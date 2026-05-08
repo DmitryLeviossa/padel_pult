@@ -2,86 +2,90 @@
 
 # Users
 users = [
-  { email: "admin@padel.com", password: "password123" },
-  { email: "alice@padel.com", password: "password123" },
-  { email: "bob@padel.com", password: "password123" },
-  { email: "carlos@padel.com", password: "password123" },
-  { email: "diana@padel.com", password: "password123" },
-  { email: "erik@padel.com", password: "password123" },
-  { email: "fiona@padel.com", password: "password123" },
-  { email: "george@padel.com", password: "password123" }
+  { email: "admin@padel.com",   password: "password123", first_name: "Админ",    last_name: "Пользователь" },
+  { email: "alexei@padel.com",  password: "password123", first_name: "Алексей",  last_name: "Иванов"       },
+  { email: "boris@padel.com",   password: "password123", first_name: "Борис",    last_name: "Смирнов"      },
+  { email: "vadim@padel.com",   password: "password123", first_name: "Вадим",    last_name: "Козлов"       },
+  { email: "darya@padel.com",   password: "password123", first_name: "Дарья",    last_name: "Новикова"     },
+  { email: "elena@padel.com",   password: "password123", first_name: "Елена",    last_name: "Морозова"     },
+  { email: "fyodor@padel.com",  password: "password123", first_name: "Фёдор",    last_name: "Волков"       },
+  { email: "galina@padel.com",  password: "password123", first_name: "Галина",   last_name: "Петрова"      }
 ].map do |attrs|
   User.find_or_create_by!(email: attrs[:email]) do |u|
-    u.password = attrs[:password]
+    u.password              = attrs[:password]
     u.password_confirmation = attrs[:password]
+    u.first_name            = attrs[:first_name]
+    u.last_name             = attrs[:last_name]
   end
 end
 
-admin, alice, bob, carlos, diana, erik, fiona, george = users
+admin, alexei, boris, vadim, darya, elena, fyodor, galina = users
 
 # Leagues
-league1 = League.find_or_create_by!(name: "Madrid Open League") do |l|
-  l.description = "Competitive padel league in Madrid"
+league1 = League.find_or_create_by!(name: "Московская открытая лига") do |l|
+  l.description = "Соревновательная лига по падел-теннису в Москве"
   l.owner = admin
 end
 
-league2 = League.find_or_create_by!(name: "Barcelona Summer League") do |l|
-  l.description = "Seasonal padel league for Barcelona players"
-  l.owner = alice
+league2 = League.find_or_create_by!(name: "Питерская летняя лига") do |l|
+  l.description = "Сезонная лига по падел-теннису для игроков Санкт-Петербурга"
+  l.owner = alexei
 end
 
 # League members
-[alice, bob, carlos, diana, erik, fiona, george].each do |user|
+league1_members = [admin, alexei, boris, vadim, darya, elena, fyodor, galina].map do |user|
   LeagueUser.find_or_create_by!(league_id: league1.id, user_id: user.id) do |lu|
     lu.score = rand(0..100)
   end
 end
+admin_lu1, alexei_lu1, boris_lu1, vadim_lu1, darya_lu1, elena_lu1, fyodor_lu1, galina_lu1 = league1_members
 
-[bob, carlos, diana, erik].each do |user|
+league2_members = [boris, vadim, darya, elena].map do |user|
   LeagueUser.find_or_create_by!(league_id: league2.id, user_id: user.id) do |lu|
     lu.score = rand(0..50)
   end
 end
+boris_lu2, vadim_lu2, darya_lu2, elena_lu2 = league2_members
 
 # Tournaments
-t1 = Tournament.find_or_create_by!(name: "Spring Cup 2026", league: league1) do |t|
+t1 = Tournament.find_or_create_by!(name: "Весенний кубок 2026", league: league1) do |t|
   t.start_date = Date.new(2026, 5, 15)
   t.end_date = Date.new(2026, 5, 17)
   t.max_participants = 16
-  t.location = "Madrid Sports Center"
+  t.location = "Московский спортивный центр"
   t.type = "olimpic"
   t.status = "active"
-  t.description = "Annual spring tournament open to all league members"
+  t.description = "Ежегодный весенний турнир, открытый для всех участников лиги"
 end
 
-t2 = Tournament.find_or_create_by!(name: "Summer Smash 2026", league: league1) do |t|
+t2 = Tournament.find_or_create_by!(name: "Летний удар 2026", league: league1) do |t|
   t.start_date = Date.new(2026, 7, 1)
   t.end_date = Date.new(2026, 7, 3)
   t.max_participants = 8
-  t.location = "La Caja Mágica"
+  t.location = "Олимпийский комплекс «Лужники»"
   t.type = "olimpic"
   t.status = "draft"
-  t.description = "Smaller summer invitational for top league players"
+  t.description = "Летний инвитейшнл для лучших игроков лиги"
 end
 
-t3 = Tournament.find_or_create_by!(name: "Barcelona Open 2026", league: league2) do |t|
+t3 = Tournament.find_or_create_by!(name: "Петербургский открытый 2026", league: league2) do |t|
   t.start_date = Date.new(2026, 6, 10)
   t.end_date = Date.new(2026, 6, 12)
   t.max_participants = 8
-  t.location = "Club Natació Atlètic-Barceloneta"
+  t.location = "СКК «Петербургский»"
   t.type = "olimpic"
   t.status = "draft"
-  t.description = "Barcelona league's flagship tournament"
+  t.description = "Главный турнир Питерской лиги"
 end
 
 # Pairs for Spring Cup
-Pair.find_or_create_by!(tournament: t1, player1: alice, player2: bob)
-Pair.find_or_create_by!(tournament: t1, player1: carlos, player2: diana)
-Pair.find_or_create_by!(tournament: t1, player1: erik, player2: fiona)
-Pair.find_or_create_by!(tournament: t1, player1: george, player2: admin)
+Pair.find_or_create_by!(tournament: t1, player1: alexei_lu1, player2: boris_lu1)
+Pair.find_or_create_by!(tournament: t1, player1: vadim_lu1, player2: darya_lu1)
+Pair.find_or_create_by!(tournament: t1, player1: elena_lu1, player2: fyodor_lu1)
+Pair.find_or_create_by!(tournament: t1, player1: galina_lu1, player2: admin_lu1)
 
-# Pairs for Barcelona Open
-Pair.find_or_create_by!(tournament: t3, player1: bob, player2: carlos)
-Pair.find_or_create_by!(tournament: t3, player1: diana, player2: erik)
+# Pairs for Saint Petersburg Open
+Pair.find_or_create_by!(tournament: t3, player1: boris_lu2, player2: vadim_lu2)
+Pair.find_or_create_by!(tournament: t3, player1: darya_lu2, player2: elena_lu2)
 
 puts "Seeded: #{User.count} users, #{League.count} leagues, #{Tournament.count} tournaments, #{Pair.count} pairs"

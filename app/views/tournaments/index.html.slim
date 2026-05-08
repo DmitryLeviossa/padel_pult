@@ -1,17 +1,17 @@
 .container.mt-4
-  h1.mb-4 Tournaments
+  h1.mb-4 Турниры
 
   - if @tournaments.any?
     table.table.table-striped.table-hover
       thead.table-dark
         tr
-          th Name
-          th Location
-          th Start Date
-          th End Date
-          th Type
-          th Status
-          th Max Participants
+          th Название
+          th Место
+          th Дата начала
+          th Дата окончания
+          th Тип
+          th Статус
+          th Макс. участников
       tbody
         - @tournaments.each do |tournament|
           tr
@@ -25,4 +25,4 @@
               span class="badge bg-#{badge_class}" = tournament.status.capitalize
             td.text-center= tournament.max_participants
   - else
-    p.text-muted No tournaments yet.
+    p.text-muted Турниров пока нет.

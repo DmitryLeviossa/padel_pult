@@ -27,12 +27,13 @@ html
         = link_to "Padel Pult", root_path, class: "navbar-brand"
         .d-flex.align-items-center.gap-3
           - if user_signed_in?
-            = link_to "Leagues", leagues_path, class: "text-light text-decoration-none small"
-            = link_to "Tournaments", tournaments_path, class: "text-light text-decoration-none small"
+            = link_to "Лиги", leagues_path, class: "text-light text-decoration-none small"
+            = link_to "Турниры", tournaments_path, class: "text-light text-decoration-none small"
+            = link_to "Игроки", users_path, class: "text-light text-decoration-none small"
             span.text-light.small= current_user.email
-            = link_to "Edit account", edit_user_registration_path, class: "text-light text-decoration-none small"
-            = button_to "Sign out", destroy_user_session_path, method: :delete, class: "btn btn-outline-light btn-sm"
+            = link_to "Редактировать аккаунт", edit_user_registration_path, class: "text-light text-decoration-none small"
+            = button_to "Выйти", destroy_user_session_path, method: :delete, class: "btn btn-outline-light btn-sm"
           - else
-            = link_to "Sign in", new_user_session_path, class: "text-light text-decoration-none small"
-            = link_to "Sign up", new_user_registration_path, class: "btn btn-outline-light btn-sm"
+            = link_to "Войти", new_user_session_path, class: "text-light text-decoration-none small"
+            = link_to "Регистрация", new_user_registration_path, class: "btn btn-outline-light btn-sm"
     = yield

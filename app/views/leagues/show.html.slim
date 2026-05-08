@@ -1,37 +1,77 @@
 .container.py-4
   .d-flex.justify-content-between.align-items-center.mb-4
-    h1.mb-0= @league.name
-    = link_to "← Leagues", leagues_path, class: "btn btn-outline-secondary btn-sm"
+    .d-flex.align-items-center.gap-3
+      - if @league.logo.attached?
+        = image_tag @league.logo, class: "rounded", style: "width: 64px; height: 64px; object-fit: cover;"
+      h1.mb-0= @league.name
+    .d-flex.gap-2
+      - if @league.owner == current_user
+        = link_to "Редактировать", edit_league_path(@league), class: "btn btn-outline-primary btn-sm"
+      = link_to "← Лиги", leagues_path, class: "btn btn-outline-secondary btn-sm"
 
   - if @league.description.present?
     p.text-muted= @league.description
 
   p.text-muted.small
-    | Created #{@league.created_at.strftime("%b %d, %Y")} by #{@league.owner.email}
+    | Создано #{@league.created_at.strftime("%d.%m.%Y")} пользователем #{@league.owner.email}
 
-  .d-flex.justify-content-between.align-items-center.mt-4.mb-2
-    h4.mb-0 Tournaments
-    - if @league.owner == current_user
-      = link_to "New Tournament", new_league_tournament_path(@league), class: "btn btn-primary btn-sm"
+  ul.nav.nav-tabs.mt-4 role="tablist"
+    li.nav-item role="presentation"
+      button.nav-link.active type="button" role="tab" data-bs-toggle="tab" data-bs-target="#tournaments" aria-controls="tournaments" aria-selected="true"
+        | Турниры
+    li.nav-item role="presentation"
+      button.nav-link type="button" role="tab" data-bs-toggle="tab" data-bs-target="#league-users" aria-controls="league-users" aria-selected="false"
+        | Участники
 
-  - if @league.tournaments.any?
-    table.table.table-hover
-      thead
-        tr
-          th Name
-          th Start Date
-          th End Date
-          th Location
-          th Type
-          th Status
-      tbody
-        - @league.tournaments.order(start_date: :asc).each do |tournament|
-          tr
-            td= link_to tournament.name, tournament_path(tournament)
-            td= tournament.start_date.strftime("%b %d, %Y")
-            td= tournament.end_date.strftime("%b %d, %Y")
-            td= tournament.location.presence || "—"
-            td= tournament.type.capitalize
-            td= tournament.status.capitalize
-  - else
-    p.text-muted No tournaments yet.
+  .tab-content.mt-3
+    #tournaments.tab-pane.fade.show.active role="tabpanel"
+      .d-flex.justify-content-between.align-items-center.mb-2
+        h5.mb-0 Турниры
+        - if @league.owner == current_user
+          = link_to "Новый турнир", new_league_tournament_path(@league), class: "btn btn-primary btn-sm"
+
+      - if @league.tournaments.any?
+        table.table.table-hover
+          thead
+            tr
+              th Название
+              th Дата начала
+              th Дата окончания
+              th Место
+              th Тип
+              th Статус
+          tbody
+            - @league.tournaments.order(start_date: :asc).each do |tournament|
+              tr
+                td= link_to tournament.name, tournament_path(tournament)
+                td= tournament.start_date.strftime("%d.%m.%Y")
+                td= tournament.end_date.strftime("%d.%m.%Y")
+                td= tournament.location.presence || "—"
+                td= tournament.type.capitalize
+                td= tournament.status.capitalize
+      - else
+        p.text-muted Турниров пока нет.
+
+    #league-users.tab-pane.fade role="tabpanel"
+      h5.mb-3 Участники
+
+      - if @league.league_users.any?
+        table.table.table-hover
+          thead
+            tr
+              th Фото
+              th Имя
+              th Очки
+          tbody
+            - @league.league_users.order(score: :desc).each do |league_user|
+              tr
+                td
+                  - if league_user.user.photo.attached?
+                    = image_tag league_user.user.photo, class: "rounded-circle", style: "width: 40px; height: 40px; object-fit: cover;"
+                  - else
+                    .rounded-circle.bg-secondary.d-inline-flex.align-items-center.justify-content-center style="width: 40px; height: 40px;"
+                      span.text-white.small = league_user.full_name.first.upcase
+                td= league_user.full_name
+                td= league_user.score
+      - else
+        p.text-muted Участников пока нет.
