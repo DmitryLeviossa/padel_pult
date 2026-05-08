@@ -29,7 +29,11 @@ Decimal phases appear between their surrounding integers in numeric order.
   2. Bootstrap SCSS entry point compiles without errors with `$variable` overrides injected before imports, causing dark colors to propagate into Bootstrap components
   3. Body text, headings, and links render with Inter or system font stack at correct weights and sizes for dark-background legibility
   4. A consistent spacing scale (`--space-*` or equivalent CSS custom properties) is applied and available for use across all components
-**Plans**: TBD
+**Plans**: 3 plans
+Plans:
+- [ ] 01-01-PLAN.md — Build config + HTML activation (silence Dart Sass warnings, data-bs-theme, Google Fonts)
+- [ ] 01-02-PLAN.md — SCSS design token partials (_variables, _theme, _spacing, _typography)
+- [ ] 01-03-PLAN.md — Bootstrap entry point rewrite and build verification
 **UI hint**: yes
 
 ### Phase 2: Layout Shell
@@ -87,7 +91,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. CSS Foundation | 0/TBD | Not started | - |
+| 1. CSS Foundation | 0/3 | Not started | - |
 | 2. Layout Shell | 0/TBD | Not started | - |
 | 3. Shared Components | 0/TBD | Not started | - |
 | 4. Content Pages | 0/TBD | Not started | - |
