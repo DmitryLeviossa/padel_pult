@@ -1,7 +1,7 @@
 ---
 phase: 1
 slug: css-foundation
-status: draft
+status: approved
 shadcn_initialized: false
 preset: none
 created: 2026-05-09
@@ -249,11 +249,11 @@ The following must be TRUE for Phase 1 to be complete (from ROADMAP.md success c
 
 ## Checker Sign-Off
 
-- [ ] Dimension 1 Copywriting: PASS
-- [ ] Dimension 2 Visuals: PASS
-- [ ] Dimension 3 Color: PASS
-- [ ] Dimension 4 Typography: PASS
-- [ ] Dimension 5 Spacing: PASS
-- [ ] Dimension 6 Registry Safety: PASS
+- [x] Dimension 1 Copywriting: PASS
+- [x] Dimension 2 Visuals: PASS
+- [x] Dimension 3 Color: PASS
+- [x] Dimension 4 Typography: FLAG (h5/h6/body proximity — non-blocking; Phase 5 adds uppercase treatment)
+- [x] Dimension 5 Spacing: FLAG (12px/20px/28px outside standard set — all 4px-aligned, Bootstrap-native)
+- [x] Dimension 6 Registry Safety: PASS
 
-**Approval:** pending
+**Approval:** approved 2026-05-09
