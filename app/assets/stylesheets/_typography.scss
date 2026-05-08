@@ -6,7 +6,7 @@
 // Link decoration override for dark surfaces.
 // Dark surfaces use color alone as the link affordance — no underline by default.
 // Underline restores on hover for accessibility.
-a {
+a:not(.btn):not(.nav-link):not(.navbar-brand) {
   text-decoration: none;
 
   &:hover {
