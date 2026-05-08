@@ -1,6 +1,6 @@
 .container.py-4
   .d-flex.justify-content-between.align-items-center.mb-4
-    h1.mb-0 New Tournament
+    h1.mb-0 Новый турнир
     = link_to "← #{@league.name}", league_path(@league), class: "btn btn-outline-secondary btn-sm"
 
   = form_with model: [@league, @tournament], class: "row g-3" do |f|
@@ -32,11 +32,11 @@
 
     .col-md-4
       = f.label :type, class: "form-label"
-      = f.select :type, [["Olympic", "olimpic"], ["Round Robin", "round_robin"]], {}, class: "form-select"
+      = f.select :type, [["Олимпийский", "olimpic"], ["Круговой", "round_robin"]], {}, class: "form-select"
 
     .col-12
       = f.label :description, class: "form-label"
       = f.text_area :description, class: "form-control", rows: 3
 
     .col-12
-      = f.submit "Create Tournament", class: "btn btn-primary"
+      = f.submit "Создать турнир", class: "btn btn-primary"

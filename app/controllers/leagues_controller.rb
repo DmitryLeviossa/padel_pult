@@ -22,9 +22,29 @@ class LeaguesController < ApplicationController
     end
   end
 
+  def edit
+    @league = League.find(params[:id])
+    authorize_owner!
+  end
+
+  def update
+    @league = League.find(params[:id])
+    authorize_owner!
+
+    if @league.update(league_params)
+      redirect_to @league, notice: "Лига обновлена."
+    else
+      render :edit, status: :unprocessable_entity
+    end
+  end
+
   private
 
+  def authorize_owner!
+    redirect_to leagues_path, alert: "Нет доступа." unless @league.owner == current_user
+  end
+
   def league_params
-    params.require(:league).permit(:name, :description)
+    params.require(:league).permit(:name, :description, :logo)
   end
 end

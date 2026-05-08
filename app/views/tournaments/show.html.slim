@@ -9,39 +9,59 @@
         p.text-muted= @tournament.description
 
       dl.row
-        dt.col-sm-3 Location
+        dt.col-sm-3 Место
         dd.col-sm-9= @tournament.location.presence || "—"
 
-        dt.col-sm-3 Start Date
-        dd.col-sm-9= @tournament.start_date.strftime("%b %d, %Y")
+        dt.col-sm-3 Дата начала
+        dd.col-sm-9= @tournament.start_date.strftime("%d.%m.%Y")
 
-        dt.col-sm-3 End Date
-        dd.col-sm-9= @tournament.end_date.strftime("%b %d, %Y")
+        dt.col-sm-3 Дата окончания
+        dd.col-sm-9= @tournament.end_date.strftime("%d.%m.%Y")
 
-        dt.col-sm-3 Type
+        dt.col-sm-3 Тип
         dd.col-sm-9= @tournament.type.capitalize
 
-        dt.col-sm-3 Max Participants
+        dt.col-sm-3 Макс. участников
         dd.col-sm-9= @tournament.max_participants
 
-        dt.col-sm-3 Status
+        dt.col-sm-3 Статус
         dd.col-sm-9
           - badge_class = { "draft" => "secondary", "active" => "success", "completed" => "primary", "cancelled" => "danger" }.fetch(@tournament.status, "secondary")
           span class="badge bg-#{badge_class}" = @tournament.status.capitalize
 
-  h4.mt-4.mb-3 Pairs
+  h4.mt-4.mb-3 Пары
   - if @tournament.pairs.any?
     table.table.table-hover
       thead
         tr
           th #
-          th Player 1
-          th Player 2
+          th Фото
+          th Игрок 1
+          th Очки
+          th Фото
+          th Игрок 2
+          th Очки
+          th Очки пары
       tbody
-        - @tournament.pairs.each_with_index do |pair, index|
+        - @tournament.pairs.sort_by { |p| -p.score }.each_with_index do |pair, index|
           tr
             td= index + 1
-            td= pair.player1.email
-            td= pair.player2.email
+            td
+              - if pair.player1.user.photo.attached?
+                = image_tag pair.player1.user.photo, class: "rounded-circle", style: "width: 40px; height: 40px; object-fit: cover;"
+              - else
+                .rounded-circle.bg-secondary.d-inline-flex.align-items-center.justify-content-center style="width: 40px; height: 40px;"
+                  span.text-white.small = pair.player1.full_name.first.upcase
+            td= pair.player1.full_name
+            td= pair.player1.score
+            td
+              - if pair.player2.user.photo.attached?
+                = image_tag pair.player2.user.photo, class: "rounded-circle", style: "width: 40px; height: 40px; object-fit: cover;"
+              - else
+                .rounded-circle.bg-secondary.d-inline-flex.align-items-center.justify-content-center style="width: 40px; height: 40px;"
+                  span.text-white.small = pair.player2.full_name.first.upcase
+            td= pair.player2.full_name
+            td= pair.player2.score
+            td= pair.score
   - else
-    p.text-muted No pairs registered yet.
+    p.text-muted Пар пока нет.
