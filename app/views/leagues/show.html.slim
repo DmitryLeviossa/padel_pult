@@ -1,0 +1,37 @@
+.container.py-4
+  .d-flex.justify-content-between.align-items-center.mb-4
+    h1.mb-0= @league.name
+    = link_to "← Leagues", leagues_path, class: "btn btn-outline-secondary btn-sm"
+
+  - if @league.description.present?
+    p.text-muted= @league.description
+
+  p.text-muted.small
+    | Created #{@league.created_at.strftime("%b %d, %Y")} by #{@league.owner.email}
+
+  .d-flex.justify-content-between.align-items-center.mt-4.mb-2
+    h4.mb-0 Tournaments
+    - if @league.owner == current_user
+      = link_to "New Tournament", new_league_tournament_path(@league), class: "btn btn-primary btn-sm"
+
+  - if @league.tournaments.any?
+    table.table.table-hover
+      thead
+        tr
+          th Name
+          th Start Date
+          th End Date
+          th Location
+          th Type
+          th Status
+      tbody
+        - @league.tournaments.order(start_date: :asc).each do |tournament|
+          tr
+            td= link_to tournament.name, tournament_path(tournament)
+            td= tournament.start_date.strftime("%b %d, %Y")
+            td= tournament.end_date.strftime("%b %d, %Y")
+            td= tournament.location.presence || "—"
+            td= tournament.type.capitalize
+            td= tournament.status.capitalize
+  - else
+    p.text-muted No tournaments yet.
