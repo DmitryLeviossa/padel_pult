@@ -3,7 +3,7 @@ Rails.application.routes.draw do
 
   get "up" => "rails/health#show", as: :rails_health_check
 
-  root to: "leagues#index"
+  root to: "dashboard#index"
 
   resources :users, only: [:index]
 
