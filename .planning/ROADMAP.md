@@ -12,7 +12,7 @@ Five phases transform Padel Pult from a default Bootstrap light app into a polis
 
 Decimal phases appear between their surrounding integers in numeric order.
 
-- [ ] **Phase 1: CSS Foundation** - Color tokens, typography, spacing system, Bootstrap SCSS overrides
+- [x] **Phase 1: CSS Foundation** - Color tokens, typography, spacing system, Bootstrap SCSS overrides *(Complete 2026-05-09)*
 - [ ] **Phase 2: Layout Shell** - Navbar, flash messages, backgrounds, mobile hamburger menu
 - [ ] **Phase 3: Shared Components** - Cards, avatar partial, form controls, tables
 - [ ] **Phase 4: Content Pages** - Dashboard, auth, leagues, tournaments, users index
@@ -32,11 +32,11 @@ Decimal phases appear between their surrounding integers in numeric order.
 **Plans**: 3 plans in 2 waves
 
 **Wave 1** *(parallel)*
-- [ ] 01-01-PLAN.md — Build config + HTML activation (silence Dart Sass warnings, data-bs-theme, Google Fonts)
-- [ ] 01-02-PLAN.md — SCSS design token partials (_variables, _theme, _spacing, _typography)
+- [x] 01-01-PLAN.md — Build config + HTML activation (silence Dart Sass warnings, data-bs-theme, Google Fonts)
+- [x] 01-02-PLAN.md — SCSS design token partials (_variables, _theme, _spacing, _typography)
 
 **Wave 2** *(blocked on Wave 1 completion)*
-- [ ] 01-03-PLAN.md — Bootstrap entry point rewrite and build verification
+- [x] 01-03-PLAN.md — Bootstrap entry point rewrite and build verification
 
 **Cross-cutting constraints:** `data-bs-theme="dark"` on `<html>` (01-01) must exist before build verification (01-03). All color token hex values are locked — no substitutions.
 
@@ -97,7 +97,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. CSS Foundation | 0/3 | Ready to execute | - |
+| 1. CSS Foundation | 3/3 | Complete | 2026-05-09 |
 | 2. Layout Shell | 0/TBD | Not started | - |
 | 3. Shared Components | 0/TBD | Not started | - |
 | 4. Content Pages | 0/TBD | Not started | - |
