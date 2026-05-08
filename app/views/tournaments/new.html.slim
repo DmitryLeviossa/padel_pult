@@ -1,0 +1,42 @@
+.container.py-4
+  .d-flex.justify-content-between.align-items-center.mb-4
+    h1.mb-0 New Tournament
+    = link_to "← #{@league.name}", league_path(@league), class: "btn btn-outline-secondary btn-sm"
+
+  = form_with model: [@league, @tournament], class: "row g-3" do |f|
+    .col-md-6
+      = f.label :name, class: "form-label"
+      = f.text_field :name, class: "form-control #{"is-invalid" if @tournament.errors[:name].any?}"
+      - if @tournament.errors[:name].any?
+        .invalid-feedback= @tournament.errors[:name].first
+
+    .col-md-6
+      = f.label :location, class: "form-label"
+      = f.text_field :location, class: "form-control"
+
+    .col-md-6
+      = f.label :start_date, class: "form-label"
+      = f.date_field :start_date, class: "form-control #{"is-invalid" if @tournament.errors[:start_date].any?}"
+      - if @tournament.errors[:start_date].any?
+        .invalid-feedback= @tournament.errors[:start_date].first
+
+    .col-md-6
+      = f.label :end_date, class: "form-label"
+      = f.date_field :end_date, class: "form-control #{"is-invalid" if @tournament.errors[:end_date].any?}"
+      - if @tournament.errors[:end_date].any?
+        .invalid-feedback= @tournament.errors[:end_date].first
+
+    .col-md-4
+      = f.label :max_participants, class: "form-label"
+      = f.number_field :max_participants, class: "form-control", min: 2
+
+    .col-md-4
+      = f.label :type, class: "form-label"
+      = f.select :type, [["Olympic", "olimpic"], ["Round Robin", "round_robin"]], {}, class: "form-select"
+
+    .col-12
+      = f.label :description, class: "form-label"
+      = f.text_area :description, class: "form-control", rows: 3
+
+    .col-12
+      = f.submit "Create Tournament", class: "btn btn-primary"

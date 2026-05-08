@@ -27,10 +27,10 @@ ActiveRecord::Schema[8.0].define(version: 2026_05_08_133808) do
   create_table "leagues", force: :cascade do |t|
     t.string "name", null: false
     t.text "description"
-    t.bigint "user_id", null: false
+    t.bigint "owner_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.index ["user_id"], name: "index_leagues_on_user_id"
+    t.index ["owner_id"], name: "index_leagues_on_owner_id"
   end
 
   create_table "pairs", force: :cascade do |t|
@@ -73,7 +73,7 @@ ActiveRecord::Schema[8.0].define(version: 2026_05_08_133808) do
 
   add_foreign_key "league_users", "leagues"
   add_foreign_key "league_users", "users"
-  add_foreign_key "leagues", "users"
+  add_foreign_key "leagues", "users", column: "owner_id"
   add_foreign_key "pairs", "tournaments"
   add_foreign_key "pairs", "users", column: "player1_id"
   add_foreign_key "pairs", "users", column: "player2_id"

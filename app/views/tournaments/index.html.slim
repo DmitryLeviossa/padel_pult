@@ -1,0 +1,28 @@
+.container.mt-4
+  h1.mb-4 Tournaments
+
+  - if @tournaments.any?
+    table.table.table-striped.table-hover
+      thead.table-dark
+        tr
+          th Name
+          th Location
+          th Start Date
+          th End Date
+          th Type
+          th Status
+          th Max Participants
+      tbody
+        - @tournaments.each do |tournament|
+          tr
+            td= tournament.name
+            td= tournament.location.presence || "—"
+            td= tournament.start_date
+            td= tournament.end_date
+            td= tournament.type.capitalize
+            td
+              - badge_class = { "draft" => "secondary", "active" => "success", "completed" => "primary", "cancelled" => "danger" }.fetch(tournament.status, "secondary")
+              span class="badge bg-#{badge_class}" = tournament.status.capitalize
+            td.text-center= tournament.max_participants
+  - else
+    p.text-muted No tournaments yet.

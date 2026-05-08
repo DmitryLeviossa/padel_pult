@@ -1,0 +1,40 @@
+.container
+  .row.justify-content-center.mt-5
+    .col-md-6
+      .card.shadow-sm
+        .card-body.p-4
+          h2.card-title.mb-4 Edit Account
+
+          = form_for(resource, as: resource_name, url: registration_path(resource_name), html: { method: :put }) do |f|
+            = render "devise/shared/error_messages", resource: resource
+
+            .mb-3
+              = f.label :email, class: "form-label"
+              = f.email_field :email, autofocus: true, autocomplete: "email", class: "form-control"
+              - if devise_mapping.confirmable? && resource.pending_reconfirmation?
+                small.text-muted Currently waiting confirmation for: #{resource.unconfirmed_email}
+
+            .mb-3
+              = f.label :password, class: "form-label"
+              small.text-muted.d-block.mb-1 Leave blank if you don't want to change it
+              = f.password_field :password, autocomplete: "new-password", class: "form-control"
+              - if @minimum_password_length
+                small.text-muted #{@minimum_password_length} characters minimum
+
+            .mb-3
+              = f.label :password_confirmation, class: "form-label"
+              = f.password_field :password_confirmation, autocomplete: "new-password", class: "form-control"
+
+            .mb-3
+              = f.label :current_password, class: "form-label"
+              small.text-muted.d-block.mb-1 We need your current password to confirm changes
+              = f.password_field :current_password, autocomplete: "current-password", class: "form-control"
+
+            = f.submit "Update", class: "btn btn-primary"
+            = link_to "Back", :back, class: "btn btn-secondary ms-2"
+
+      .card.shadow-sm.mt-3
+        .card-body.p-4
+          h5.card-title.text-danger Cancel Account
+          p.text-muted Are you sure you want to cancel your account?
+          = button_to "Cancel my account", registration_path(resource_name), data: { confirm: "Are you sure?", turbo_confirm: "Are you sure?" }, method: :delete, class: "btn btn-danger btn-sm"

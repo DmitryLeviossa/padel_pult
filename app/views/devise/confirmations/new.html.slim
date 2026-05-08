@@ -1,0 +1,19 @@
+.container
+  .row.justify-content-center.mt-5
+    .col-md-5
+      .card.shadow-sm
+        .card-body.p-4
+          h2.card-title.mb-4 Resend confirmation instructions
+
+          = form_for(resource, as: resource_name, url: confirmation_path(resource_name), html: { method: :post }) do |f|
+            = render "devise/shared/error_messages", resource: resource
+
+            .mb-3
+              = f.label :email, class: "form-label"
+              = f.email_field :email, autofocus: true, autocomplete: "email", class: "form-control"
+
+            = f.submit "Resend confirmation instructions", class: "btn btn-primary w-100"
+
+          hr.my-3
+          .text-center.small
+            = render "devise/shared/links"
