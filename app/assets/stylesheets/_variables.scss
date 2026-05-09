@@ -9,7 +9,7 @@ $body-bg:          #0d1117;
 $body-color:       #e6edf3;
 $border-color:     #30363d;
 $dark:             #21262d;
-$input-bg:         var(--color-bg-surface); // COMP-03: dark input surface; propagates to form-control, form-select, textarea
+$input-bg:         #21262d; // COMP-03: dark input surface (matches --color-bg-surface); propagates to form-control, form-select, textarea
 
 // Shape — Linear-inspired sharp corners
 $border-radius:    0.375rem;
