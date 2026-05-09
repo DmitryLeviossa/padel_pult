@@ -9,7 +9,6 @@
             th #
             th Фото
             th Имя
-            th Email
             th Дата регистрации
         tbody
           - @users.each_with_index do |user, i|
@@ -22,7 +21,6 @@
                   .rounded-circle.bg-secondary.d-inline-flex.align-items-center.justify-content-center style="width: 40px; height: 40px;"
                     span.text-white.small = user.full_name.first.upcase
               td= user.full_name
-              td= user.email
               td= user.created_at.strftime("%d.%m.%Y")
   - else
     p.text-muted Пользователей пока нет.
