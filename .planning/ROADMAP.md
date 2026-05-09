@@ -14,7 +14,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 
 - [x] **Phase 1: CSS Foundation** - Color tokens, typography, spacing system, Bootstrap SCSS overrides *(Complete 2026-05-09)*
 - [x] **Phase 2: Layout Shell** - Navbar, flash messages, backgrounds, mobile hamburger menu *(Complete 2026-05-09)*
-- [ ] **Phase 3: Shared Components** - Cards, avatar partial, form controls, tables
+- [x] **Phase 3: Shared Components** - Cards, avatar partial, form controls, tables *(Complete 2026-05-09)*
 - [ ] **Phase 4: Content Pages** - Dashboard, auth, leagues, tournaments, users index
 - [ ] **Phase 5: Polish Pass** - Button glow, card lift, table header typography
 
@@ -75,8 +75,8 @@ Decimal phases appear between their surrounding integers in numeric order.
 **Plans**: 2 plans in 1 wave
 
 **Wave 1** *(parallel — no dependencies between plans)*
-- [ ] 03-01-PLAN.md — SCSS foundation: _variables.scss + _theme.scss edits + new _cards.scss, _forms.scss, _tables.scss, _avatar.scss + manifest update (COMP-01, COMP-03, COMP-04)
-- [ ] 03-02-PLAN.md — Avatar partial + 5 template avatar replacements + 2 thead.table-dark removals (COMP-02, COMP-04)
+- [x] 03-01-PLAN.md — SCSS foundation: _variables.scss + _theme.scss edits + new _cards.scss, _forms.scss, _tables.scss, _avatar.scss + manifest update (COMP-01, COMP-03, COMP-04)
+- [x] 03-02-PLAN.md — Avatar partial + 5 template avatar replacements + 2 thead.table-dark removals (COMP-02, COMP-04)
 
 **Cross-cutting constraints:** Plans 01 and 02 are fully parallel — no file overlap. Both can execute in the same wave or sequentially in either order.
 
@@ -115,6 +115,6 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5
 |-------|----------------|--------|-----------|
 | 1. CSS Foundation | 3/3 | Complete | 2026-05-09 |
 | 2. Layout Shell | 2/2 | Complete | 2026-05-09 |
-| 3. Shared Components | 0/2 | Not started | - |
+| 3. Shared Components | 2/2 | Complete | 2026-05-09 |
 | 4. Content Pages | 0/TBD | Not started | - |
 | 5. Polish Pass | 0/TBD | Not started | - |
