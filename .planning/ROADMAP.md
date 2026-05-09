@@ -72,7 +72,14 @@ Decimal phases appear between their surrounding integers in numeric order.
   2. The `_avatar.html.slim` partial renders initials on a correct dark surface in every template that previously used `bg-secondary`
   3. Form inputs (`form-control`, `form-select`, `textarea`, file upload) all display dark surfaces with electric blue focus rings — no white backgrounds visible on any form
   4. Tables render with dark Bootstrap `--bs-table-*` variable overrides, correct border colors, and no `thead.table-dark` flash of white header
-**Plans**: TBD
+**Plans**: 2 plans in 1 wave
+
+**Wave 1** *(parallel — no dependencies between plans)*
+- [ ] 03-01-PLAN.md — SCSS foundation: _variables.scss + _theme.scss edits + new _cards.scss, _forms.scss, _tables.scss, _avatar.scss + manifest update (COMP-01, COMP-03, COMP-04)
+- [ ] 03-02-PLAN.md — Avatar partial + 5 template avatar replacements + 2 thead.table-dark removals (COMP-02, COMP-04)
+
+**Cross-cutting constraints:** Plans 01 and 02 are fully parallel — no file overlap. Both can execute in the same wave or sequentially in either order.
+
 **UI hint**: yes
 
 ### Phase 4: Content Pages
@@ -108,6 +115,6 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5
 |-------|----------------|--------|-----------|
 | 1. CSS Foundation | 3/3 | Complete | 2026-05-09 |
 | 2. Layout Shell | 2/2 | Complete | 2026-05-09 |
-| 3. Shared Components | 0/TBD | Not started | - |
+| 3. Shared Components | 0/2 | Not started | - |
 | 4. Content Pages | 0/TBD | Not started | - |
 | 5. Polish Pass | 0/TBD | Not started | - |
