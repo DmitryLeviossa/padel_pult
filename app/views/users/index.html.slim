@@ -3,12 +3,13 @@
 
   - if @users.any?
     .table-responsive
-      table.table.table-striped.table-hover.align-middle
+      table.table.table-hover.align-middle
         thead
           tr
             th #
             th Фото
             th Имя
+            th Email
             th Дата регистрации
         tbody
           - @users.each_with_index do |user, i|
@@ -17,6 +18,7 @@
               td
                 = render "shared/avatar", user: user
               td= user.full_name
+              td= user.email
               td= user.created_at.strftime("%d.%m.%Y")
   - else
     p.text-muted Пользователей пока нет.
