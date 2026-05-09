@@ -13,6 +13,14 @@ export default class extends Controller {
 
   close() {
     this.element.classList.remove("show")
-    this.element.addEventListener("transitionend", () => this.element.remove(), { once: true })
+
+    const onTransitionEnd = () => this.element.remove()
+    this.element.addEventListener("transitionend", onTransitionEnd, { once: true })
+
+    // Fallback: if no transition fires within 200ms (e.g. prefers-reduced-motion), remove directly
+    setTimeout(() => {
+      this.element.removeEventListener("transitionend", onTransitionEnd)
+      if (this.element.isConnected) this.element.remove()
+    }, 200)
   }
 }
