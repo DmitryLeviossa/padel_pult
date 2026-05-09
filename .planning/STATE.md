@@ -9,12 +9,12 @@ See: .planning/PROJECT.md (updated 2026-05-08)
 
 ## Current Position
 
-Phase: 2 of 5 (Layout Shell)
-Plan: 1 of 2 in current phase
-Status: In progress — 02-01 complete, 02-02 ready to execute
-Last activity: 2026-05-09 — 02-01 executed (navbar partial, Stimulus controller, SCSS — 2 tasks, 3 files)
+Phase: 2 of 5 (Layout Shell) — COMPLETE
+Plan: 2 of 2 in current phase
+Status: Phase 2 complete — 02-01 and 02-02 both executed. Ready to begin Phase 3 (Shared Components)
+Last activity: 2026-05-09 — 02-02 executed (flash partial, controller, SCSS, layout wiring, manifest update — 2 tasks, 9 files)
 
-Progress: [███░░░░░░░] 30%
+Progress: [████░░░░░░] 40%
 
 ## Performance Metrics
 
@@ -28,7 +28,7 @@ Progress: [███░░░░░░░] 30%
 | Phase | Plans | Total | Avg/Plan |
 |-------|-------|-------|----------|
 | 1. CSS Foundation | 3 | ~30 min | ~10 min |
-| 2. Layout Shell | 1 (in progress) | ~2 min | ~2 min |
+| 2. Layout Shell | 2 (complete) | ~5 min | ~2.5 min |
 
 **Recent Trend:**
 - Last 5 plans: —
@@ -49,6 +49,9 @@ Recent decisions affecting current work:
 - Linear.app as design reference (user's explicit aesthetic preference)
 - Stimulus controller wraps Bootstrap Collapse API (not data-bs-toggle direct) — satisfies LAY-04; Stimulus owns trigger, Bootstrap owns animation
 - No .navbar-dark or .bg-dark on navbar — use var(--color-bg-navbar) to avoid mapping to $dark (#21262d card surface)
+- Flash rendered once in layout partial (_flash.html.slim), not per-view — prevents double rendering with Turbo
+- data-turbo-temporary on flash alerts — prevents Turbo Drive snapshot caching of flash DOM
+- main.py-4 without .container on <main> — individual views control horizontal constraint internally via .container.py-4
 
 ### Pending Todos
 
@@ -67,5 +70,5 @@ None yet.
 ## Session Continuity
 
 Last session: 2026-05-09
-Stopped at: 02-01 complete — navbar partial, Stimulus controller, _navbar.scss created and committed. Ready to execute 02-02 (layout wiring, flash partial, manifest update).
-Resume file: .planning/phases/02-layout-shell/02-02-PLAN.md
+Stopped at: 02-02 complete — Phase 2 (Layout Shell) fully complete. Flash partial, controller, SCSS created; application.html.slim wired with navbar+flash+main.py-4; SCSS manifest updated; inline flash removed from 3 views; hello_controller.js deleted.
+Resume file: .planning/phases/03-shared-components/ (Phase 3 — Shared Components)

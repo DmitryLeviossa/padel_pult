@@ -14,10 +14,10 @@
 
 ### Layout
 
-- [ ] **LAY-01**: Application navbar redesigned — dark navy surface, brand, nav links with active states, user avatar/menu, fully responsive
-- [ ] **LAY-02**: Flash messages moved to `application.html.slim` and restyled for dark theme — dark-aware alert colors, auto-dismiss via Stimulus
-- [ ] **LAY-03**: Page body and background layers correct — dark base background, surface color distinct from navbar
-- [ ] **LAY-04**: Mobile hamburger menu implemented with Stimulus controller — responsive collapse on small screens
+- [x] **LAY-01**: Application navbar redesigned — dark navy surface, brand, nav links with active states, user avatar/menu, fully responsive
+- [x] **LAY-02**: Flash messages moved to `application.html.slim` and restyled for dark theme — dark-aware alert colors, auto-dismiss via Stimulus
+- [x] **LAY-03**: Page body and background layers correct — dark base background, surface color distinct from navbar
+- [x] **LAY-04**: Mobile hamburger menu implemented with Stimulus controller — responsive collapse on small screens
 
 ### Shared Components
 
@@ -67,10 +67,10 @@
 | CSST-02 | Phase 1 | Pending |
 | CSST-03 | Phase 1 | Pending |
 | CSST-04 | Phase 1 | Pending |
-| LAY-01 | Phase 2 | Pending |
-| LAY-02 | Phase 2 | Pending |
-| LAY-03 | Phase 2 | Pending |
-| LAY-04 | Phase 2 | Pending |
+| LAY-01 | Phase 2 | Complete (02-01) |
+| LAY-02 | Phase 2 | Complete (02-02) |
+| LAY-03 | Phase 2 | Complete (02-02) |
+| LAY-04 | Phase 2 | Complete (02-01) |
 | COMP-01 | Phase 3 | Pending |
 | COMP-02 | Phase 3 | Pending |
 | COMP-03 | Phase 3 | Pending |

@@ -13,7 +13,7 @@ Five phases transform Padel Pult from a default Bootstrap light app into a polis
 Decimal phases appear between their surrounding integers in numeric order.
 
 - [x] **Phase 1: CSS Foundation** - Color tokens, typography, spacing system, Bootstrap SCSS overrides *(Complete 2026-05-09)*
-- [ ] **Phase 2: Layout Shell** - Navbar, flash messages, backgrounds, mobile hamburger menu
+- [x] **Phase 2: Layout Shell** - Navbar, flash messages, backgrounds, mobile hamburger menu *(Complete 2026-05-09)*
 - [ ] **Phase 3: Shared Components** - Cards, avatar partial, form controls, tables
 - [ ] **Phase 4: Content Pages** - Dashboard, auth, leagues, tournaments, users index
 - [ ] **Phase 5: Polish Pass** - Button glow, card lift, table header typography
@@ -57,7 +57,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 - [x] 02-01-PLAN.md — Navbar partial (_navbar.html.slim), Stimulus navbar controller, _navbar.scss (LAY-01, LAY-04)
 
 **Wave 2** *(blocked on Wave 1 completion)*
-- [ ] 02-02-PLAN.md — Flash partial + controller + SCSS, layout wiring, manifest update, inline flash cleanup (LAY-02, LAY-03)
+- [x] 02-02-PLAN.md — Flash partial + controller + SCSS, layout wiring, manifest update, inline flash cleanup (LAY-02, LAY-03)
 
 **Cross-cutting constraints:** Plan 01 creates navbar files in isolation; Plan 02 wires everything into the layout. Do not add @import to application.bootstrap.scss until Plan 02 to keep Plan 01 self-contained.
 
@@ -107,7 +107,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 1. CSS Foundation | 3/3 | Complete | 2026-05-09 |
-| 2. Layout Shell | 1/2 | In progress | - |
+| 2. Layout Shell | 2/2 | Complete | 2026-05-09 |
 | 3. Shared Components | 0/TBD | Not started | - |
 | 4. Content Pages | 0/TBD | Not started | - |
 | 5. Polish Pass | 0/TBD | Not started | - |
