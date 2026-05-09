@@ -3,6 +3,7 @@
 /   user: (required) User ActiveRecord object — must respond to .full_name and .photo
 /          NOTE: pass league_user.user, NOT league_user — LeagueUser does not delegate .photo
 /   size: (optional) Integer px size, default 40
+- return if user.nil?
 - size ||= 40
 - font_size = (size * 0.3).round(2)
 - initials = user.full_name.split.map(&:first).first(2).join.upcase
