@@ -51,7 +51,16 @@ Decimal phases appear between their surrounding integers in numeric order.
   2. Flash messages appear below the navbar with dark-aware colors and auto-dismiss on all pages
   3. The page body sits on the correct dark base background, visually distinct from the navbar surface
   4. On mobile, a hamburger icon appears and toggling it expands/collapses the nav links via a Stimulus controller
-**Plans**: TBD
+**Plans**: 2 plans in 2 waves
+
+**Wave 1** *(no dependencies)*
+- [ ] 02-01-PLAN.md — Navbar partial (_navbar.html.slim), Stimulus navbar controller, _navbar.scss (LAY-01, LAY-04)
+
+**Wave 2** *(blocked on Wave 1 completion)*
+- [ ] 02-02-PLAN.md — Flash partial + controller + SCSS, layout wiring, manifest update, inline flash cleanup (LAY-02, LAY-03)
+
+**Cross-cutting constraints:** Plan 01 creates navbar files in isolation; Plan 02 wires everything into the layout. Do not add @import to application.bootstrap.scss until Plan 02 to keep Plan 01 self-contained.
+
 **UI hint**: yes
 
 ### Phase 3: Shared Components
@@ -98,7 +107,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 1. CSS Foundation | 3/3 | Complete | 2026-05-09 |
-| 2. Layout Shell | 0/TBD | Not started | - |
+| 2. Layout Shell | 0/2 | Not started | - |
 | 3. Shared Components | 0/TBD | Not started | - |
 | 4. Content Pages | 0/TBD | Not started | - |
 | 5. Polish Pass | 0/TBD | Not started | - |
