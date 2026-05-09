@@ -3,7 +3,7 @@
 // Table thead dark header — after removing thead.table-dark from templates (Plan 02).
 // Bootstrap .table uses CSS vars for borders/text/hover that already follow _theme.scss tokens.
 
-thead > tr > th {
+.table thead > tr > th {
   background-color: var(--color-bg-surface);
   color: var(--color-text-muted);
   font-weight: 600;
