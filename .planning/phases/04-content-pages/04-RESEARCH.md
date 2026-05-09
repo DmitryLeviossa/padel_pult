@@ -381,17 +381,19 @@ table.table.table-hover.align-middle
 
 ---
 
-## Open Questions
+## Open Questions (RESOLVED)
 
 1. **Dashboard stat cards — email column in users/index**
    - What we know: `users/index` shows `#`, photo, name, registration date
    - What's unclear: PAGE-05 requirement mentions "name, email" — but current template has no email column
    - Recommendation: Add email column to users/index as part of PAGE-05 to match requirement text. No controller change needed — `user.email` is available.
+   - RESOLVED: Plan 04-05 adds the email column to users/index as a view-only change.
 
 2. **`@recent_leagues` N+1 — owner eager load**
    - What we know: Dashboard template line 47 calls `league.owner.full_name` without eager loading in controller
    - What's unclear: This is a controller change, outside the "pure UI pass" scope constraint
-   - Recommendation: Document in plan as optional improvement note. Do not change controller. OR wrap in a comment noting the N+1 for Phase 4 executor awareness.
+   - Recommendation: Document in plan as optional improvement note. Do not change controller.
+   - RESOLVED: Scoped out — controller change deferred. Plan 04-01 notes the N+1 as an optional future improvement.
 
 ---
 
