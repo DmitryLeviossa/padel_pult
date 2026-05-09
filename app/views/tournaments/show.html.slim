@@ -27,7 +27,8 @@
         dt.col-sm-3 Статус
         dd.col-sm-9
           - badge_class = { "draft" => "secondary", "active" => "success", "completed" => "primary", "cancelled" => "danger" }.fetch(@tournament.status, "secondary")
-          span class="badge bg-#{badge_class}" = @tournament.status.capitalize
+          span.badge class="bg-#{badge_class}"
+            = @tournament.status.capitalize
 
   h4.mt-4.mb-3 Пары
   - if @tournament.pairs.any?
