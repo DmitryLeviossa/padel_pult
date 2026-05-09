@@ -54,7 +54,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 **Plans**: 2 plans in 2 waves
 
 **Wave 1** *(no dependencies)*
-- [ ] 02-01-PLAN.md — Navbar partial (_navbar.html.slim), Stimulus navbar controller, _navbar.scss (LAY-01, LAY-04)
+- [x] 02-01-PLAN.md — Navbar partial (_navbar.html.slim), Stimulus navbar controller, _navbar.scss (LAY-01, LAY-04)
 
 **Wave 2** *(blocked on Wave 1 completion)*
 - [ ] 02-02-PLAN.md — Flash partial + controller + SCSS, layout wiring, manifest update, inline flash cleanup (LAY-02, LAY-03)
@@ -107,7 +107,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 1. CSS Foundation | 3/3 | Complete | 2026-05-09 |
-| 2. Layout Shell | 0/2 | Not started | - |
+| 2. Layout Shell | 1/2 | In progress | - |
 | 3. Shared Components | 0/TBD | Not started | - |
 | 4. Content Pages | 0/TBD | Not started | - |
 | 5. Polish Pass | 0/TBD | Not started | - |
