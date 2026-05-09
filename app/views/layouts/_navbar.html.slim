@@ -1,0 +1,36 @@
+nav.navbar.navbar-expand-lg data-controller="navbar" style="background-color: var(--color-bg-navbar); border-bottom: 1px solid var(--color-border);"
+  .container-fluid
+    = link_to "Padel Pult", root_path, class: "navbar-brand fw-semibold"
+
+    button.navbar-toggler type="button" data-action="navbar#toggle" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation"
+      span.navbar-toggler-icon
+
+    #navbarCollapse.collapse.navbar-collapse data-navbar-target="menu"
+      ul.navbar-nav.me-auto.mb-2.mb-lg-0
+        - if user_signed_in?
+          li.nav-item
+            = link_to "Лиги", leagues_path, class: "nav-link #{request.path.start_with?('/leagues') ? 'active' : ''}", aria: { current: (request.path.start_with?('/leagues') ? 'page' : nil) }
+          li.nav-item
+            = link_to "Турниры", tournaments_path, class: "nav-link #{request.path.start_with?('/tournaments') ? 'active' : ''}", aria: { current: (request.path.start_with?('/tournaments') ? 'page' : nil) }
+          li.nav-item
+            = link_to "Игроки", users_path, class: "nav-link #{request.path.start_with?('/users') ? 'active' : ''}", aria: { current: (request.path.start_with?('/users') ? 'page' : nil) }
+
+      - if user_signed_in?
+        ul.navbar-nav.ms-auto.align-items-center.gap-2
+          li.nav-item.dropdown
+            a.nav-link.dropdown-toggle href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false"
+              .d-inline-flex.align-items-center.justify-content-center.rounded-circle style="width:32px;height:32px;background:var(--color-bg-surface);border:1px solid var(--color-border);font-size:0.75rem;font-weight:600;color:var(--color-text-muted);"
+                = current_user.full_name.split.map(&:first).first(2).join.upcase
+            ul.dropdown-menu.dropdown-menu-end
+              li
+                = link_to "Редактировать аккаунт", edit_user_registration_path, class: "dropdown-item"
+              li
+                hr.dropdown-divider
+              li
+                = button_to "Выйти", destroy_user_session_path, method: :delete, class: "dropdown-item text-danger border-0 bg-transparent w-100 text-start"
+      - else
+        ul.navbar-nav.ms-auto
+          li.nav-item
+            = link_to "Войти", new_user_session_path, class: "nav-link"
+          li.nav-item
+            = link_to "Регистрация", new_user_registration_path, class: "btn btn-primary btn-sm ms-2"
