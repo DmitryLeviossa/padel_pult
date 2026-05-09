@@ -1,7 +1,7 @@
-.container
-  .row.justify-content-center.mt-5
+.container.py-4
+  .row.justify-content-center
     .col-md-6
-      .card.shadow-sm
+      .card
         .card-body.p-4
           h2.card-title.mb-4 Редактировать аккаунт
 
@@ -46,7 +46,7 @@
             = f.submit "Обновить", class: "btn btn-primary"
             = link_to "Назад", :back, class: "btn btn-secondary ms-2"
 
-      .card.shadow-sm.mt-3
+      .card.mt-3
         .card-body.p-4
           h5.card-title.text-danger Удалить аккаунт
           p.text-muted Вы уверены, что хотите удалить аккаунт?
