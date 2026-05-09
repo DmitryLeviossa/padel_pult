@@ -7,10 +7,10 @@
 
 ### CSS Foundation
 
-- [ ] **CSST-01**: Color token system implemented as CSS custom properties (`--color-*`) layered above Bootstrap's `--bs-*` variables — dark navy/slate palette + electric blue accent
-- [ ] **CSST-02**: Bootstrap SCSS entry point (`application.bootstrap.scss`) rewritten with selective partial imports and `$variable` overrides injected before `@import` to enable full color propagation
-- [ ] **CSST-03**: Typography system defined — font stack (Inter or system), heading weights/sizes, body text sizing for dark legibility
-- [ ] **CSST-04**: Spacing/layout tokens defined as CSS custom properties — consistent scale used across all components
+- [x] **CSST-01**: Color token system implemented as CSS custom properties (`--color-*`) layered above Bootstrap's `--bs-*` variables — dark navy/slate palette + electric blue accent
+- [x] **CSST-02**: Bootstrap SCSS entry point (`application.bootstrap.scss`) rewritten with selective partial imports and `$variable` overrides injected before `@import` to enable full color propagation
+- [x] **CSST-03**: Typography system defined — font stack (Inter or system), heading weights/sizes, body text sizing for dark legibility
+- [x] **CSST-04**: Spacing/layout tokens defined as CSS custom properties — consistent scale used across all components
 
 ### Layout
 
@@ -63,10 +63,10 @@
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| CSST-01 | Phase 1 | Pending |
-| CSST-02 | Phase 1 | Pending |
-| CSST-03 | Phase 1 | Pending |
-| CSST-04 | Phase 1 | Pending |
+| CSST-01 | Phase 1 | Complete (01-02) |
+| CSST-02 | Phase 1 | Complete (01-03) |
+| CSST-03 | Phase 1 | Complete (01-02) |
+| CSST-04 | Phase 1 | Complete (01-02) |
 | LAY-01 | Phase 2 | Complete (02-01) |
 | LAY-02 | Phase 2 | Complete (02-02) |
 | LAY-03 | Phase 2 | Complete (02-02) |

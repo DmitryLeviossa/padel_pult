@@ -21,9 +21,9 @@ Every screen feels premium and cohesive — a dark, modern sports management app
 
 ### Active
 
-- [ ] Dark navy/slate base theme applied globally
-- [ ] Electric blue as primary accent color throughout
-- [ ] Application layout redesigned — responsive top navbar, clean structure
+- [x] Dark navy/slate base theme applied globally *(Phase 1)*
+- [x] Electric blue as primary accent color throughout *(Phase 1)*
+- [x] Application layout redesigned — responsive top navbar, clean structure *(Phase 2)*
 - [ ] Dashboard redesigned — stats cards, activity feed, modern grid
 - [ ] League pages redesigned (index, show, new, edit)
 - [ ] Tournament pages redesigned (index, show, new)
@@ -55,10 +55,13 @@ Every screen feels premium and cohesive — a dark, modern sports management app
 
 | Decision | Rationale | Outcome |
 |----------|-----------|---------|
-| Keep Bootstrap 5 | Already in stack, just override variables for dark theme | — Pending |
-| Top navbar (not sidebar) | User preference; cleaner for this app's scale | — Pending |
-| CSS variables for color system | Enables consistent theming and easy future changes | — Pending |
-| Linear.app as design reference | User's explicit preference for that aesthetic | — Pending |
+| Keep Bootstrap 5 | Already in stack, just override variables for dark theme | ✓ Validated Phase 1 |
+| Top navbar (not sidebar) | User preference; cleaner for this app's scale | ✓ Validated Phase 2 |
+| CSS variables for color system | Enables consistent theming and easy future changes | ✓ Validated Phase 1 |
+| Linear.app as design reference | User's explicit preference for that aesthetic | ✓ Validated Phase 2 |
+| Stimulus wraps Bootstrap Collapse (not data-bs-toggle) | Prevents double-fire; Stimulus owns trigger, Bootstrap owns animation | ✓ Validated Phase 2 |
+| Flash rendered once in layout, not per-view | Prevents double rendering with Turbo Drive | ✓ Validated Phase 2 |
+| main.py-4 without .container on <main> | Individual views control their own horizontal constraint | ✓ Validated Phase 2 |
 
 ## Evolution
 
@@ -78,4 +81,4 @@ This document evolves at phase transitions and milestone boundaries.
 4. Update Context with current state
 
 ---
-*Last updated: 2026-05-09 — Phase 1 (CSS Foundation) complete. Design token system, Bootstrap dark mode, Inter font, and spacing scale validated in production build. Proceeding to Phase 2 (Layout Shell).*
+*Last updated: 2026-05-09 — Phase 2 (Layout Shell) complete. Dark navbar with Stimulus hamburger, flash messages with auto-dismiss, full layout shell wired and verified. Proceeding to Phase 3 (Shared Components).*
