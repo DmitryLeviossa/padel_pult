@@ -2,4 +2,4 @@
 - flash.each do |type, message|
   .alert.alert-dismissible.fade.show role="alert" class=type_map.fetch(type, "alert-secondary") data-controller="flash" data-flash-delay-value="5000" data-turbo-temporary="true"
     = message
-    button.btn-close type="button" data-bs-dismiss="alert" data-action="flash#close" aria-label="Close"
+    button.btn-close type="button" data-bs-dismiss="alert" aria-label="Close"
