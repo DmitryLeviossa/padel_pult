@@ -10,9 +10,9 @@ See: .planning/PROJECT.md (updated 2026-05-08)
 ## Current Position
 
 Phase: 2 of 5 (Layout Shell)
-Plan: 0 of TBD in current phase
-Status: Phase 1 complete — ready to plan Phase 2
-Last activity: 2026-05-09 — Phase 1 complete (3/3 plans, verification passed 8/8)
+Plan: 0 of 2 in current phase
+Status: Ready to execute — Phase 2 planned (2 plans, 2 waves)
+Last activity: 2026-05-09 — Phase 2 planned (2 plans in 2 waves, verification passed)
 
 Progress: [██░░░░░░░░] 20%
 
@@ -64,5 +64,5 @@ None yet.
 ## Session Continuity
 
 Last session: 2026-05-09
-Stopped at: Phase 1 complete — verification passed (8/8 must-haves). 2 critical code review issues fixed (missing close partial, button link hover bleed). Ready to plan Phase 2.
-Resume file: .planning/ROADMAP.md (Phase 2: Layout Shell)
+Stopped at: Phase 2 planned — 2 plans in 2 waves, verification passed (all 4 LAY requirements covered). Ready to execute Phase 2.
+Resume file: .planning/phases/02-layout-shell/ (02-01-PLAN.md, 02-02-PLAN.md)
