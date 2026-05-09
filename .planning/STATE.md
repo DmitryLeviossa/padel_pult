@@ -5,14 +5,14 @@
 See: .planning/PROJECT.md (updated 2026-05-08)
 
 **Core value:** Every screen feels premium and cohesive — a dark, modern sports management app users actually enjoy using.
-**Current focus:** Phase 2 — Layout Shell
+**Current focus:** Phase 3 — Shared Components
 
 ## Current Position
 
-Phase: 2 of 5 (Layout Shell) — COMPLETE
-Plan: 2 of 2 in current phase
-Status: Phase 2 complete — 02-01 and 02-02 both executed. Ready to begin Phase 3 (Shared Components)
-Last activity: 2026-05-09 — 02-02 executed (flash partial, controller, SCSS, layout wiring, manifest update — 2 tasks, 9 files)
+Phase: 3 of 5 (Shared Components) — Ready to execute
+Plan: 0 of 2 in current phase
+Status: Phase 3 planned — 2 plans ready (03-01 SCSS foundation, 03-02 avatar + template cleanup). Both plans are Wave 1 parallel.
+Last activity: 2026-05-09 — Phase 3 planning complete (2 plans, 4 waves, covers COMP-01 through COMP-04)
 
 Progress: [████░░░░░░] 40%
 
@@ -70,5 +70,5 @@ None yet.
 ## Session Continuity
 
 Last session: 2026-05-09
-Stopped at: 02-02 complete — Phase 2 (Layout Shell) fully complete. Flash partial, controller, SCSS created; application.html.slim wired with navbar+flash+main.py-4; SCSS manifest updated; inline flash removed from 3 views; hello_controller.js deleted.
-Resume file: .planning/phases/03-shared-components/ (Phase 3 — Shared Components)
+Stopped at: Phase 3 (Shared Components) planned — 2 plans verified. 03-01 covers SCSS foundation (cards, forms, tables); 03-02 covers avatar partial + template replacements.
+Resume file: .planning/phases/03-shared-components/ (Phase 3 — execute 03-01 and 03-02)
