@@ -92,7 +92,17 @@ Decimal phases appear between their surrounding integers in numeric order.
   3. All 4 league templates (index, show, new, edit) use the card grid, tabs, and form components from Phase 3
   4. All 3 tournament templates (index, show, new) use the card/list and form components from Phase 3
   5. The users index renders as a dark table with the avatar partial in the first column, consistent with the component library
-**Plans**: TBD
+**Plans**: 5 plans in 1 wave
+
+**Wave 1** *(parallel — no dependencies between plans)*
+- [ ] 04-01-PLAN.md — Dashboard stat-card row + shadow removal (PAGE-01)
+- [ ] 04-02-PLAN.md — All 7 auth templates: container.py-4 + shadow removal (PAGE-02)
+- [ ] 04-03-PLAN.md — League index shadow removal + new/edit container wrappers (PAGE-03)
+- [ ] 04-04-PLAN.md — Tournaments index: container.py-4 + table-striped removal (PAGE-04)
+- [ ] 04-05-PLAN.md — Users index: table-striped removal + email column (PAGE-05)
+
+**Cross-cutting constraints:** All 5 plans touch entirely separate template directories — no file overlap. All can execute in parallel. After all 5 complete, `grep -r "shadow-sm" app/views/` must return 0 results.
+
 **UI hint**: yes
 
 ### Phase 5: Polish Pass
@@ -116,5 +126,5 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5
 | 1. CSS Foundation | 3/3 | Complete | 2026-05-09 |
 | 2. Layout Shell | 2/2 | Complete | 2026-05-09 |
 | 3. Shared Components | 2/2 | Complete | 2026-05-09 |
-| 4. Content Pages | 0/TBD | Not started | - |
+| 4. Content Pages | 0/5 | Not started | - |
 | 5. Polish Pass | 0/TBD | Not started | - |
