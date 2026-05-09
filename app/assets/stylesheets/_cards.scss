@@ -1,0 +1,15 @@
+// _cards.scss
+// Imported in application.bootstrap.scss after @import 'flash' (Phase 3, Plan 01).
+// Card dark surface + border overrides — bypasses Bootstrap's cascade-ineffective --bs-card-bg.
+// Direct property overrides win by source order (equal specificity, imported after Bootstrap).
+
+.card {
+  background-color: var(--color-bg-surface);
+  border-color: var(--color-border);
+}
+
+.card-header,
+.card-footer {
+  background-color: transparent;
+  border-color: var(--color-border);
+}

@@ -41,4 +41,7 @@
   --bs-input-border-color:       var(--color-border);
   --bs-input-color:              var(--color-text-primary);
   --bs-input-placeholder-color:  var(--color-text-placeholder);
+  --bs-tertiary-bg:              var(--color-bg-navbar);    // COMP-03: file-selector-button bg (#161b22 — darker than input, clear visual separation)
+  --bs-box-shadow-sm:            none;                       // COMP-01: suppress invisible light-theme shadows on dark backgrounds
+  --bs-box-shadow:               none;                       // COMP-01: suppress .shadow utility on dark backgrounds
 }
