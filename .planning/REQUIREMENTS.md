@@ -22,9 +22,9 @@
 ### Shared Components
 
 - [ ] **COMP-01**: Card component dark-styled — elevated surface with `#21262d` background, 1px border-based depth (no invisible box-shadows), used consistently across all pages
-- [ ] **COMP-02**: Avatar partial extracted as `_avatar.html.slim` — initials fallback uses dark-correct surface color (replaces broken `bg-secondary` in 4+ templates)
+- [x] **COMP-02**: Avatar partial extracted as `_avatar.html.slim` — initials fallback uses dark-correct surface color (replaces broken `bg-secondary` in 4+ templates)
 - [ ] **COMP-03**: Form controls dark-styled — `form-control`, `form-select`, `textarea`, file upload `::file-selector-button` all use dark surfaces with accent focus ring
-- [ ] **COMP-04**: Tables dark-styled — Bootstrap `--bs-table-*` CSS variables overridden, `thead.table-dark` replaced, border and hover row colors correct
+- [x] **COMP-04**: Tables dark-styled — Bootstrap `--bs-table-*` CSS variables overridden, `thead.table-dark` replaced, border and hover row colors correct
 
 ### Content Pages
 
@@ -72,9 +72,9 @@
 | LAY-03 | Phase 2 | Complete (02-02) |
 | LAY-04 | Phase 2 | Complete (02-01) |
 | COMP-01 | Phase 3 | Pending |
-| COMP-02 | Phase 3 | Pending |
+| COMP-02 | Phase 3 | Complete (03-02) |
 | COMP-03 | Phase 3 | Pending |
-| COMP-04 | Phase 3 | Pending |
+| COMP-04 | Phase 3 | Complete (03-02) |
 | PAGE-01 | Phase 4 | Pending |
 | PAGE-02 | Phase 4 | Pending |
 | PAGE-03 | Phase 4 | Pending |
@@ -91,4 +91,4 @@
 
 ---
 *Requirements defined: 2026-05-09*
-*Last updated: 2026-05-09 after roadmap creation*
+*Last updated: 2026-05-09 after 03-02 execution (COMP-02, COMP-04 complete)*

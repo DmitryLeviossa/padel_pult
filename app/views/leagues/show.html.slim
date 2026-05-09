@@ -66,11 +66,7 @@
             - @league.league_users.order(score: :desc).each do |league_user|
               tr
                 td
-                  - if league_user.user.photo.attached?
-                    = image_tag league_user.user.photo, class: "rounded-circle", style: "width: 40px; height: 40px; object-fit: cover;"
-                  - else
-                    .rounded-circle.bg-secondary.d-inline-flex.align-items-center.justify-content-center style="width: 40px; height: 40px;"
-                      span.text-white.small = league_user.full_name.first.upcase
+                  = render "shared/avatar", user: league_user.user
                 td= league_user.full_name
                 td= league_user.score
       - else
