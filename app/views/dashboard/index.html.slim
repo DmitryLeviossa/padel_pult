@@ -55,7 +55,7 @@
       .row.row-cols-1.row-cols-md-3.g-3
         - @recent_leagues.each do |league|
           .col
-            .card.h-100
+            .card.card-hoverable.h-100
               .card-body
                 h6.card-title= link_to league.name, league_path(league), class: "text-decoration-none stretched-link"
                 p.card-text.text-muted.small= league.description
