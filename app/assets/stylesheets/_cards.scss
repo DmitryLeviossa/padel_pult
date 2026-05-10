@@ -2,14 +2,24 @@
 // Imported in application.bootstrap.scss after @import 'flash' (Phase 3, Plan 01).
 // Card dark surface + border overrides — bypasses Bootstrap's cascade-ineffective --bs-card-bg.
 // Direct property overrides win by source order (equal specificity, imported after Bootstrap).
+// Phase 5 (POLL-02): added transition on .card base + .card-hoverable utility for hover lift.
 
 .card {
   background-color: var(--color-bg-surface);
   border-color: var(--color-border);
+  transition: $transition-base;
 }
 
 .card-header,
 .card-footer {
   background-color: transparent;
   border-color: var(--color-border);
+}
+
+// POLL-02: Hover lift utility. Add `.card-hoverable` to any .card that should react to hover
+// (typically cards with a stretched-link child — e.g. leagues/index, dashboard recent leagues).
+// Uses transform (not top/left) so there is zero layout shift on neighboring elements.
+.card-hoverable:hover {
+  transform: translateY(-1px);
+  border-color: var(--color-accent-hover);
 }
