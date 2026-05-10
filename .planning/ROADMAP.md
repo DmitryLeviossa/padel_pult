@@ -113,7 +113,17 @@ Decimal phases appear between their surrounding integers in numeric order.
   1. Hovering any primary/accent button produces a visible electric blue glow (`box-shadow: 0 0 12px rgba(47,129,247,0.3)`) without layout shift
   2. Hovering a clickable card animates a `translateY(-1px)` lift and brightens the border within 150ms, then reverses on mouse-out
   3. All `<th>` elements in data tables render uppercase with `letter-spacing: 0.05em`, visually distinguishable from body text
-**Plans**: TBD
+**Plans**: 3 plans in 2 waves
+
+**Wave 1** *(parallel — no file overlap)*
+- [ ] 05-01-PLAN.md — POLL-01 button hover/focus-visible glow (new _interactions.scss + import)
+- [ ] 05-02-PLAN.md — POLL-02 CSS (.card transition + .card-hoverable rule) + POLL-03 (table th uppercase + letter-spacing)
+
+**Wave 2** *(blocked on 05-02 — needs .card-hoverable rule committed)*
+- [ ] 05-03-PLAN.md — Apply .card-hoverable class to stretched-link cards (leagues/index + dashboard recent leagues)
+
+**Cross-cutting constraints:** Plans 05-01 and 05-02 touch entirely separate SCSS files — fully parallel. Plan 05-03 must run after 05-02 because it depends on the .card-hoverable rule existing in CSS. Per user decision (CONTEXT lock): use .card-hoverable utility class instead of UI-SPEC's a > .card selector — makes hover lift visible immediately on current stretched-link templates.
+
 **UI hint**: yes
 
 ## Progress
@@ -127,4 +137,4 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5
 | 2. Layout Shell | 2/2 | Complete | 2026-05-09 |
 | 3. Shared Components | 2/2 | Complete | 2026-05-09 |
 | 4. Content Pages | 5/5 | Complete | 2026-05-09 |
-| 5. Polish Pass | 0/TBD | Not started | - |
+| 5. Polish Pass | 0/3 | Planned | - |

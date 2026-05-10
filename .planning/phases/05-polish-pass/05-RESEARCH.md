@@ -369,7 +369,7 @@ This is the simplest change of the three — two property additions to an existi
 
 ---
 
-## Open Questions
+## Open Questions (RESOLVED)
 
 1. **POLL-02 selector — immediate visual effect desired?**
    - What we know: `a > .card` matches zero current cards; all cards use `stretched-link` internal navigation

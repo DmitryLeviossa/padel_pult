@@ -5,14 +5,14 @@
 See: .planning/PROJECT.md (updated 2026-05-08)
 
 **Core value:** Every screen feels premium and cohesive — a dark, modern sports management app users actually enjoy using.
-**Current focus:** Phase 4 — Content Pages
+**Current focus:** Phase 5 — Polish Pass
 
 ## Current Position
 
-Phase: 5 of 5 (Polish Pass) — Ready to plan
-Plan: 0 of TBD in current phase
-Status: Phase 4 complete — all 13 content page templates redesigned, 0 shadow-sm remaining, verification passed 13/13.
-Last activity: 2026-05-09 — Phase 4 executed (5 plans complete, PAGE-01 through PAGE-05 satisfied)
+Phase: 5 of 5 (Polish Pass) — Ready to execute
+Plan: 0 of 3 in current phase
+Status: Phase 5 planned — 3 plans in 2 waves (POLL-01 button glow, POLL-02 card lift, POLL-03 table headers).
+Last activity: 2026-05-10 — Phase 5 planned (3 plans: 05-01, 05-02, 05-03)
 
 Progress: [████████░░] 80%
 
