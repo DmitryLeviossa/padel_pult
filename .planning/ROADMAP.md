@@ -116,8 +116,8 @@ Decimal phases appear between their surrounding integers in numeric order.
 **Plans**: 3 plans in 2 waves
 
 **Wave 1** *(parallel — no file overlap)*
-- [ ] 05-01-PLAN.md — POLL-01 button hover/focus-visible glow (new _interactions.scss + import)
-- [ ] 05-02-PLAN.md — POLL-02 CSS (.card transition + .card-hoverable rule) + POLL-03 (table th uppercase + letter-spacing)
+- [x] 05-01-PLAN.md — POLL-01 button hover/focus-visible glow (new _interactions.scss + import)
+- [x] 05-02-PLAN.md — POLL-02 CSS (.card transition + .card-hoverable rule) + POLL-03 (table th uppercase + letter-spacing)
 
 **Wave 2** *(blocked on 05-02 — needs .card-hoverable rule committed)*
 - [ ] 05-03-PLAN.md — Apply .card-hoverable class to stretched-link cards (leagues/index + dashboard recent leagues)
