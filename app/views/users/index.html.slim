@@ -1,6 +1,16 @@
 .container.py-4
   h1.mb-4 Пользователи
 
+  = search_form_for @q, url: users_path, method: :get, html: { class: "mb-4" } do |f|
+    .row.g-2.align-items-end
+      .col-md-4
+        label.form-label Имя
+        = f.search_field :full_name_cont, class: "form-control", placeholder: "Поиск по имени"
+      .col-md-2
+        .d-flex.gap-2
+          = f.submit "Применить", class: "btn btn-primary"
+          = link_to "Сбросить", users_path, class: "btn btn-outline-secondary"
+
   - if @users.any?
     .table-responsive
       table.table.table-hover.align-middle
@@ -9,7 +19,7 @@
             th #
             th Фото
             th Имя
-            th Email
+            th Лиги
             th Дата регистрации
         tbody
           - @users.each_with_index do |user, i|
@@ -18,7 +28,9 @@
               td
                 = render "shared/avatar", user: user
               td= user.full_name
-              td= user.email
-              td= user.created_at.strftime("%d.%m.%Y")
+              td
+                - user.leagues.each do |league|
+                  = link_to league.name, league_path(league), class: "badge text-bg-secondary text-decoration-none me-1"
+              td= l(user.created_at.to_date, format: :long)
   - else
     p.text-muted Пользователей пока нет.

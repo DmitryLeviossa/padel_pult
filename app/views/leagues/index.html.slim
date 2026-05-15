@@ -18,6 +18,6 @@
               - if league.description.present?
                 p.card-text.text-muted= league.description
             .card-footer.text-muted.small
-              | Создано #{league.created_at.strftime("%d.%m.%Y")}
+              | Создано #{l(league.created_at.to_date, format: :long)}
   - else
     p.text-muted Лиг пока нет.

@@ -13,13 +13,13 @@
         dd.col-sm-9= @tournament.location.presence || "—"
 
         dt.col-sm-3 Дата начала
-        dd.col-sm-9= @tournament.start_date.strftime("%d.%m.%Y")
+        dd.col-sm-9= l(@tournament.start_date, format: :long)
 
         dt.col-sm-3 Дата окончания
-        dd.col-sm-9= @tournament.end_date.strftime("%d.%m.%Y")
+        dd.col-sm-9= l(@tournament.end_date, format: :long)
 
         dt.col-sm-3 Тип
-        dd.col-sm-9= @tournament.type.capitalize
+        dd.col-sm-9= t("tournament.type.#{@tournament.type}")
 
         dt.col-sm-3 Макс. участников
         dd.col-sm-9= @tournament.max_participants
@@ -28,7 +28,7 @@
         dd.col-sm-9
           - badge_class = { "draft" => "secondary", "active" => "success", "completed" => "primary", "cancelled" => "danger" }.fetch(@tournament.status, "secondary")
           span.badge class="bg-#{badge_class}"
-            = @tournament.status.capitalize
+            = t("tournament.status.#{@tournament.status}")
 
   h4.mt-4.mb-3 Пары
   - if @tournament.pairs.any?

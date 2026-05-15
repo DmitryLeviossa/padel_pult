@@ -1,5 +1,6 @@
 class UsersController < ApplicationController
   def index
-    @users = User.order(:last_name, :first_name, :email)
+    @q = User.ransack(params[:q])
+    @users = @q.result.includes(:leagues).order(:last_name, :first_name, :email)
   end
 end

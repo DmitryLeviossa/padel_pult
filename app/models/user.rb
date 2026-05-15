@@ -26,6 +26,21 @@ class User < ApplicationRecord
 
   has_one_attached :photo
 
+  has_many :league_users
+  has_many :leagues, through: :league_users
+
+  ransacker :full_name do
+    Arel::Nodes::NamedFunction.new('CONCAT_WS', [Arel::Nodes.build_quoted(' '), arel_table[:first_name], arel_table[:last_name]])
+  end
+
+  def self.ransackable_attributes(_auth_object = nil)
+    %w[first_name last_name full_name email created_at]
+  end
+
+  def self.ransackable_associations(_auth_object = nil)
+    []
+  end
+
   def full_name
     "#{first_name} #{last_name}".strip.presence || email
   end

@@ -26,8 +26,7 @@
         tr
           th Название
           th Место
-          th Дата начала
-          th Дата окончания
+          th Даты
           th Тип
           th Статус
           th Макс. участников
@@ -36,13 +35,12 @@
           tr
             td= link_to tournament.name, tournament_path(tournament)
             td= tournament.location.presence || "—"
-            td= tournament.start_date
-            td= tournament.end_date
-            td= tournament.type.capitalize
+            td= "#{l(tournament.start_date, format: :long)} — #{l(tournament.end_date, format: :long)}"
+            td= t("tournament.type.#{tournament.type}")
             td
               - badge_class = { "draft" => "secondary", "active" => "success", "completed" => "primary", "cancelled" => "danger" }.fetch(tournament.status, "secondary")
               span.badge class="bg-#{badge_class}"
-                = tournament.status.capitalize
+                = t("tournament.status.#{tournament.status}")
             td.text-center= "#{tournament.pairs.size * 2}/#{tournament.max_participants}"
   - else
     p.text-muted Турниров пока нет.
