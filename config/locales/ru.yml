@@ -144,6 +144,13 @@ ru:
       photo_column: Фото
       member_name_column: Имя
       score_column: Очки
+      join: Вступить в лигу
+      leave: Покинуть лигу
+      leave_confirm: Вы уверены, что хотите покинуть лигу?
+      joined: Вы вступили в лигу.
+      left: Вы покинули лигу.
+      already_member: Вы уже являетесь участником этой лиги.
+      not_member: Вы не являетесь участником этой лиги.
     new:
       title: Новая лига
       submit: Создать лигу
