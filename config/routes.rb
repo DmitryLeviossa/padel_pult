@@ -9,6 +9,10 @@ Rails.application.routes.draw do
 
   resources :leagues do
     resources :tournaments, only: [:new, :create]
+    member do
+      post :join
+      delete :leave
+    end
   end
   resources :tournaments
 end

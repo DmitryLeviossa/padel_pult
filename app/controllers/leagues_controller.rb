@@ -22,6 +22,27 @@ class LeaguesController < ApplicationController
     end
   end
 
+  def join
+    @league = League.find(params[:id])
+    if @league.users.include?(current_user)
+      redirect_to @league, alert: t("leagues.show.already_member")
+    else
+      @league.league_users.create!(user: current_user)
+      redirect_to @league, notice: t("leagues.show.joined")
+    end
+  end
+
+  def leave
+    @league = League.find(params[:id])
+    league_user = @league.league_users.find_by(user: current_user)
+    if league_user
+      league_user.destroy
+      redirect_to @league, notice: t("leagues.show.left")
+    else
+      redirect_to @league, alert: t("leagues.show.not_member")
+    end
+  end
+
   def edit
     @league = League.find(params[:id])
     authorize_owner!

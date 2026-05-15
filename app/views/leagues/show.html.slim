@@ -7,6 +7,10 @@
     .d-flex.gap-2
       - if @league.owner == current_user
         = link_to t('.edit'), edit_league_path(@league), class: "btn btn-outline-primary btn-sm"
+      - elsif @league.users.include?(current_user)
+        = button_to t('.leave'), leave_league_path(@league), method: :delete, class: "btn btn-outline-danger btn-sm", data: { turbo_confirm: t('.leave_confirm') }
+      - else
+        = button_to t('.join'), join_league_path(@league), method: :post, class: "btn btn-primary btn-sm"
       = link_to t('.back'), leagues_path, class: "btn btn-outline-secondary btn-sm"
 
   - if @league.description.present?
