@@ -51,5 +51,8 @@
 @import 'avatar';
 @import 'interactions';
 
-// 6. Icon font — always last
+// 6. Tom Select with Bootstrap 5 theme
+@import 'tom-select/dist/css/tom-select.bootstrap5';
+
+// 7. Icon font — always last
 @import 'bootstrap-icons/font/bootstrap-icons';
