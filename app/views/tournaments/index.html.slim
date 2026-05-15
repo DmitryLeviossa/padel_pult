@@ -1,9 +1,28 @@
-.container.mt-4
+.container.py-4
   h1.mb-4 Турниры
 
+  = search_form_for @q, url: tournaments_path, method: :get, html: { class: "mb-4" } do |f|
+    .row.g-2.align-items-end
+      .col-md-3
+        label.form-label Название
+        = f.search_field :name_cont, class: "form-control", placeholder: "Поиск по названию"
+      .col-md-2
+        label.form-label Место
+        = f.search_field :location_cont, class: "form-control", placeholder: "Место"
+      .col-md-2
+        label.form-label Статус
+        = f.select :status_eq, [["", ""], ["Черновик", "draft"], ["Активный", "active"], ["Завершён", "completed"], ["Отменён", "cancelled"]], {}, class: "form-select"
+      .col-md-2
+        label.form-label Тип
+        = f.select :type_eq, [["", ""], ["Олимпийский", "olimpic"], ["Круговой", "round_robin"]], {}, class: "form-select"
+      .col-md-3
+        .d-flex.gap-2
+          = f.submit "Применить", class: "btn btn-primary"
+          = link_to "Сбросить", tournaments_path, class: "btn btn-outline-secondary"
+
   - if @tournaments.any?
-    table.table.table-striped.table-hover
-      thead.table-dark
+    table.table.table-hover
+      thead
         tr
           th Название
           th Место
@@ -15,14 +34,15 @@
       tbody
         - @tournaments.each do |tournament|
           tr
-            td= tournament.name
+            td= link_to tournament.name, tournament_path(tournament)
             td= tournament.location.presence || "—"
             td= tournament.start_date
             td= tournament.end_date
             td= tournament.type.capitalize
             td
               - badge_class = { "draft" => "secondary", "active" => "success", "completed" => "primary", "cancelled" => "danger" }.fetch(tournament.status, "secondary")
-              span class="badge bg-#{badge_class}" = tournament.status.capitalize
-            td.text-center= tournament.max_participants
+              span.badge class="bg-#{badge_class}"
+                = tournament.status.capitalize
+            td.text-center= "#{tournament.pairs.size * 2}/#{tournament.max_participants}"
   - else
     p.text-muted Турниров пока нет.

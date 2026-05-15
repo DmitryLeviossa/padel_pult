@@ -1,14 +1,25 @@
 .container.py-4
   h1.mb-4 Добро пожаловать, #{current_user.full_name}!
 
-  - if flash[:notice]
-    .alert.alert-success= flash[:notice]
-  - if flash[:alert]
-    .alert.alert-danger= flash[:alert]
+  .row.g-3.mb-4
+    .col-sm-6.col-lg-3
+      .card
+        .card-body.d-flex.align-items-center.gap-3
+          i.bi.bi-people.fs-2.text-primary
+          div
+            .text-muted.small Мои лиги
+            .fs-4.fw-semibold= @my_leagues.count
+    .col-sm-6.col-lg-3
+      .card
+        .card-body.d-flex.align-items-center.gap-3
+          i.bi.bi-trophy.fs-2.text-primary
+          div
+            .text-muted.small Мои турниры
+            .fs-4.fw-semibold= @my_tournaments.count
 
   .row.g-4
     .col-md-6
-      .card.shadow-sm.h-100
+      .card.h-100
         .card-header.fw-semibold Мои лиги
         .card-body
           - if @my_leagues.any?
@@ -24,7 +35,7 @@
           = link_to "Создать лигу", new_league_path, class: "btn btn-sm btn-primary"
 
     .col-md-6
-      .card.shadow-sm.h-100
+      .card.h-100
         .card-header.fw-semibold Мои турниры
         .card-body
           - if @my_tournaments.any?
@@ -44,7 +55,7 @@
       .row.row-cols-1.row-cols-md-3.g-3
         - @recent_leagues.each do |league|
           .col
-            .card.shadow-sm.h-100
+            .card.card-hoverable.h-100
               .card-body
                 h6.card-title= link_to league.name, league_path(league), class: "text-decoration-none stretched-link"
                 p.card-text.text-muted.small= league.description

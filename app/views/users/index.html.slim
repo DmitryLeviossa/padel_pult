@@ -1,13 +1,10 @@
 .container.py-4
   h1.mb-4 Пользователи
 
-  - if flash[:notice]
-    .alert.alert-success= flash[:notice]
-
   - if @users.any?
     .table-responsive
-      table.table.table-striped.table-hover.align-middle
-        thead.table-dark
+      table.table.table-hover.align-middle
+        thead
           tr
             th #
             th Фото
@@ -19,11 +16,7 @@
             tr
               td= i + 1
               td
-                - if user.photo.attached?
-                  = image_tag user.photo, class: "rounded-circle", style: "width: 40px; height: 40px; object-fit: cover;"
-                - else
-                  .rounded-circle.bg-secondary.d-inline-flex.align-items-center.justify-content-center style="width: 40px; height: 40px;"
-                    span.text-white.small = user.full_name.first.upcase
+                = render "shared/avatar", user: user
               td= user.full_name
               td= user.email
               td= user.created_at.strftime("%d.%m.%Y")

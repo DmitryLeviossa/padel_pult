@@ -1,0 +1,15 @@
+/ app/views/shared/_avatar.html.slim
+/ Parameters:
+/   user: (required) User ActiveRecord object — must respond to .full_name and .photo
+/          NOTE: pass league_user.user, NOT league_user — LeagueUser does not delegate .photo
+/   size: (optional) Integer px size, default 40
+- return if user.nil?
+- size ||= 40
+- font_size = (size * 0.3).round(2)
+- initials = user.full_name.split.map(&:first).first(2).join.upcase
+
+- if user.photo.attached?
+  = image_tag user.photo.variant(resize_to_fill: [size * 2, size * 2]), class: "rounded-circle", style: "width: #{size}px; height: #{size}px; object-fit: cover;"
+- else
+  .rounded-circle.d-inline-flex.align-items-center.justify-content-center style="width: #{size}px; height: #{size}px; background: var(--color-bg-surface); border: 1px solid var(--color-border); font-size: #{font_size}px; font-weight: 600; color: var(--color-text-muted);"
+    = initials

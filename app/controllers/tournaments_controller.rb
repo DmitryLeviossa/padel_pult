@@ -1,10 +1,11 @@
 class TournamentsController < ApplicationController
-  before_action :set_league, only: [:new, :create]
-  before_action :set_tournament, only: [:show]
-  before_action :authorize_owner!, only: [:new, :create]
+  before_action :set_league, only: [ :new, :create ]
+  before_action :set_tournament, only: [ :show ]
+  before_action :authorize_owner!, only: [ :new, :create ]
 
   def index
-    @tournaments = Tournament.all
+    @q = Tournament.ransack(params[:q])
+    @tournaments = @q.result.includes(:pairs)
   end
 
   def show
@@ -31,7 +32,7 @@ class TournamentsController < ApplicationController
   end
 
   def set_tournament
-    @tournament = Tournament.includes(pairs: [:player1, :player2]).find(params[:id])
+    @tournament = Tournament.includes(pairs: [ { player1: :user }, { player2: :user } ]).find(params[:id])
   end
 
   def authorize_owner!

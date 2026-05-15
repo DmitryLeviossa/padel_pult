@@ -1,7 +1,7 @@
-.container
-  .row.justify-content-center.mt-5
+.container.py-4
+  .row.justify-content-center
     .col-md-6
-      .card.shadow-sm
+      .card
         .card-body.p-4
           h2.card-title.mb-4 Редактировать аккаунт
 
@@ -9,11 +9,7 @@
             = render "devise/shared/error_messages", resource: resource
 
             .mb-3.text-center
-              - if resource.photo.attached? && resource.photo.blob.persisted?
-                = image_tag resource.photo, class: "rounded-circle mb-2", style: "width: 100px; height: 100px; object-fit: cover;"
-              - else
-                .rounded-circle.bg-secondary.d-inline-flex.align-items-center.justify-content-center.mb-2 style="width: 100px; height: 100px;"
-                  span.text-white.fs-2 = resource.full_name.first.upcase
+              = render "shared/avatar", user: resource, size: 100
               = f.label :photo, "Фото профиля", class: "form-label d-block"
               = f.file_field :photo, accept: "image/*", class: "form-control"
 
@@ -50,8 +46,8 @@
             = f.submit "Обновить", class: "btn btn-primary"
             = link_to "Назад", :back, class: "btn btn-secondary ms-2"
 
-    .card.shadow-sm.mt-3
-      .card-body.p-4
-        h5.card-title.text-danger Удалить аккаунт
-        p.text-muted Вы уверены, что хотите удалить аккаунт?
-        = button_to "Удалить мой аккаунт", registration_path(resource_name), data: { confirm: "Вы уверены?", turbo_confirm: "Вы уверены?" }, method: :delete, class: "btn btn-danger btn-sm"
+      .card.mt-3
+        .card-body.p-4
+          h5.card-title.text-danger Удалить аккаунт
+          p.text-muted Вы уверены, что хотите удалить аккаунт?
+          = button_to "Удалить мой аккаунт", registration_path(resource_name), data: { confirm: "Вы уверены?", turbo_confirm: "Вы уверены?" }, method: :delete, class: "btn btn-danger btn-sm"

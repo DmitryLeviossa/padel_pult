@@ -1,0 +1,11 @@
+// _forms.scss
+// Imported in application.bootstrap.scss after @import 'cards' (Phase 3, Plan 01).
+// Supplemental form dark styles — $input-bg override in _variables.scss handles input backgrounds.
+// This file covers browser-native chrome (date/time pickers) not controlled by Bootstrap vars.
+
+// Native date/time pickers — force browser chrome into dark mode
+input[type="date"],
+input[type="time"],
+input[type="datetime-local"] {
+  color-scheme: dark;
+}

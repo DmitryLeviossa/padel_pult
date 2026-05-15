@@ -1,0 +1,15 @@
+// _tables.scss
+// Imported in application.bootstrap.scss after @import 'forms' (Phase 3, Plan 01).
+// Table thead dark header — after removing thead.table-dark from templates (Plan 02).
+// Bootstrap .table uses CSS vars for borders/text/hover that already follow _theme.scss tokens.
+// Phase 5 (POLL-03): added text-transform + letter-spacing for premium header typography.
+
+.table thead > tr > th {
+  background-color: var(--color-bg-surface);
+  color: var(--color-text-muted);
+  font-weight: 600;
+  border-bottom: 1px solid var(--color-border);
+  white-space: nowrap;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}

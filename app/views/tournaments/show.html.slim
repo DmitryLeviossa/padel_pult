@@ -27,7 +27,8 @@
         dt.col-sm-3 Статус
         dd.col-sm-9
           - badge_class = { "draft" => "secondary", "active" => "success", "completed" => "primary", "cancelled" => "danger" }.fetch(@tournament.status, "secondary")
-          span class="badge bg-#{badge_class}" = @tournament.status.capitalize
+          span.badge class="bg-#{badge_class}"
+            = @tournament.status.capitalize
 
   h4.mt-4.mb-3 Пары
   - if @tournament.pairs.any?
@@ -47,19 +48,11 @@
           tr
             td= index + 1
             td
-              - if pair.player1.user.photo.attached?
-                = image_tag pair.player1.user.photo, class: "rounded-circle", style: "width: 40px; height: 40px; object-fit: cover;"
-              - else
-                .rounded-circle.bg-secondary.d-inline-flex.align-items-center.justify-content-center style="width: 40px; height: 40px;"
-                  span.text-white.small = pair.player1.full_name.first.upcase
+              = render "shared/avatar", user: pair.player1.user
             td= pair.player1.full_name
             td= pair.player1.score
             td
-              - if pair.player2.user.photo.attached?
-                = image_tag pair.player2.user.photo, class: "rounded-circle", style: "width: 40px; height: 40px; object-fit: cover;"
-              - else
-                .rounded-circle.bg-secondary.d-inline-flex.align-items-center.justify-content-center style="width: 40px; height: 40px;"
-                  span.text-white.small = pair.player2.full_name.first.upcase
+              = render "shared/avatar", user: pair.player2.user
             td= pair.player2.full_name
             td= pair.player2.score
             td= pair.score

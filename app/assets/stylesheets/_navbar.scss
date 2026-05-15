@@ -1,0 +1,43 @@
+// _navbar.scss
+// Imported in application.bootstrap.scss after project theme partials (Plan 02).
+// Navbar surface and link overrides — uses Phase 1 tokens from _theme.scss and _spacing.scss.
+
+.navbar {
+  background-color: var(--color-bg-navbar) !important;
+  border-bottom: 1px solid var(--color-border);
+
+  .navbar-brand {
+    color: var(--color-text-primary);
+    font-weight: 600;
+
+    &:hover {
+      color: var(--color-accent-hover);
+    }
+  }
+
+  .nav-link {
+    color: var(--color-text-muted);
+    padding: var(--space-2) var(--space-3);
+    border-radius: var(--bs-border-radius-sm);
+    transition: color 0.15s ease-in-out, background-color 0.15s ease-in-out;
+
+    &:hover {
+      color: var(--color-text-primary);
+      background-color: rgba(255, 255, 255, 0.05);
+    }
+
+    &.active {
+      color: var(--color-accent);
+      font-weight: 600;
+    }
+  }
+
+  .navbar-toggler {
+    border-color: var(--color-border);
+    color: var(--color-text-muted);
+
+    &:focus {
+      box-shadow: 0 0 0 0.25rem rgba(47, 129, 247, 0.25);
+    }
+  }
+}

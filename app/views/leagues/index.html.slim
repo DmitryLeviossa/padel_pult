@@ -3,14 +3,11 @@
     h1.mb-0 Лиги
     = link_to "Новая лига", new_league_path, class: "btn btn-primary"
 
-  - if flash[:notice]
-    .alert.alert-success= flash[:notice]
-
   - if @leagues.any?
     .row.row-cols-1.row-cols-md-2.row-cols-lg-3.g-4
       - @leagues.each do |league|
         .col
-          .card.h-100.shadow-sm
+          .card.card-hoverable.h-100
             - if league.logo.attached?
               = image_tag league.logo, class: "card-img-top", style: "height: 140px; object-fit: cover;"
             .card-body
