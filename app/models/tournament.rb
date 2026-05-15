@@ -30,4 +30,8 @@ class Tournament < ApplicationRecord
   has_many :pairs, dependent: :destroy
 
   validates :status, inclusion: { in: %w[draft active completed cancelled] }
+
+  def self.ransackable_attributes(_auth_object = nil)
+    %w[name location status type start_date end_date]
+  end
 end

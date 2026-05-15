@@ -4,7 +4,8 @@ class TournamentsController < ApplicationController
   before_action :authorize_owner!, only: [ :new, :create ]
 
   def index
-    @tournaments = Tournament.all
+    @q = Tournament.ransack(params[:q])
+    @tournaments = @q.result.includes(:pairs)
   end
 
   def show
