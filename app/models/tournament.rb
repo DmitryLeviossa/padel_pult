@@ -29,7 +29,7 @@ class Tournament < ApplicationRecord
   belongs_to :league
   has_many :pairs, dependent: :destroy
 
-  enum :status, { draft: "draft", active: "active", completed: "completed", cancelled: "cancelled" }
+  enum :status, { draft: "draft", registration: "registration", active: "active", completed: "completed", cancelled: "cancelled" }
   enum :type, { olimpic: "olimpic", round_robin: "round_robin", mixed: "mixed" }
 
   def self.ransackable_attributes(_auth_object = nil)

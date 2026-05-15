@@ -1,35 +1,33 @@
 .container.py-4
-  h1.mb-4 Турниры
+  h1.mb-4= t('.title')
 
-  = search_form_for @q, url: tournaments_path, method: :get, html: { class: "mb-4" } do |f|
+  = search_form_for @q, url: tournaments_path, method: :get, html: { class: "mb-4", data: { auto_submit: "" } } do |f|
     .row.g-2.align-items-end
       .col-md-3
-        label.form-label Название
-        = f.search_field :name_cont, class: "form-control", placeholder: "Поиск по названию"
+        label.form-label= t('.name_label')
+        = f.search_field :name_cont, class: "form-control", placeholder: t('.search_placeholder')
       .col-md-2
-        label.form-label Место
-        = f.search_field :location_cont, class: "form-control", placeholder: "Место"
-      .col-md-2
-        label.form-label Статус
-        = f.select :status_eq, [["", ""], ["Черновик", "draft"], ["Активный", "active"], ["Завершён", "completed"], ["Отменён", "cancelled"]], {}, class: "form-select"
-      .col-md-2
-        label.form-label Тип
-        = f.select :type_eq, [["", ""], ["Олимпийский", "olimpic"], ["Круговой", "round_robin"]], {}, class: "form-select"
+        label.form-label= t('.location_label')
+        = f.search_field :location_cont, class: "form-control", placeholder: t('.location_placeholder')
       .col-md-3
-        .d-flex.gap-2
-          = f.submit "Применить", class: "btn btn-primary"
-          = link_to "Сбросить", tournaments_path, class: "btn btn-outline-secondary"
+        label.form-label= t('.status_label')
+        = f.select :status_in, Tournament.statuses.keys.map { |s| [t("tournament.status.#{s}"), s] }.reject { |_, s| s == "draft" }, {}, class: "form-select", multiple: true
+      .col-md-2
+        label.form-label= t('.type_label')
+        = f.select :type_eq, [["", ""]] + Tournament.types.keys.map { |tp| [t("tournament.type.#{tp}"), tp] }, {}, class: "form-select"
+      .col-md-2
+        = link_to t('.reset'), tournaments_path, class: "btn btn-outline-secondary"
 
   - if @tournaments.any?
     table.table.table-hover
       thead
         tr
-          th Название
-          th Место
-          th Даты
-          th Тип
-          th Статус
-          th Макс. участников
+          th= t('.name_column')
+          th= t('.location_column')
+          th= t('.dates_column')
+          th= t('.type_column')
+          th= t('.status_column')
+          th= t('.max_participants_column')
       tbody
         - @tournaments.each do |tournament|
           tr
@@ -43,4 +41,4 @@
                 = t("tournament.status.#{tournament.status}")
             td.text-center= "#{tournament.pairs.size * 2}/#{tournament.max_participants}"
   - else
-    p.text-muted Турниров пока нет.
+    p.text-muted= t('.no_tournaments')

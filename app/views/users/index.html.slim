@@ -1,15 +1,15 @@
 .container.py-4
-  h1.mb-4 Пользователи
+  h1.mb-4= t('.title')
 
   = search_form_for @q, url: users_path, method: :get, html: { class: "mb-4" } do |f|
     .row.g-2.align-items-end
       .col-md-4
-        label.form-label Имя
-        = f.search_field :full_name_cont, class: "form-control", placeholder: "Поиск по имени"
+        label.form-label= t('.name_label')
+        = f.search_field :full_name_cont, class: "form-control", placeholder: t('.search_placeholder')
       .col-md-2
         .d-flex.gap-2
-          = f.submit "Применить", class: "btn btn-primary"
-          = link_to "Сбросить", users_path, class: "btn btn-outline-secondary"
+          = f.submit t('.submit'), class: "btn btn-primary"
+          = link_to t('.reset'), users_path, class: "btn btn-outline-secondary"
 
   - if @users.any?
     .table-responsive
@@ -17,10 +17,10 @@
         thead
           tr
             th #
-            th Фото
-            th Имя
-            th Лиги
-            th Дата регистрации
+            th= t('.photo_column')
+            th= t('.name_column')
+            th= t('.leagues_column')
+            th= t('.registered_at_column')
         tbody
           - @users.each_with_index do |user, i|
             tr
@@ -33,4 +33,4 @@
                   = link_to league.name, league_path(league), class: "badge text-bg-secondary text-decoration-none me-1"
               td= l(user.created_at.to_date, format: :long)
   - else
-    p.text-muted Пользователей пока нет.
+    p.text-muted= t('.no_users')

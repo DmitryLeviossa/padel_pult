@@ -57,9 +57,45 @@ ru:
       default: "%d.%m.%Y %H:%M"
       short: "%d %b %H:%M"
       long: "%-d %B %Y г., %H:%M"
+
+  activerecord:
+    models:
+      league:
+        one: Лига
+        other: Лиги
+      tournament:
+        one: Турнир
+        other: Турниры
+      user:
+        one: Пользователь
+        other: Пользователи
+    attributes:
+      league:
+        name: Название
+        description: Описание
+        logo: Логотип
+      tournament:
+        name: Название
+        location: Место
+        start_date: Дата начала
+        end_date: Дата окончания
+        max_participants: Макс. участников
+        type: Тип
+        description: Описание
+        status: Статус
+      user:
+        first_name: Имя
+        last_name: Фамилия
+        email: Email
+        password: Пароль
+        password_confirmation: Подтверждение пароля
+        remember_me: Запомнить меня
+        photo: Фото профиля
+
   tournament:
     status:
       draft: Черновик
+      registration: Регистрация
       active: Активный
       completed: Завершён
       cancelled: Отменён
@@ -67,3 +103,161 @@ ru:
       olimpic: Олимпийский
       round_robin: Круговой
       mixed: Смешанный
+
+  dashboard:
+    index:
+      welcome: "Добро пожаловать, %{name}!"
+      my_leagues: Мои лиги
+      my_tournaments: Мои турниры
+      owner: Владелец
+      no_leagues: Вы ещё не создали ни одной лиги.
+      no_tournaments: Турниров пока нет.
+      all_leagues: Все лиги
+      create_league: Создать лигу
+      all_tournaments: Все турниры
+      recent_leagues: Последние лиги
+      no_recent_leagues: Лиг пока нет.
+
+  leagues:
+    index:
+      title: Лиги
+      new_league: Новая лига
+      owner: Владелец
+      created_at: "Создано %{date}"
+      no_leagues: Лиг пока нет.
+    show:
+      edit: Редактировать
+      back: "← Лиги"
+      created_by: "Создано %{date} пользователем %{owner}"
+      tournaments_tab: Турниры
+      members_tab: Участники
+      new_tournament: Новый турнир
+      no_tournaments: Турниров пока нет.
+      members_section: Участники
+      no_members: Участников пока нет.
+      name_column: Название
+      start_date_column: Дата начала
+      end_date_column: Дата окончания
+      location_column: Место
+      type_column: Тип
+      status_column: Статус
+      photo_column: Фото
+      member_name_column: Имя
+      score_column: Очки
+    new:
+      title: Новая лига
+      submit: Создать лигу
+      cancel: Отмена
+    edit:
+      title: Редактировать лигу
+      submit: Сохранить
+      cancel: Отмена
+
+  tournaments:
+    index:
+      title: Турниры
+      name_label: Название
+      location_label: Место
+      status_label: Статус
+      type_label: Тип
+      search_placeholder: Поиск по названию
+      location_placeholder: Место
+      reset: Сбросить
+      name_column: Название
+      location_column: Место
+      dates_column: Даты
+      type_column: Тип
+      status_column: Статус
+      max_participants_column: Макс. участников
+      no_tournaments: Турниров пока нет.
+    new:
+      title: Новый турнир
+      date_range: Даты проведения
+      date_placeholder: Выберите даты
+      submit: Создать турнир
+    show:
+      location: Место
+      start_date: Дата начала
+      end_date: Дата окончания
+      type: Тип
+      max_participants: Макс. участников
+      status: Статус
+      pairs: Пары
+      no_pairs: Пар пока нет.
+      photo_column: Фото
+      player1_column: Игрок 1
+      score_column: Очки
+      player2_column: Игрок 2
+      pair_score_column: Очки пары
+      submitted_at_column: Дата подачи заявки
+
+  users:
+    index:
+      title: Пользователи
+      name_label: Имя
+      search_placeholder: Поиск по имени
+      submit: Применить
+      reset: Сбросить
+      photo_column: Фото
+      name_column: Имя
+      leagues_column: Лиги
+      registered_at_column: Дата регистрации
+      no_users: Пользователей пока нет.
+
+  layouts:
+    navbar:
+      leagues: Лиги
+      tournaments: Турниры
+      players: Игроки
+      edit_account: Редактировать аккаунт
+      sign_out: Выйти
+      sign_in: Войти
+      sign_up: Регистрация
+
+  devise:
+    sessions:
+      new:
+        title: Войти
+        submit: Войти
+    registrations:
+      new:
+        title: Регистрация
+        min_password: "Минимум %{count} символов"
+        submit: Зарегистрироваться
+      edit:
+        title: Редактировать аккаунт
+        pending_reconfirmation: "Ожидается подтверждение для: %{email}"
+        leave_blank: Оставьте пустым, если не хотите менять
+        min_password: "Минимум %{count} символов"
+        submit: Обновить
+        cancel: Назад
+        delete_account: Удалить аккаунт
+        delete_confirmation: Вы уверены, что хотите удалить аккаунт?
+        delete_submit: Удалить мой аккаунт
+        confirm_delete: Вы уверены?
+    passwords:
+      new:
+        title: Забыли пароль?
+        submit: Отправить инструкции по сбросу пароля
+      edit:
+        title: Изменить пароль
+        new_password: Новый пароль
+        confirm_password: Подтвердите новый пароль
+        min_password: "Минимум %{count} символов"
+        submit: Изменить пароль
+    confirmations:
+      new:
+        title: Повторная отправка инструкций подтверждения
+        submit: Повторно отправить
+    unlocks:
+      new:
+        title: Повторная отправка инструкций разблокировки
+        submit: Повторно отправить
+    shared:
+      links:
+        sign_in: Войти
+        sign_up: Регистрация
+        forgot_password: Забыли пароль?
+        no_confirmation: Не получили инструкции подтверждения?
+        no_unlock: Не получили инструкции разблокировки?
+        sign_in_with: "Войти через %{provider}"

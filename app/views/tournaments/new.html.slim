@@ -1,6 +1,6 @@
 .container.py-4
   .d-flex.justify-content-between.align-items-center.mb-4
-    h1.mb-0 Новый турнир
+    h1.mb-0= t('.title')
     = link_to "← #{@league.name}", league_path(@league), class: "btn btn-outline-secondary btn-sm"
 
   = form_with model: [@league, @tournament], class: "row g-3" do |f|
@@ -14,15 +14,13 @@
       = f.label :location, class: "form-label"
       = f.text_field :location, class: "form-control"
 
-    .col-md-6
-      = f.label :start_date, class: "form-label"
-      = f.date_field :start_date, class: "form-control #{"is-invalid" if @tournament.errors[:start_date].any?}"
+    .col-md-4
+      label.form-label for="date_range_picker"= t('.date_range')
+      = f.hidden_field :start_date, id: "tournament_start_date"
+      = f.hidden_field :end_date, id: "tournament_end_date"
+      input#date_range_picker.form-control type="text" placeholder=t('.date_placeholder') readonly="true" class="#{"is-invalid" if @tournament.errors[:start_date].any? || @tournament.errors[:end_date].any?}" data-start=@tournament.start_date data-end=@tournament.end_date
       - if @tournament.errors[:start_date].any?
         .invalid-feedback= @tournament.errors[:start_date].first
-
-    .col-md-6
-      = f.label :end_date, class: "form-label"
-      = f.date_field :end_date, class: "form-control #{"is-invalid" if @tournament.errors[:end_date].any?}"
       - if @tournament.errors[:end_date].any?
         .invalid-feedback= @tournament.errors[:end_date].first
 
@@ -32,11 +30,11 @@
 
     .col-md-4
       = f.label :type, class: "form-label"
-      = f.select :type, [["Олимпийский", "olimpic"], ["Круговой", "round_robin"], ["Смешанный", "mixed"]], {}, class: "form-select"
+      = f.select :type, Tournament.types.keys.map { |tp| [t("tournament.type.#{tp}"), tp] }, {}, class: "form-select"
 
     .col-12
       = f.label :description, class: "form-label"
       = f.text_area :description, class: "form-control", rows: 3
 
     .col-12
-      = f.submit "Создать турнир", class: "btn btn-primary"
+      = f.submit t('.submit'), class: "btn btn-primary"

@@ -9,11 +9,11 @@ nav.navbar.navbar-expand-lg data-controller="navbar"
       ul.navbar-nav.me-auto.mb-2.mb-lg-0
         - if user_signed_in?
           li.nav-item
-            = link_to "Лиги", leagues_path, class: "nav-link #{request.path.start_with?('/leagues') ? 'active' : ''}", aria: { current: (request.path.start_with?('/leagues') ? 'page' : nil) }
+            = link_to t('layouts.navbar.leagues'), leagues_path, class: "nav-link #{request.path.start_with?('/leagues') ? 'active' : ''}", aria: { current: (request.path.start_with?('/leagues') ? 'page' : nil) }
           li.nav-item
-            = link_to "Турниры", tournaments_path, class: "nav-link #{request.path.start_with?('/tournaments') ? 'active' : ''}", aria: { current: (request.path.start_with?('/tournaments') ? 'page' : nil) }
+            = link_to t('layouts.navbar.tournaments'), tournaments_path, class: "nav-link #{request.path.start_with?('/tournaments') ? 'active' : ''}", aria: { current: (request.path.start_with?('/tournaments') ? 'page' : nil) }
           li.nav-item
-            = link_to "Игроки", users_path, class: "nav-link #{request.path.start_with?('/users') ? 'active' : ''}", aria: { current: (request.path.start_with?('/users') ? 'page' : nil) }
+            = link_to t('layouts.navbar.players'), users_path, class: "nav-link #{request.path.start_with?('/users') ? 'active' : ''}", aria: { current: (request.path.start_with?('/users') ? 'page' : nil) }
 
       - if user_signed_in?
         ul.navbar-nav.ms-auto.align-items-center.gap-2
@@ -23,14 +23,14 @@ nav.navbar.navbar-expand-lg data-controller="navbar"
                 = current_user.full_name.split.map(&:first).first(2).join.upcase
             ul.dropdown-menu.dropdown-menu-end
               li
-                = link_to "Редактировать аккаунт", edit_user_registration_path, class: "dropdown-item"
+                = link_to t('layouts.navbar.edit_account'), edit_user_registration_path, class: "dropdown-item"
               li
                 hr.dropdown-divider
               li
-                = button_to "Выйти", destroy_user_session_path, method: :delete, class: "dropdown-item text-danger border-0 bg-transparent w-100 text-start"
+                = button_to t('layouts.navbar.sign_out'), destroy_user_session_path, method: :delete, class: "dropdown-item text-danger border-0 bg-transparent w-100 text-start"
       - else
         ul.navbar-nav.ms-auto
           li.nav-item
-            = link_to "Войти", new_user_session_path, class: "nav-link"
+            = link_to t('layouts.navbar.sign_in'), new_user_session_path, class: "nav-link"
           li.nav-item
-            = link_to "Регистрация", new_user_registration_path, class: "btn btn-primary btn-sm ms-2"
+            = link_to t('layouts.navbar.sign_up'), new_user_registration_path, class: "btn btn-primary btn-sm ms-2"
