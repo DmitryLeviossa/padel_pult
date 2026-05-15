@@ -1,7 +1,7 @@
 .container.py-4
   .d-flex.justify-content-between.align-items-center.mb-4
-    h1.mb-0 Лиги
-    = link_to "Новая лига", new_league_path, class: "btn btn-primary"
+    h1.mb-0= t('.title')
+    = link_to t('.new_league'), new_league_path, class: "btn btn-primary"
 
   - if @leagues.any?
     .row.row-cols-1.row-cols-md-2.row-cols-lg-3.g-4
@@ -14,10 +14,10 @@
               .d-flex.align-items-start.gap-2.mb-1
                 h5.card-title.mb-0= link_to league.name, league_path(league), class: "text-decoration-none stretched-link"
                 - if user_signed_in? && league.owner_id == current_user.id
-                  span.badge.bg-primary.flex-shrink-0 Владелец
+                  span.badge.bg-primary.flex-shrink-0= t('.owner')
               - if league.description.present?
                 p.card-text.text-muted= league.description
             .card-footer.text-muted.small
-              | Создано #{l(league.created_at.to_date, format: :long)}
+              = t('.created_at', date: l(league.created_at.to_date, format: :long))
   - else
-    p.text-muted Лиг пока нет.
+    p.text-muted= t('.no_leagues')

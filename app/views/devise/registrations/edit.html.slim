@@ -3,46 +3,46 @@
     .col-md-6
       .card
         .card-body.p-4
-          h2.card-title.mb-4 Редактировать аккаунт
+          h2.card-title.mb-4= t('.title')
 
           = form_for(resource, as: resource_name, url: registration_path(resource_name), html: { method: :put, multipart: true }) do |f|
             = render "devise/shared/error_messages", resource: resource
 
             .mb-3.text-center
               = render "shared/avatar", user: resource, size: 100
-              = f.label :photo, "Фото профиля", class: "form-label d-block"
+              = f.label :photo, class: "form-label d-block"
               = f.file_field :photo, accept: "image/*", class: "form-control"
 
             .row.mb-3
               .col
-                = f.label :first_name, "Имя", class: "form-label"
+                = f.label :first_name, class: "form-label"
                 = f.text_field :first_name, autocomplete: "given-name", class: "form-control"
               .col
-                = f.label :last_name, "Фамилия", class: "form-label"
+                = f.label :last_name, class: "form-label"
                 = f.text_field :last_name, autocomplete: "family-name", class: "form-control"
 
             .mb-3
               = f.label :email, class: "form-label"
               = f.email_field :email, autofocus: true, autocomplete: "email", class: "form-control"
               - if devise_mapping.confirmable? && resource.pending_reconfirmation?
-                small.text-muted Ожидается подтверждение для: #{resource.unconfirmed_email}
+                small.text-muted= t('.pending_reconfirmation', email: resource.unconfirmed_email)
 
             .mb-3
               = f.label :password, class: "form-label"
-              small.text-muted.d-block.mb-1 Оставьте пустым, если не хотите менять
+              small.text-muted.d-block.mb-1= t('.leave_blank')
               = f.password_field :password, autocomplete: "new-password", class: "form-control"
               - if @minimum_password_length
-                small.text-muted Минимум #{@minimum_password_length} символов
+                small.text-muted= t('.min_password', count: @minimum_password_length)
 
             .mb-3
               = f.label :password_confirmation, class: "form-label"
               = f.password_field :password_confirmation, autocomplete: "new-password", class: "form-control"
 
-            = f.submit "Обновить", class: "btn btn-primary"
-            = link_to "Назад", :back, class: "btn btn-secondary ms-2"
+            = f.submit t('.submit'), class: "btn btn-primary"
+            = link_to t('.cancel'), :back, class: "btn btn-secondary ms-2"
 
-      .card.mt-3
-        .card-body.p-4
-          h5.card-title.text-danger Удалить аккаунт
-          p.text-muted Вы уверены, что хотите удалить аккаунт?
-          = button_to "Удалить мой аккаунт", registration_path(resource_name), data: { confirm: "Вы уверены?", turbo_confirm: "Вы уверены?" }, method: :delete, class: "btn btn-danger btn-sm"
+  .card.mt-3
+    .card-body.p-4
+      h5.card-title.text-danger= t('.delete_account')
+      p.text-muted= t('.delete_confirmation')
+      = button_to t('.delete_submit'), registration_path(resource_name), data: { confirm: t('.confirm_delete'), turbo_confirm: t('.confirm_delete') }, method: :delete, class: "btn btn-danger btn-sm"

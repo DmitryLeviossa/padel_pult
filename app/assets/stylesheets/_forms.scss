@@ -3,9 +3,71 @@
 // Supplemental form dark styles — $input-bg override in _variables.scss handles input backgrounds.
 // This file covers browser-native chrome (date/time pickers) not controlled by Bootstrap vars.
 
+// Tom Select multi — keep control same height as other inputs (no wrapping)
+.ts-wrapper.multi .ts-control {
+  flex-wrap: nowrap;
+  overflow: hidden;
+  height: calc(1.5em + 0.75rem + 2px); // matches Bootstrap .form-control height
+  align-items: center;
+}
+
 // Native date/time pickers — force browser chrome into dark mode
 input[type="date"],
 input[type="time"],
 input[type="datetime-local"] {
   color-scheme: dark;
 }
+
+// Flatpickr dark-mode overrides to match Bootstrap dark theme
+.flatpickr-calendar {
+  background: #2b3035;
+  border: 1px solid #495057;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.5);
+  color: #dee2e6;
+
+  &.arrowTop::before { border-bottom-color: #495057; }
+  &.arrowTop::after  { border-bottom-color: #2b3035; }
+
+  .flatpickr-months {
+    .flatpickr-month,
+    .flatpickr-prev-month,
+    .flatpickr-next-month {
+      background: #343a40;
+      color: #dee2e6;
+      fill: #dee2e6;
+      &:hover { color: #fff; fill: #fff; }
+    }
+    .flatpickr-current-month {
+      color: #dee2e6;
+      input.cur-year { color: #dee2e6; }
+    }
+  }
+
+  .flatpickr-weekdays { background: #343a40; }
+  span.flatpickr-weekday { background: #343a40; color: #adb5bd; }
+
+  .flatpickr-day {
+    color: #dee2e6;
+    &:hover, &:focus { background: #495057; border-color: #495057; }
+    &.today { border-color: #0d6efd; }
+    &.today:hover { background: #0d6efd; color: #fff; }
+    &.selected,
+    &.startRange,
+    &.endRange {
+      background: #0d6efd;
+      border-color: #0d6efd;
+      color: #fff;
+    }
+    &.inRange {
+      background: rgba(13, 110, 253, 0.2);
+      border-color: rgba(13, 110, 253, 0.2);
+      box-shadow: -5px 0 0 rgba(13, 110, 253, 0.2), 5px 0 0 rgba(13, 110, 253, 0.2);
+    }
+    &.flatpickr-disabled, &.prevMonthDay, &.nextMonthDay {
+      color: #6c757d;
+    }
+  }
+}
+
+// Make the flatpickr trigger look like a Bootstrap form-control
+.flatpickr-input[readonly] { cursor: pointer; }

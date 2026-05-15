@@ -54,5 +54,8 @@
 // 6. Tom Select with Bootstrap 5 theme
 @import 'tom-select/dist/css/tom-select.bootstrap5';
 
-// 7. Icon font — always last
+// 7. Flatpickr date range picker
+@import 'flatpickr/dist/flatpickr.min';
+
+// 8. Icon font — always last
 @import 'bootstrap-icons/font/bootstrap-icons';

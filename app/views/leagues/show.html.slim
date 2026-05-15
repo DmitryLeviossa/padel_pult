@@ -6,42 +6,42 @@
       h1.mb-0= @league.name
     .d-flex.gap-2
       - if @league.owner == current_user
-        = link_to "Редактировать", edit_league_path(@league), class: "btn btn-outline-primary btn-sm"
-      = link_to "← Лиги", leagues_path, class: "btn btn-outline-secondary btn-sm"
+        = link_to t('.edit'), edit_league_path(@league), class: "btn btn-outline-primary btn-sm"
+      = link_to t('.back'), leagues_path, class: "btn btn-outline-secondary btn-sm"
 
   - if @league.description.present?
     p.text-muted= @league.description
 
-  p.text-muted.small
-    | Создано #{l(@league.created_at.to_date, format: :long)} пользователем #{@league.owner.email}
+  p.text-muted.small= t('.created_by', date: l(@league.created_at.to_date, format: :long), owner: @league.owner.email)
 
   ul.nav.nav-tabs.mt-4 role="tablist"
     li.nav-item role="presentation"
       button.nav-link.active type="button" role="tab" data-bs-toggle="tab" data-bs-target="#tournaments" aria-controls="tournaments" aria-selected="true"
-        | Турниры
+        = t('.tournaments_tab')
     li.nav-item role="presentation"
       button.nav-link type="button" role="tab" data-bs-toggle="tab" data-bs-target="#league-users" aria-controls="league-users" aria-selected="false"
-        | Участники
+        = t('.members_tab')
 
   .tab-content.mt-3
     #tournaments.tab-pane.fade.show.active role="tabpanel"
       .d-flex.justify-content-between.align-items-center.mb-2
-        h5.mb-0 Турниры
+        h5.mb-0= t('.tournaments_tab')
         - if @league.owner == current_user
-          = link_to "Новый турнир", new_league_tournament_path(@league), class: "btn btn-primary btn-sm"
+          = link_to t('.new_tournament'), new_league_tournament_path(@league), class: "btn btn-primary btn-sm"
 
-      - if @league.tournaments.any?
+      - visible_tournaments = @league.owner == current_user ? @league.tournaments : @league.tournaments.where.not(status: :draft)
+      - if visible_tournaments.any?
         table.table.table-hover
           thead
             tr
-              th Название
-              th Дата начала
-              th Дата окончания
-              th Место
-              th Тип
-              th Статус
+              th= t('.name_column')
+              th= t('.start_date_column')
+              th= t('.end_date_column')
+              th= t('.location_column')
+              th= t('.type_column')
+              th= t('.status_column')
           tbody
-            - @league.tournaments.order(start_date: :asc).each do |tournament|
+            - visible_tournaments.order(start_date: :asc).each do |tournament|
               tr
                 td= link_to tournament.name, tournament_path(tournament)
                 td= l(tournament.start_date, format: :long)
@@ -50,18 +50,18 @@
                 td= t("tournament.type.#{tournament.type}")
                 td= t("tournament.status.#{tournament.status}")
       - else
-        p.text-muted Турниров пока нет.
+        p.text-muted= t('.no_tournaments')
 
     #league-users.tab-pane.fade role="tabpanel"
-      h5.mb-3 Участники
+      h5.mb-3= t('.members_section')
 
       - if @league.league_users.any?
         table.table.table-hover
           thead
             tr
-              th Фото
-              th Имя
-              th Очки
+              th= t('.photo_column')
+              th= t('.member_name_column')
+              th= t('.score_column')
           tbody
             - @league.league_users.order(score: :desc).each do |league_user|
               tr
@@ -70,4 +70,4 @@
                 td= league_user.full_name
                 td= league_user.score
       - else
-        p.text-muted Участников пока нет.
+        p.text-muted= t('.no_members')

@@ -9,42 +9,43 @@
         p.text-muted= @tournament.description
 
       dl.row
-        dt.col-sm-3 Место
+        dt.col-sm-3= t('.location')
         dd.col-sm-9= @tournament.location.presence || "—"
 
-        dt.col-sm-3 Дата начала
+        dt.col-sm-3= t('.start_date')
         dd.col-sm-9= l(@tournament.start_date, format: :long)
 
-        dt.col-sm-3 Дата окончания
+        dt.col-sm-3= t('.end_date')
         dd.col-sm-9= l(@tournament.end_date, format: :long)
 
-        dt.col-sm-3 Тип
+        dt.col-sm-3= t('.type')
         dd.col-sm-9= t("tournament.type.#{@tournament.type}")
 
-        dt.col-sm-3 Макс. участников
+        dt.col-sm-3= t('.max_participants')
         dd.col-sm-9= @tournament.max_participants
 
-        dt.col-sm-3 Статус
+        dt.col-sm-3= t('.status')
         dd.col-sm-9
-          - badge_class = { "draft" => "secondary", "active" => "success", "completed" => "primary", "cancelled" => "danger" }.fetch(@tournament.status, "secondary")
+          - badge_class = { "draft" => "secondary", "registration" => "info", "active" => "success", "completed" => "primary", "cancelled" => "danger" }.fetch(@tournament.status, "secondary")
           span.badge class="bg-#{badge_class}"
             = t("tournament.status.#{@tournament.status}")
 
-  h4.mt-4.mb-3 Пары
+  h4.mt-4.mb-3= t('.pairs')
   - if @tournament.pairs.any?
     table.table.table-hover
       thead
         tr
           th #
-          th Фото
-          th Игрок 1
-          th Очки
-          th Фото
-          th Игрок 2
-          th Очки
-          th Очки пары
+          th= t('.photo_column')
+          th= sort_link(@tournament, "player1", t('.player1_column'), @sort, @direction)
+          th= sort_link(@tournament, "player1_score", t('.score_column'), @sort, @direction)
+          th= t('.photo_column')
+          th= sort_link(@tournament, "player2", t('.player2_column'), @sort, @direction)
+          th= sort_link(@tournament, "player2_score", t('.score_column'), @sort, @direction)
+          th= sort_link(@tournament, "score", t('.pair_score_column'), @sort, @direction)
+          th= sort_link(@tournament, "created_at", t('.submitted_at_column'), @sort, @direction)
       tbody
-        - @tournament.pairs.sort_by { |p| -p.score }.each_with_index do |pair, index|
+        - @pairs.each_with_index do |pair, index|
           tr
             td= index + 1
             td
@@ -56,5 +57,6 @@
             td= pair.player2.full_name
             td= pair.player2.score
             td= pair.score
+            td= l(pair.created_at.to_date, format: :long)
   - else
-    p.text-muted Пар пока нет.
+    p.text-muted= t('.no_pairs')

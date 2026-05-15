@@ -1,5 +1,5 @@
 .container.py-4
-  h1.mb-4 Редактировать лигу
+  h1.mb-4= t('.title')
 
   = form_with model: @league, class: "mt-4" do |f|
     .mb-3
@@ -13,11 +13,11 @@
       = f.text_area :description, class: "form-control", rows: 4
 
     .mb-3
-      = f.label :logo, "Логотип", class: "form-label"
+      = f.label :logo, class: "form-label"
       - if @league.logo.attached?
         .mb-2
           = image_tag @league.logo, class: "rounded", style: "width: 80px; height: 80px; object-fit: cover;"
       = f.file_field :logo, class: "form-control", accept: "image/*"
 
-    = f.submit "Сохранить", class: "btn btn-primary"
-    = link_to "Отмена", @league, class: "btn btn-secondary ms-2"
+    = f.submit t('.submit'), class: "btn btn-primary"
+    = link_to t('.cancel'), @league, class: "btn btn-secondary ms-2"
