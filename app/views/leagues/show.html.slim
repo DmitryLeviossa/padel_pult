@@ -13,7 +13,7 @@
     p.text-muted= @league.description
 
   p.text-muted.small
-    | Создано #{@league.created_at.strftime("%d.%m.%Y")} пользователем #{@league.owner.email}
+    | Создано #{l(@league.created_at.to_date, format: :long)} пользователем #{@league.owner.email}
 
   ul.nav.nav-tabs.mt-4 role="tablist"
     li.nav-item role="presentation"
@@ -44,11 +44,11 @@
             - @league.tournaments.order(start_date: :asc).each do |tournament|
               tr
                 td= link_to tournament.name, tournament_path(tournament)
-                td= tournament.start_date.strftime("%d.%m.%Y")
-                td= tournament.end_date.strftime("%d.%m.%Y")
+                td= l(tournament.start_date, format: :long)
+                td= l(tournament.end_date, format: :long)
                 td= tournament.location.presence || "—"
-                td= tournament.type.capitalize
-                td= tournament.status.capitalize
+                td= t("tournament.type.#{tournament.type}")
+                td= t("tournament.status.#{tournament.status}")
       - else
         p.text-muted Турниров пока нет.
 
