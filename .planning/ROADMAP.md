@@ -120,7 +120,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 - [x] 05-02-PLAN.md — POLL-02 CSS (.card transition + .card-hoverable rule) + POLL-03 (table th uppercase + letter-spacing)
 
 **Wave 2** *(blocked on 05-02 — needs .card-hoverable rule committed)*
-- [ ] 05-03-PLAN.md — Apply .card-hoverable class to stretched-link cards (leagues/index + dashboard recent leagues)
+- [x] 05-03-PLAN.md — Apply .card-hoverable class to stretched-link cards (leagues/index + dashboard recent leagues)
 
 **Cross-cutting constraints:** Plans 05-01 and 05-02 touch entirely separate SCSS files — fully parallel. Plan 05-03 must run after 05-02 because it depends on the .card-hoverable rule existing in CSS. Per user decision (CONTEXT lock): use .card-hoverable utility class instead of UI-SPEC's a > .card selector — makes hover lift visible immediately on current stretched-link templates.
 
