@@ -38,11 +38,6 @@
               = f.label :password_confirmation, class: "form-label"
               = f.password_field :password_confirmation, autocomplete: "new-password", class: "form-control"
 
-            .mb-3
-              = f.label :current_password, class: "form-label"
-              small.text-muted.d-block.mb-1 Введите текущий пароль для подтверждения изменений
-              = f.password_field :current_password, autocomplete: "current-password", class: "form-control"
-
             = f.submit "Обновить", class: "btn btn-primary"
             = link_to "Назад", :back, class: "btn btn-secondary ms-2"
 
