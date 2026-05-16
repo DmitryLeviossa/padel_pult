@@ -25,4 +25,8 @@ class League < ApplicationRecord
   has_many :users, through: :league_users
 
   has_one_attached :logo
+
+  def self.ransackable_attributes(auth_object = nil)
+    %w[name description created_at]
+  end
 end

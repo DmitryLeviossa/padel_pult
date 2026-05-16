@@ -9,14 +9,14 @@
       .col-md-2
         label.form-label= t('.location_label')
         = f.search_field :location_cont, class: "form-control", placeholder: t('.location_placeholder')
-      .col-md-3
+      .col-md-4
         label.form-label= t('.status_label')
         = f.select :status_in, Tournament.statuses.keys.map { |s| [t("tournament.status.#{s}"), s] }.reject { |_, s| s == "draft" }, {}, class: "form-select", multiple: true
       .col-md-2
         label.form-label= t('.type_label')
         = f.select :type_eq, [["", ""]] + Tournament.types.keys.map { |tp| [t("tournament.type.#{tp}"), tp] }, {}, class: "form-select"
-      .col-md-2
-        = link_to t('.reset'), tournaments_path, class: "btn btn-outline-secondary"
+      .col-md-1
+        = link_to t('.reset'), tournaments_path, class: "btn btn-outline-secondary w-100"
 
   - if @tournaments.any?
     table.table.table-hover

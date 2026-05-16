@@ -3,12 +3,11 @@
 // Supplemental form dark styles — $input-bg override in _variables.scss handles input backgrounds.
 // This file covers browser-native chrome (date/time pickers) not controlled by Bootstrap vars.
 
-// Tom Select multi — keep control same height as other inputs (no wrapping)
+// Tom Select multi — align items and allow wrapping when many tags are selected
 .ts-wrapper.multi .ts-control {
-  flex-wrap: nowrap;
-  overflow: hidden;
-  height: calc(1.5em + 0.75rem + 2px); // matches Bootstrap .form-control height
+  flex-wrap: wrap;
   align-items: center;
+  min-height: calc(1.5em + 0.75rem + 2px);
 }
 
 // Native date/time pickers — force browser chrome into dark mode
