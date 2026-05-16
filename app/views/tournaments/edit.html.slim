@@ -1,0 +1,6 @@
+.container.py-4
+  .d-flex.justify-content-between.align-items-center.mb-4
+    h1.mb-0= t('.title')
+    = link_to "← #{@tournament.name}", tournament_path(@tournament), class: "btn btn-outline-secondary btn-sm"
+
+  = render "form", tournament: @tournament, form_model: @tournament, submit_label: t('.submit')

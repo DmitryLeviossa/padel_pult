@@ -1,9 +1,5 @@
 # Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
 
-# This model initially had no columns defined. If you add columns to the
-# model remove the "{}" from the fixture names and add the columns immediately
-# below each fixture, per the syntax in the comments below
-#
 # == Schema Information
 #
 # Table name: leagues
@@ -15,16 +11,10 @@
 #  updated_at  :datetime         not null
 #  owner_id    :bigint           not null
 #
-# Indexes
-#
-#  index_leagues_on_owner_id  (owner_id)
-#
-# Foreign Keys
-#
-#  fk_rails_...  (owner_id => users.id)
-#
-one: {}
-# column: value
-#
-two: {}
-# column: value
+one:
+  name: Test League
+  owner: one
+
+two:
+  name: Other League
+  owner: two
