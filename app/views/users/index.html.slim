@@ -15,33 +15,30 @@
           = link_to t('.reset'), users_path, class: "btn btn-outline-secondary"
 
   - if @users.any?
-    .table-responsive
-      table.table.table-hover.align-middle
-        thead
-          tr
-            th #
-            th= t('.photo_column')
-            th= t('.name_column')
-            th= t('.leagues_column')
-            th= t('.gender_column')
-            th= t('.registered_at_column')
-        tbody
-          - @users.each_with_index do |user, i|
-            tr
-              td= i + 1
-              td
-                = render "shared/avatar", user: user
-              td= user.full_name
-              td
-                - user.leagues.each do |league|
-                  = link_to league.name, league_path(league), class: "badge text-bg-secondary text-decoration-none me-1"
-              td
+    .d-flex.flex-column.gap-2
+      - @users.each do |user|
+        .card.w-100.overflow-hidden style="height: 250px;"
+          .d-flex.h-100
+            .flex-shrink-0 style="width: 25%;"
+              - if user.photo.attached?
+                = image_tag user.photo.variant(resize_to_fill: [400, 500]), style: "width: 100%; height: 100%; object-fit: cover;"
+              - else
+                - initials = user.full_name.split.map(&:first).first(2).join.upcase
+                .d-flex.align-items-center.justify-content-center.h-100 style="background: var(--color-bg-surface); border-right: 1px solid var(--color-border); font-size: 3rem; font-weight: 600; color: var(--color-text-muted);"
+                  = initials
+            .d-flex.flex-column.justify-content-between.flex-grow-1.p-3
+              div
+                .fw-semibold.fs-5= user.full_name
+                .d-flex.flex-wrap.gap-1.mt-2
+                  - user.leagues.each do |league|
+                    = link_to league.name, league_path(league), class: "badge text-bg-secondary text-decoration-none"
+              .d-flex.align-items-center.justify-content-between
                 - if user.gender_male?
                   span.badge.badge-gender-male М
                 - elsif user.gender_female?
                   span.badge.badge-gender-female Ж
                 - else
-                  | —
-              td= l(user.created_at.to_date, format: :long)
+                  span
+                small.text-muted= l(user.created_at.to_date, format: :long)
   - else
     p.text-muted= t('.no_users')
