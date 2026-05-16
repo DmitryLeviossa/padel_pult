@@ -152,6 +152,7 @@ ru:
       location_column: Место
       type_column: Тип
       status_column: Статус
+      participants_column: Участники
       photo_column: Фото
       member_name_column: Имя
       score_column: Очки
@@ -162,7 +163,6 @@ ru:
       left: Вы покинули лигу.
       already_member: Вы уже являетесь участником этой лиги.
       not_member: Вы не являетесь участником этой лиги.
-      open_registration: Открыть регистрацию
     new:
       title: Новая лига
       submit: Создать лигу
