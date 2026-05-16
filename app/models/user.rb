@@ -6,6 +6,7 @@
 #  email                  :string           default(""), not null
 #  encrypted_password     :string           default(""), not null
 #  first_name             :string
+#  gender                 :integer
 #  last_name              :string
 #  remember_created_at    :datetime
 #  reset_password_sent_at :datetime
@@ -24,6 +25,10 @@ class User < ApplicationRecord
   devise :database_authenticatable, :registerable,
          :recoverable, :rememberable, :validatable
 
+  enum :gender, { male: 0, female: 1 }, prefix: true
+
+  validates :gender, presence: true
+
   has_one_attached :photo
 
   has_many :league_users
@@ -34,7 +39,7 @@ class User < ApplicationRecord
   end
 
   def self.ransackable_attributes(_auth_object = nil)
-    %w[first_name last_name full_name email created_at]
+    %w[first_name last_name full_name email created_at gender]
   end
 
   def self.ransackable_associations(_auth_object = nil)

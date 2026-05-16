@@ -1,6 +1,7 @@
 class LeaguesController < ApplicationController
   def index
-    @leagues = League.all
+    @q = leagues_scope.ransack(params[:q])
+    @leagues = @q.result
   end
 
   def show
@@ -60,6 +61,18 @@ class LeaguesController < ApplicationController
   end
 
   private
+
+  def leagues_scope
+    case params[:filter]
+    when "mine"
+      member_ids = LeagueUser.where(user: current_user).select(:league_id)
+      League.where(owner: current_user).or(League.where(id: member_ids))
+    when "owned"
+      League.where(owner: current_user)
+    else
+      League.all
+    end
+  end
 
   def authorize_owner!
     redirect_to leagues_path, alert: "Нет доступа." unless @league.owner == current_user

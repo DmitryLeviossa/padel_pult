@@ -52,7 +52,10 @@
                 td= l(tournament.end_date, format: :long)
                 td= tournament.location.presence || "—"
                 td= t("tournament.type.#{tournament.type}")
-                td= t("tournament.status.#{tournament.status}")
+                td
+                  - badge_class = { "draft" => "secondary", "registration" => "info", "active" => "success", "completed" => "primary", "cancelled" => "danger" }.fetch(tournament.status, "secondary")
+                  span.badge class="bg-#{badge_class}"
+                    = t("tournament.status.#{tournament.status}")
       - else
         p.text-muted= t('.no_tournaments')
 

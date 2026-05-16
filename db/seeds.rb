@@ -2,20 +2,21 @@
 
 # Users
 users = [
-  { email: "admin@padel.com",   password: "password123", first_name: "Админ",    last_name: "Пользователь" },
-  { email: "alexei@padel.com",  password: "password123", first_name: "Алексей",  last_name: "Иванов"       },
-  { email: "boris@padel.com",   password: "password123", first_name: "Борис",    last_name: "Смирнов"      },
-  { email: "vadim@padel.com",   password: "password123", first_name: "Вадим",    last_name: "Козлов"       },
-  { email: "darya@padel.com",   password: "password123", first_name: "Дарья",    last_name: "Новикова"     },
-  { email: "elena@padel.com",   password: "password123", first_name: "Елена",    last_name: "Морозова"     },
-  { email: "fyodor@padel.com",  password: "password123", first_name: "Фёдор",    last_name: "Волков"       },
-  { email: "galina@padel.com",  password: "password123", first_name: "Галина",   last_name: "Петрова"      }
+  { email: "admin@padel.com",   password: "password123", first_name: "Админ",    last_name: "Пользователь", gender: :male   },
+  { email: "alexei@padel.com",  password: "password123", first_name: "Алексей",  last_name: "Иванов",       gender: :male   },
+  { email: "boris@padel.com",   password: "password123", first_name: "Борис",    last_name: "Смирнов",      gender: :male   },
+  { email: "vadim@padel.com",   password: "password123", first_name: "Вадим",    last_name: "Козлов",       gender: :male   },
+  { email: "darya@padel.com",   password: "password123", first_name: "Дарья",    last_name: "Новикова",     gender: :female },
+  { email: "elena@padel.com",   password: "password123", first_name: "Елена",    last_name: "Морозова",     gender: :female },
+  { email: "fyodor@padel.com",  password: "password123", first_name: "Фёдор",    last_name: "Волков",       gender: :male   },
+  { email: "galina@padel.com",  password: "password123", first_name: "Галина",   last_name: "Петрова",      gender: :female }
 ].map do |attrs|
   User.find_or_create_by!(email: attrs[:email]) do |u|
     u.password              = attrs[:password]
     u.password_confirmation = attrs[:password]
     u.first_name            = attrs[:first_name]
     u.last_name             = attrs[:last_name]
+    u.gender                = attrs[:gender]
   end
 end
 

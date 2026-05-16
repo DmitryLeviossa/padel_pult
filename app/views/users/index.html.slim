@@ -7,6 +7,9 @@
         label.form-label= t('.name_label')
         = f.search_field :full_name_cont, class: "form-control", placeholder: t('.search_placeholder')
       .col-md-2
+        label.form-label= t('.gender_label')
+        = f.select :gender_eq, options_for_select([[t('.gender_all'), nil]] + User.genders.keys.map { |g| [t("activerecord.attributes.user.genders.#{g}"), g] }, params.dig(:q, :gender_eq)), {}, class: "form-select"
+      .col-md-2
         .d-flex.gap-2
           = f.submit t('.submit'), class: "btn btn-primary"
           = link_to t('.reset'), users_path, class: "btn btn-outline-secondary"
@@ -20,6 +23,7 @@
             th= t('.photo_column')
             th= t('.name_column')
             th= t('.leagues_column')
+            th= t('.gender_column')
             th= t('.registered_at_column')
         tbody
           - @users.each_with_index do |user, i|
@@ -31,6 +35,13 @@
               td
                 - user.leagues.each do |league|
                   = link_to league.name, league_path(league), class: "badge text-bg-secondary text-decoration-none me-1"
+              td
+                - if user.gender_male?
+                  span.badge.badge-gender-male М
+                - elsif user.gender_female?
+                  span.badge.badge-gender-female Ж
+                - else
+                  | —
               td= l(user.created_at.to_date, format: :long)
   - else
     p.text-muted= t('.no_users')

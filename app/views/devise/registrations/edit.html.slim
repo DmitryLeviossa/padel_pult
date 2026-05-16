@@ -22,6 +22,10 @@
                 = f.text_field :last_name, autocomplete: "family-name", class: "form-control"
 
             .mb-3
+              = f.label :gender, class: "form-label"
+              = f.select :gender, User.genders.keys.map { |g| [t("activerecord.attributes.user.genders.#{g}"), g] }, { include_blank: t('helpers.select.prompt') }, class: "form-select"
+
+            .mb-3
               = f.label :email, class: "form-label"
               = f.email_field :email, autofocus: true, autocomplete: "email", class: "form-control"
               - if devise_mapping.confirmable? && resource.pending_reconfirmation?

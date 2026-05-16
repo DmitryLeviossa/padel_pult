@@ -91,6 +91,10 @@ ru:
         password_confirmation: Подтверждение пароля
         remember_me: Запомнить меня
         photo: Фото профиля
+        gender: Пол
+        genders:
+          male: Мужской
+          female: Женский
 
   tournament:
     status:
@@ -125,6 +129,13 @@ ru:
       owner: Владелец
       created_at: "Создано %{date}"
       no_leagues: Лиг пока нет.
+      search_label: Название
+      search_placeholder: Поиск по названию
+      filter_label: Участие
+      filter_all: Все лиги
+      filter_mine: Мои лиги
+      filter_owned: Я создал
+      reset: Сбросить
     show:
       edit: Редактировать
       back: "← Лиги"
@@ -208,6 +219,9 @@ ru:
       photo_column: Фото
       name_column: Имя
       leagues_column: Лиги
+      gender_column: Пол
+      gender_label: Пол
+      gender_all: Все
       registered_at_column: Дата регистрации
       no_users: Пользователей пока нет.
 
