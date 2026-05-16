@@ -59,6 +59,14 @@ ru:
       long: "%-d %B %Y г., %H:%M"
 
   activerecord:
+    errors:
+      models:
+        pair:
+          attributes:
+            player2:
+              same_as_player1: не может совпадать с игроком 1
+          messages:
+            player_already_registered: один из игроков уже зарегистрирован на этот турнир
     models:
       league:
         one: Лига
@@ -172,6 +180,14 @@ ru:
       submit: Сохранить
       cancel: Отмена
 
+  pairs:
+    not_league_member: Вы не являетесь участником этой лиги.
+    registration_closed: Регистрация на этот турнир закрыта.
+    already_registered: Вы уже зарегистрированы на этот турнир.
+    create:
+      success: Вы успешно зарегистрировались на турнир!
+      failure: Не удалось подать заявку. Попробуйте ещё раз.
+
   tournaments:
     index:
       title: Турниры
@@ -218,6 +234,9 @@ ru:
       status: Статус
       pairs: Пары
       no_pairs: Пар пока нет.
+      apply: Подать заявку
+      partner_prompt: "— выберите партнёра —"
+      already_registered: Вы уже зарегистрированы на этот турнир.
       photo_column: Фото
       player1_column: Игрок 1
       score_column: Очки

@@ -51,6 +51,16 @@
                 td= rule["points"]
 
   h4.mt-4.mb-3= t('.pairs')
+
+  - if @available_partners
+    = form_with url: tournament_pairs_path(@tournament), method: :post, scope: :pair, class: "d-flex align-items-center gap-2 mb-3" do |f|
+      = f.select :player2_id,
+          @available_partners.map { |lu| [ lu.full_name, lu.id ] },
+          { prompt: t('.partner_prompt') },
+          class: "form-select form-select-sm w-auto"
+      = f.submit t('.apply'), class: "btn btn-success btn-sm"
+  - elsif @current_league_user
+    .alert.alert-info.mb-3= t('.already_registered')
   - if @tournament.pairs.any?
     table.table.table-hover
       thead
