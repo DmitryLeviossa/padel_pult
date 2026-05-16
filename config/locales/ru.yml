@@ -171,6 +171,7 @@ ru:
       left: Вы покинули лигу.
       already_member: Вы уже являетесь участником этой лиги.
       not_member: Вы не являетесь участником этой лиги.
+      owner_cannot_leave: Владелец не может покинуть лигу.
     new:
       title: Новая лига
       submit: Создать лигу
@@ -187,6 +188,9 @@ ru:
     create:
       success: Вы успешно зарегистрировались на турнир!
       failure: Не удалось подать заявку. Попробуйте ещё раз.
+    destroy:
+      success: Пара успешно удалена.
+    delete_not_allowed: Удаление пар недоступно.
 
   tournaments:
     index:
@@ -245,6 +249,8 @@ ru:
       pair_score_column: Очки пары
       submitted_at_column: Дата подачи заявки
       placement_column: Место
+      delete_pair: Удалить
+      delete_pair_confirm: Вы уверены, что хотите удалить эту пару?
     open_registration:
       success: Регистрация на турнир открыта.
       not_draft: Регистрацию можно открыть только для турнира в статусе черновика.

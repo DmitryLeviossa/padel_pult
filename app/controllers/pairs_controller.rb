@@ -1,8 +1,10 @@
 class PairsController < ApplicationController
   before_action :set_tournament
-  before_action :authorize_league_member!
-  before_action :authorize_registration_open!
-  before_action :authorize_not_already_registered!
+  before_action :authorize_league_member!, only: :create
+  before_action :authorize_registration_open!, only: :create
+  before_action :authorize_not_already_registered!, only: :create
+  before_action :set_pair, only: :destroy
+  before_action :authorize_league_owner!, only: :destroy
 
   def create
     @pair = @tournament.pairs.build(player1: current_league_user, player2: partner)
@@ -13,10 +15,19 @@ class PairsController < ApplicationController
     end
   end
 
+  def destroy
+    @pair.destroy
+    redirect_to tournament_path(@tournament), notice: t(".success")
+  end
+
   private
 
   def set_tournament
     @tournament = Tournament.find(params[:tournament_id])
+  end
+
+  def set_pair
+    @pair = @tournament.pairs.find(params[:id])
   end
 
   def current_league_user
@@ -45,6 +56,12 @@ class PairsController < ApplicationController
                  @tournament.pairs.exists?(player2_id: league_user.id)
     if already_in
       redirect_to tournament_path(@tournament), alert: t("pairs.already_registered")
+    end
+  end
+
+  def authorize_league_owner!
+    unless @tournament.league.owner == current_user && @tournament.registration?
+      redirect_to tournament_path(@tournament), alert: t("pairs.delete_not_allowed")
     end
   end
 end

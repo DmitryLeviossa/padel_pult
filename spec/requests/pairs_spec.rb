@@ -70,4 +70,60 @@ RSpec.describe "Pairs", type: :request do
       end
     end
   end
+
+  describe "DELETE /tournaments/:tournament_id/pairs/:id" do
+    let(:pair) { create(:pair, tournament: registration_tournament, player1: league_user1, player2: league_user2) }
+
+    context "as league owner" do
+      before { sign_in owner }
+
+      it "deletes the pair and redirects to tournament" do
+        pair
+
+        expect {
+          delete tournament_pair_path(registration_tournament, pair)
+        }.to change(Pair, :count).by(-1)
+
+        expect(response).to redirect_to(tournament_path(registration_tournament))
+      end
+
+      it "does not delete pair when tournament is not in registration" do
+        draft_pair = create(:pair, tournament: draft_tournament, player1: league_user1, player2: league_user2)
+
+        expect {
+          delete tournament_pair_path(draft_tournament, draft_pair)
+        }.not_to change(Pair, :count)
+
+        expect(response).to redirect_to(tournament_path(draft_tournament))
+      end
+    end
+
+    context "as league member (non-owner)" do
+      before { sign_in member1 }
+
+      it "does not delete the pair and redirects" do
+        pair
+
+        expect {
+          delete tournament_pair_path(registration_tournament, pair)
+        }.not_to change(Pair, :count)
+
+        expect(response).to redirect_to(tournament_path(registration_tournament))
+      end
+    end
+
+    context "as outsider" do
+      before { sign_in outsider }
+
+      it "does not delete the pair and redirects" do
+        pair
+
+        expect {
+          delete tournament_pair_path(registration_tournament, pair)
+        }.not_to change(Pair, :count)
+
+        expect(response).to redirect_to(tournament_path(registration_tournament))
+      end
+    end
+  end
 end
