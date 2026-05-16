@@ -14,5 +14,9 @@ Rails.application.routes.draw do
       delete :leave
     end
   end
-  resources :tournaments
+  resources :tournaments do
+    member do
+      post :open_registration
+    end
+  end
 end

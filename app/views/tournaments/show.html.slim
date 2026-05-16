@@ -1,7 +1,10 @@
 .container.py-4
   .d-flex.justify-content-between.align-items-center.mb-4
     h1.mb-0= @tournament.name
-    = link_to "← #{@tournament.league.name}", league_path(@tournament.league), class: "btn btn-outline-secondary btn-sm"
+    .d-flex.gap-2
+      - if @tournament.draft? && @tournament.league.owner == current_user
+        = button_to t('leagues.show.open_registration'), open_registration_tournament_path(@tournament), method: :post, class: "btn btn-outline-success btn-sm"
+      = link_to "← #{@tournament.league.name}", league_path(@tournament.league), class: "btn btn-outline-secondary btn-sm"
 
   .row.mb-4
     .col-md-8

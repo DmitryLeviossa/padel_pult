@@ -162,6 +162,7 @@ ru:
       left: Вы покинули лигу.
       already_member: Вы уже являетесь участником этой лиги.
       not_member: Вы не являетесь участником этой лиги.
+      open_registration: Открыть регистрацию
     new:
       title: Новая лига
       submit: Создать лигу
@@ -208,6 +209,9 @@ ru:
       player2_column: Игрок 2
       pair_score_column: Очки пары
       submitted_at_column: Дата подачи заявки
+    open_registration:
+      success: Регистрация на турнир открыта.
+      not_draft: Регистрацию можно открыть только для турнира в статусе черновика.
 
   users:
     index:
