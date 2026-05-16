@@ -1,9 +1,5 @@
 # Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
 
-# This model initially had no columns defined. If you add columns to the
-# model remove the "{}" from the fixture names and add the columns immediately
-# below each fixture, per the syntax in the comments below
-#
 # == Schema Information
 #
 # Table name: pairs
@@ -15,20 +11,3 @@
 #  player2_id    :bigint           not null
 #  tournament_id :bigint           not null
 #
-# Indexes
-#
-#  index_pairs_on_player1_id     (player1_id)
-#  index_pairs_on_player2_id     (player2_id)
-#  index_pairs_on_tournament_id  (tournament_id)
-#
-# Foreign Keys
-#
-#  fk_rails_...  (player1_id => league_users.id)
-#  fk_rails_...  (player2_id => league_users.id)
-#  fk_rails_...  (tournament_id => tournaments.id)
-#
-one: {}
-# column: value
-#
-two: {}
-# column: value

@@ -1,8 +1,8 @@
 class TournamentsController < ApplicationController
   before_action :set_league, only: [ :new, :create ]
-  before_action :set_tournament, only: [ :show, :open_registration ]
+  before_action :set_tournament, only: [ :show, :edit, :update, :open_registration ]
   before_action :authorize_owner!, only: [ :new, :create ]
-  before_action :authorize_tournament_owner!, only: [ :open_registration ]
+  before_action :authorize_tournament_owner!, only: [ :edit, :update, :open_registration ]
 
   def index
     filter_params = params[:q]&.to_unsafe_h || {}
@@ -46,6 +46,23 @@ class TournamentsController < ApplicationController
       redirect_to league_path(@league), notice: "Tournament created successfully."
     else
       render :new, status: :unprocessable_entity
+    end
+  end
+
+  def edit
+    redirect_to tournament_path(@tournament), alert: t(".not_draft") unless @tournament.draft?
+  end
+
+  def update
+    unless @tournament.draft?
+      redirect_to tournament_path(@tournament), alert: t(".not_draft")
+      return
+    end
+
+    if @tournament.update(tournament_params)
+      redirect_to tournament_path(@tournament), notice: t(".success")
+    else
+      render :edit, status: :unprocessable_entity
     end
   end
 

@@ -1,0 +1,76 @@
+= form_with model: form_model, class: "row g-3" do |f|
+  .col-md-6
+    = f.label :name, class: "form-label"
+    = f.text_field :name, class: "form-control #{"is-invalid" if tournament.errors[:name].any?}"
+    - if tournament.errors[:name].any?
+      .invalid-feedback= tournament.errors[:name].first
+
+  .col-md-6
+    = f.label :location, class: "form-label"
+    = f.text_field :location, class: "form-control"
+
+  .col-md-4
+    label.form-label for="date_range_picker"= t("tournaments.new.date_range")
+    = f.hidden_field :start_date, id: "tournament_start_date"
+    = f.hidden_field :end_date, id: "tournament_end_date"
+    input#date_range_picker.form-control type="text" placeholder=t("tournaments.new.date_placeholder") readonly="true" class="#{"is-invalid" if tournament.errors[:start_date].any? || tournament.errors[:end_date].any?}" data-start=tournament.start_date data-end=tournament.end_date
+    - if tournament.errors[:start_date].any?
+      .invalid-feedback= tournament.errors[:start_date].first
+    - if tournament.errors[:end_date].any?
+      .invalid-feedback= tournament.errors[:end_date].first
+
+  .col-md-4
+    = f.label :max_participants, class: "form-label"
+    = f.number_field :max_participants, class: "form-control", min: 2
+
+  .col-md-4
+    = f.label :type, class: "form-label"
+    = f.select :type, Tournament.types.keys.map { |tp| [t("tournament.type.#{tp}"), tp] }, {}, class: "form-select"
+
+  .col-12
+    = f.label :description, class: "form-label"
+    = f.text_area :description, class: "form-control", rows: 3
+
+  .col-12
+    hr
+    h5.mb-3= t("tournaments.new.placement_points_title")
+    - if tournament.errors[:placement_points].any?
+      .alert.alert-danger
+        - tournament.errors[:placement_points].each do |msg|
+          div= msg
+
+    div data-controller="placement-points"
+      div data-placement-points-target="list"
+        - Array(tournament.placement_points).each_with_index do |rule, i|
+          .placement-row.row.g-2.align-items-center.mb-2
+            .col-auto
+              small.text-muted= t("tournaments.new.place_from")
+              = f.number_field "placement_points[#{i}][from]", value: rule["from"], class: "form-control form-control-sm", min: 1, style: "width: 80px"
+            .col-auto
+              small.text-muted= t("tournaments.new.place_to")
+              = f.number_field "placement_points[#{i}][to]", value: rule["to"], class: "form-control form-control-sm", min: 1, style: "width: 80px"
+            .col-auto
+              small.text-muted= t("tournaments.new.points")
+              = f.number_field "placement_points[#{i}][points]", value: rule["points"], class: "form-control form-control-sm", min: 1, style: "width: 80px"
+            .col-auto.pt-3
+              button.btn.btn-outline-danger.btn-sm type="button" data-action="placement-points#removeRow" = "×"
+
+      template data-placement-points-target="template"
+        .placement-row.row.g-2.align-items-center.mb-2
+          .col-auto
+            small.text-muted= t("tournaments.new.place_from")
+            input.form-control.form-control-sm type="number" name="tournament[placement_points][__INDEX__][from]" min="1" style="width: 80px"
+          .col-auto
+            small.text-muted= t("tournaments.new.place_to")
+            input.form-control.form-control-sm type="number" name="tournament[placement_points][__INDEX__][to]" min="1" style="width: 80px"
+          .col-auto
+            small.text-muted= t("tournaments.new.points")
+            input.form-control.form-control-sm type="number" name="tournament[placement_points][__INDEX__][points]" min="1" style="width: 80px"
+          .col-auto.pt-3
+            button.btn.btn-outline-danger.btn-sm type="button" data-action="placement-points#removeRow" = "×"
+
+      button.btn.btn-outline-secondary.btn-sm.mt-1 type="button" data-action="placement-points#addRow"
+        = t("tournaments.new.add_rule")
+
+  .col-12
+    = f.submit submit_label, class: "btn btn-primary"
