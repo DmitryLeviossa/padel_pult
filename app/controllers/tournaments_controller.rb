@@ -27,6 +27,19 @@ class TournamentsController < ApplicationController
     end
 
     @pairs = @direction == "desc" ? sorted.reverse : sorted
+
+    if @tournament.registration?
+      @current_league_user = @tournament.league.league_users.find_by(user: current_user)
+      if @current_league_user
+        already_in = @tournament.pairs.any? { |p| p.player1_id == @current_league_user.id || p.player2_id == @current_league_user.id }
+        unless already_in
+          occupied_ids = @tournament.pairs.flat_map { |p| [ p.player1_id, p.player2_id ] }
+          @available_partners = @tournament.league.league_users
+                                           .includes(:user)
+                                           .where.not(id: [ @current_league_user.id ] + occupied_ids)
+        end
+      end
+    end
   end
 
   def new

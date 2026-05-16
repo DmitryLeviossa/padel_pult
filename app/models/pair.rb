@@ -26,7 +26,25 @@ class Pair < ApplicationRecord
   belongs_to :player2, class_name: "LeagueUser"
   belongs_to :tournament
 
+  validate :players_must_be_different
+  validate :each_player_once_per_tournament
+
   def score
     player1.score + player2.score
+  end
+
+  private
+
+  def players_must_be_different
+    errors.add(:player2, :same_as_player1) if player1_id.present? && player1_id == player2_id
+  end
+
+  def each_player_once_per_tournament
+    return unless tournament_id.present?
+
+    occupied = Pair.where(tournament_id: tournament_id)
+                   .where.not(id: id)
+                   .where("player1_id IN (?) OR player2_id IN (?)", [ player1_id, player2_id ], [ player1_id, player2_id ])
+    errors.add(:base, :player_already_registered) if occupied.exists?
   end
 end

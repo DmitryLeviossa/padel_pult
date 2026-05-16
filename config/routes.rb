@@ -15,6 +15,7 @@ Rails.application.routes.draw do
     end
   end
   resources :tournaments do
+    resources :pairs, only: [ :create ]
     member do
       post :open_registration
     end
