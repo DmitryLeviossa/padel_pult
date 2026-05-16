@@ -48,35 +48,52 @@ league2_members = [boris, vadim, darya, elena].map do |user|
 end
 boris_lu2, vadim_lu2, darya_lu2, elena_lu2 = league2_members
 
+standard_points = [
+  { "from" => 1,  "to" => 1,  "points" => 10 },
+  { "from" => 2,  "to" => 2,  "points" => 8  },
+  { "from" => 3,  "to" => 3,  "points" => 6  },
+  { "from" => 4,  "to" => 7,  "points" => 4  },
+  { "from" => 8,  "to" => 12, "points" => 2  }
+]
+
+small_points = [
+  { "from" => 1, "to" => 1, "points" => 15 },
+  { "from" => 2, "to" => 2, "points" => 10 },
+  { "from" => 3, "to" => 4, "points" => 5  }
+]
+
 # Tournaments
 t1 = Tournament.find_or_create_by!(name: "Весенний кубок 2026", league: league1) do |t|
-  t.start_date = Date.new(2026, 5, 15)
-  t.end_date = Date.new(2026, 5, 17)
+  t.start_date       = Date.new(2026, 5, 15)
+  t.end_date         = Date.new(2026, 5, 17)
   t.max_participants = 16
-  t.location = "Московский спортивный центр"
-  t.type = "olimpic"
-  t.status = "active"
-  t.description = "Ежегодный весенний турнир, открытый для всех участников лиги"
+  t.location         = "Московский спортивный центр"
+  t.type             = "olimpic"
+  t.status           = "active"
+  t.description      = "Ежегодный весенний турнир, открытый для всех участников лиги"
+  t.placement_points = standard_points
 end
 
 t2 = Tournament.find_or_create_by!(name: "Летний удар 2026", league: league1) do |t|
-  t.start_date = Date.new(2026, 7, 1)
-  t.end_date = Date.new(2026, 7, 3)
+  t.start_date       = Date.new(2026, 7, 1)
+  t.end_date         = Date.new(2026, 7, 3)
   t.max_participants = 8
-  t.location = "Олимпийский комплекс «Лужники»"
-  t.type = "olimpic"
-  t.status = "draft"
-  t.description = "Летний инвитейшнл для лучших игроков лиги"
+  t.location         = "Олимпийский комплекс «Лужники»"
+  t.type             = "olimpic"
+  t.status           = "draft"
+  t.description      = "Летний инвитейшнл для лучших игроков лиги"
+  t.placement_points = small_points
 end
 
 t3 = Tournament.find_or_create_by!(name: "Петербургский открытый 2026", league: league2) do |t|
-  t.start_date = Date.new(2026, 6, 10)
-  t.end_date = Date.new(2026, 6, 12)
+  t.start_date       = Date.new(2026, 6, 10)
+  t.end_date         = Date.new(2026, 6, 12)
   t.max_participants = 8
-  t.location = "СКК «Петербургский»"
-  t.type = "olimpic"
-  t.status = "draft"
-  t.description = "Главный турнир Питерской лиги"
+  t.location         = "СКК «Петербургский»"
+  t.type             = "olimpic"
+  t.status           = "draft"
+  t.description      = "Главный турнир Питерской лиги"
+  t.placement_points = small_points
 end
 
 # Pairs for Spring Cup

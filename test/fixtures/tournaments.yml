@@ -14,6 +14,7 @@
 #  location         :string
 #  max_participants :integer          default(16), not null
 #  name             :string           not null
+#  placement_points :jsonb            not null
 #  start_date       :date             not null
 #  status           :string           default("draft"), not null
 #  type             :string           default("olimpic"), not null

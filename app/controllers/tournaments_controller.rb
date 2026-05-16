@@ -31,6 +31,12 @@ class TournamentsController < ApplicationController
 
   def new
     @tournament = @league.tournaments.build
+    @tournament.placement_points = [
+      { "from" => 1, "to" => 1, "points" => nil },
+      { "from" => 2, "to" => 2, "points" => nil },
+      { "from" => 3, "to" => 3, "points" => nil },
+      { "from" => 4, "to" => 7, "points" => nil }
+    ]
   end
 
   def create
@@ -72,6 +78,9 @@ class TournamentsController < ApplicationController
   end
 
   def tournament_params
-    params.require(:tournament).permit(:name, :start_date, :end_date, :max_participants, :location, :type, :description)
+    params.require(:tournament).permit(
+      :name, :start_date, :end_date, :max_participants, :location, :type, :description,
+      placement_points: [ :from, :to, :points ]
+    )
   end
 end
