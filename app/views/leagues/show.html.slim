@@ -44,7 +44,7 @@
               th= t('.location_column')
               th= t('.type_column')
               th= t('.status_column')
-              th
+              th= t('.participants_column')
           tbody
             - visible_tournaments.order(start_date: :asc).each do |tournament|
               tr
@@ -57,9 +57,7 @@
                   - badge_class = { "draft" => "secondary", "registration" => "info", "active" => "success", "completed" => "primary", "cancelled" => "danger" }.fetch(tournament.status, "secondary")
                   span.badge class="bg-#{badge_class}"
                     = t("tournament.status.#{tournament.status}")
-                td
-                  - if @league.owner == current_user && tournament.draft?
-                    = button_to t('.open_registration'), open_registration_tournament_path(tournament), method: :post, class: "btn btn-sm btn-outline-success"
+                td= "#{tournament.pairs.count * 2} / #{tournament.max_participants}"
       - else
         p.text-muted= t('.no_tournaments')
 
