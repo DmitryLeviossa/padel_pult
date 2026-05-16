@@ -68,12 +68,14 @@
         table.table.table-hover
           thead
             tr
+              th #
               th= t('.photo_column')
               th= t('.member_name_column')
               th= t('.score_column')
           tbody
-            - @league.league_users.order(score: :desc).each do |league_user|
+            - @league.league_users.order(score: :desc).each_with_index do |league_user, index|
               tr
+                td= index + 1
                 td
                   = render "shared/avatar", user: league_user.user
                 td= league_user.full_name
