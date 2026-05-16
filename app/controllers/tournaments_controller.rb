@@ -1,7 +1,8 @@
 class TournamentsController < ApplicationController
   before_action :set_league, only: [ :new, :create ]
-  before_action :set_tournament, only: [ :show ]
+  before_action :set_tournament, only: [ :show, :open_registration ]
   before_action :authorize_owner!, only: [ :new, :create ]
+  before_action :authorize_tournament_owner!, only: [ :open_registration ]
 
   def index
     filter_params = params[:q]&.to_unsafe_h || {}
@@ -42,6 +43,16 @@ class TournamentsController < ApplicationController
     end
   end
 
+  def open_registration
+    unless @tournament.draft?
+      redirect_to league_path(@tournament.league), alert: t(".not_draft")
+      return
+    end
+
+    @tournament.registration!
+    redirect_to league_path(@tournament.league), notice: t(".success")
+  end
+
   private
 
   def set_league
@@ -54,6 +65,10 @@ class TournamentsController < ApplicationController
 
   def authorize_owner!
     redirect_to league_path(@league), alert: "Not authorized." unless @league.owner == current_user
+  end
+
+  def authorize_tournament_owner!
+    redirect_to league_path(@tournament.league), alert: "Not authorized." unless @tournament.league.owner == current_user
   end
 
   def tournament_params
