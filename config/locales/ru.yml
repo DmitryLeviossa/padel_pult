@@ -194,6 +194,11 @@ ru:
       date_range: Даты проведения
       date_placeholder: Выберите даты
       submit: Создать турнир
+      placement_points_title: Очки за места
+      place_from: "С места"
+      place_to: "По место"
+      points: Очки
+      add_rule: "+ Добавить правило"
     show:
       location: Место
       start_date: Дата начала
