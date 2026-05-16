@@ -18,6 +18,8 @@ Rails.application.routes.draw do
     resources :pairs, only: [ :create ]
     member do
       post :open_registration
+      get :fill_results
+      patch :complete
     end
   end
 end

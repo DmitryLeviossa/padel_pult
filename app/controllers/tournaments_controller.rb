@@ -1,8 +1,8 @@
 class TournamentsController < ApplicationController
   before_action :set_league, only: [ :new, :create ]
-  before_action :set_tournament, only: [ :show, :edit, :update, :open_registration ]
+  before_action :set_tournament, only: [ :show, :edit, :update, :open_registration, :fill_results, :complete ]
   before_action :authorize_owner!, only: [ :new, :create ]
-  before_action :authorize_tournament_owner!, only: [ :edit, :update, :open_registration ]
+  before_action :authorize_tournament_owner!, only: [ :edit, :update, :open_registration, :fill_results, :complete ]
 
   def index
     filter_params = params[:q]&.to_unsafe_h || {}
@@ -12,8 +12,10 @@ class TournamentsController < ApplicationController
   end
 
   def show
-    @sort = params[:sort].presence_in(%w[score player1 player2 player1_score player2_score created_at]) || "score"
-    @direction = params[:direction].presence_in(%w[asc desc]) || "desc"
+    default_sort = @tournament.completed? ? "placement" : "score"
+    default_dir  = @tournament.completed? ? "asc" : "desc"
+    @sort = params[:sort].presence_in(%w[score player1 player2 player1_score player2_score created_at placement]) || default_sort
+    @direction = params[:direction].presence_in(%w[asc desc]) || default_dir
 
     sorted = @tournament.pairs.sort_by do |pair|
       case @sort
@@ -22,6 +24,7 @@ class TournamentsController < ApplicationController
       when "player1_score" then pair.player1.score
       when "player2_score" then pair.player2.score
       when "created_at"    then pair.created_at
+      when "placement"     then pair.placement || Float::INFINITY
       else                      pair.score
       end
     end
@@ -87,6 +90,25 @@ class TournamentsController < ApplicationController
 
     @tournament.registration!
     redirect_to league_path(@tournament.league), notice: t(".success")
+  end
+
+  def fill_results
+    unless @tournament.active?
+      redirect_to tournament_path(@tournament), alert: t(".not_active")
+    end
+  end
+
+  def complete
+    unless @tournament.active?
+      redirect_to tournament_path(@tournament), alert: t(".not_active")
+      return
+    end
+
+    if Tournaments::CompleteService.new(@tournament, params[:placements] || {}).call
+      redirect_to tournament_path(@tournament), notice: t(".success")
+    else
+      redirect_to fill_results_tournament_path(@tournament), alert: t(".failure")
+    end
   end
 
   private
