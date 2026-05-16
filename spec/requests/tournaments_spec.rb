@@ -7,6 +7,87 @@ RSpec.describe "Tournaments", type: :request do
   let(:draft_tournament) { create(:tournament, league: league) }
   let(:active_tournament) { create(:tournament, :active, league: league) }
 
+  describe "GET /tournaments/:id/fill_results" do
+    context "as owner" do
+      before { sign_in owner }
+
+      it "returns 200 for active tournament" do
+        get fill_results_tournament_path(active_tournament)
+        expect(response).to have_http_status(:ok)
+      end
+
+      it "redirects to tournament for non-active tournament" do
+        get fill_results_tournament_path(draft_tournament)
+        expect(response).to redirect_to(tournament_path(draft_tournament))
+      end
+    end
+
+    context "as non-owner" do
+      before { sign_in other_user }
+
+      it "redirects to league" do
+        get fill_results_tournament_path(active_tournament)
+        expect(response).to redirect_to(league_path(active_tournament.league))
+      end
+    end
+
+    context "unauthenticated" do
+      it "redirects to sign in" do
+        get fill_results_tournament_path(active_tournament)
+        expect(response).to redirect_to(new_user_session_path)
+      end
+    end
+  end
+
+  describe "PATCH /tournaments/:id/complete" do
+    let(:points_rules) { [ { "from" => 1, "to" => 1, "points" => 10 }, { "from" => 2, "to" => 2, "points" => 5 } ] }
+    let(:tournament) { create(:tournament, :active, league: league, placement_points: points_rules) }
+    let(:lu1) { create(:league_user, league: league) }
+    let(:lu2) { create(:league_user, league: league) }
+    let!(:pair) { create(:pair, tournament: tournament, player1: lu1, player2: lu2) }
+
+    context "as owner" do
+      before { sign_in owner }
+
+      it "completes the tournament and updates scores" do
+        patch complete_tournament_path(tournament), params: { placements: { pair.id.to_s => 1 } }
+        expect(response).to redirect_to(tournament_path(tournament))
+        expect(tournament.reload.status).to eq("completed")
+        expect(lu1.reload.score).to eq(10)
+        expect(lu2.reload.score).to eq(10)
+      end
+
+      it "assigns placement to the pair" do
+        patch complete_tournament_path(tournament), params: { placements: { pair.id.to_s => 2 } }
+        expect(pair.reload.placement).to eq(2)
+        expect(lu1.reload.score).to eq(5)
+      end
+
+      it "redirects to tournament when not active" do
+        patch complete_tournament_path(draft_tournament)
+        expect(response).to redirect_to(tournament_path(draft_tournament))
+        expect(draft_tournament.reload.status).to eq("draft")
+      end
+    end
+
+    context "as non-owner" do
+      before { sign_in other_user }
+
+      it "redirects to league without completing" do
+        patch complete_tournament_path(tournament), params: { placements: { pair.id.to_s => 1 } }
+        expect(response).to redirect_to(league_path(tournament.league))
+        expect(tournament.reload.status).to eq("active")
+      end
+    end
+
+    context "unauthenticated" do
+      it "redirects to sign in" do
+        patch complete_tournament_path(tournament)
+        expect(response).to redirect_to(new_user_session_path)
+      end
+    end
+  end
+
   describe "GET /tournaments/:id/edit" do
     context "as owner" do
       before { sign_in owner }

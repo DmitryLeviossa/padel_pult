@@ -3,6 +3,7 @@
 # Table name: pairs
 #
 #  id            :bigint           not null, primary key
+#  placement     :integer
 #  created_at    :datetime         not null
 #  updated_at    :datetime         not null
 #  player1_id    :bigint           not null

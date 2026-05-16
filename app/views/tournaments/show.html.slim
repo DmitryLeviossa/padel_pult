@@ -5,6 +5,8 @@
       - if @tournament.draft? && @tournament.league.owner == current_user
         = link_to t('tournaments.show.edit'), edit_tournament_path(@tournament), class: "btn btn-outline-primary btn-sm"
         = button_to t('leagues.show.open_registration'), open_registration_tournament_path(@tournament), method: :post, class: "btn btn-outline-success btn-sm"
+      - elsif @tournament.active? && @tournament.league.owner == current_user
+        = link_to t('tournaments.show.fill_results'), fill_results_tournament_path(@tournament), class: "btn btn-primary btn-sm"
       = link_to "← #{@tournament.league.name}", league_path(@tournament.league), class: "btn btn-outline-secondary btn-sm"
 
   .row.mb-4
@@ -65,7 +67,10 @@
     table.table.table-hover
       thead
         tr
-          th #
+          - if @tournament.completed?
+            th= sort_link(@tournament, "placement", t('.placement_column'), @sort, @direction)
+          - else
+            th #
           th= t('.photo_column')
           th= sort_link(@tournament, "player1", t('.player1_column'), @sort, @direction)
           th= sort_link(@tournament, "player1_score", t('.score_column'), @sort, @direction)
@@ -77,7 +82,10 @@
       tbody
         - @pairs.each_with_index do |pair, index|
           tr
-            td= index + 1
+            - if @tournament.completed?
+              td= pair.placement
+            - else
+              td= index + 1
             td
               = render "shared/avatar", user: pair.player1.user
             td= pair.player1.full_name
