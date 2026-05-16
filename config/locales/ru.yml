@@ -206,6 +206,10 @@ ru:
       success: Турнир успешно обновлён.
     show:
       edit: Редактировать
+      placement_points_title: Очки за места
+      place_from: "С места"
+      place_to: "По место"
+      points: Очки
       location: Место
       start_date: Дата начала
       end_date: Дата окончания

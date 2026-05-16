@@ -34,6 +34,22 @@
           span.badge class="bg-#{badge_class}"
             = t("tournament.status.#{@tournament.status}")
 
+    - if @tournament.placement_points.present?
+      .col-md-4
+        h5.mb-3= t('.placement_points_title')
+        table.table.table-sm.table-bordered
+          thead.table-light
+            tr
+              th= t('.place_from')
+              th= t('.place_to')
+              th= t('.points')
+          tbody
+            - @tournament.placement_points.each do |rule|
+              tr
+                td= rule["from"]
+                td= rule["to"]
+                td= rule["points"]
+
   h4.mt-4.mb-3= t('.pairs')
   - if @tournament.pairs.any?
     table.table.table-hover
