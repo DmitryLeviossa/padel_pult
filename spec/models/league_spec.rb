@@ -20,4 +20,10 @@
 require "rails_helper"
 
 RSpec.describe League, type: :model do
+  describe "callbacks" do
+    it "adds the owner as a league member on create" do
+      league = create(:league)
+      expect(league.users).to include(league.owner)
+    end
+  end
 end

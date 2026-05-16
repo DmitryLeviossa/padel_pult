@@ -35,6 +35,10 @@ class LeaguesController < ApplicationController
 
   def leave
     @league = League.find(params[:id])
+    if @league.owner == current_user
+      return redirect_to @league, alert: t("leagues.show.owner_cannot_leave")
+    end
+
     league_user = @league.league_users.find_by(user: current_user)
     if league_user
       league_user.destroy
@@ -66,7 +70,7 @@ class LeaguesController < ApplicationController
     case params[:filter]
     when "mine"
       member_ids = LeagueUser.where(user: current_user).select(:league_id)
-      League.where(owner: current_user).or(League.where(id: member_ids))
+      League.where(id: member_ids)
     when "owned"
       League.where(owner: current_user)
     else
