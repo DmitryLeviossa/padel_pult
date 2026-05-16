@@ -130,9 +130,17 @@ class TournamentsController < ApplicationController
   end
 
   def tournament_params
-    params.require(:tournament).permit(
-      :name, :start_date, :end_date, :max_participants, :location, :type, :description,
-      placement_points: [ :from, :to, :points ]
+    base = params.require(:tournament).permit(
+      :name, :start_date, :end_date, :max_participants, :location, :type, :description
     )
+
+    raw_pp = params.dig(:tournament, :placement_points)
+    if raw_pp.is_a?(ActionController::Parameters)
+      base[:placement_points] = raw_pp.to_unsafe_h
+                                      .sort_by { |k, _| k.to_i }
+                                      .map { |_, v| v.slice("from", "to", "points") }
+    end
+
+    base
   end
 end
