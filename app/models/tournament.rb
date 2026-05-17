@@ -4,12 +4,12 @@
 #
 #  id               :bigint           not null, primary key
 #  description      :text
-#  end_date         :date             not null
+#  end_date         :datetime         not null
 #  location         :string
 #  max_participants :integer          default(16), not null
 #  name             :string           not null
 #  placement_points :jsonb            not null
-#  start_date       :date             not null
+#  start_date       :datetime         not null
 #  status           :string           default("draft"), not null
 #  type             :string           default("olimpic"), not null
 #  created_at       :datetime         not null

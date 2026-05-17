@@ -9,21 +9,25 @@
     = f.label :location, class: "form-label"
     = f.text_field :location, class: "form-control"
 
-  .col-md-4
-    label.form-label for="date_range_picker"= t("tournaments.new.date_range")
+  .col-md-3
+    label.form-label for="tournament_start_date_picker"= t("tournaments.new.start_date")
     = f.hidden_field :start_date, id: "tournament_start_date"
-    = f.hidden_field :end_date, id: "tournament_end_date"
-    input#date_range_picker.form-control type="text" placeholder=t("tournaments.new.date_placeholder") readonly="true" class="#{"is-invalid" if tournament.errors[:start_date].any? || tournament.errors[:end_date].any?}" data-start=tournament.start_date data-end=tournament.end_date
+    input#tournament_start_date_picker.form-control type="text" placeholder=t("tournaments.new.datetime_placeholder") readonly="true" class="#{"is-invalid" if tournament.errors[:start_date].any?}" data-value=tournament.start_date&.strftime("%d.%m.%Y %H:%M")
     - if tournament.errors[:start_date].any?
       .invalid-feedback= tournament.errors[:start_date].first
+
+  .col-md-3
+    label.form-label for="tournament_end_date_picker"= t("tournaments.new.end_date")
+    = f.hidden_field :end_date, id: "tournament_end_date"
+    input#tournament_end_date_picker.form-control type="text" placeholder=t("tournaments.new.datetime_placeholder") readonly="true" class="#{"is-invalid" if tournament.errors[:end_date].any?}" data-value=tournament.end_date&.strftime("%d.%m.%Y %H:%M")
     - if tournament.errors[:end_date].any?
       .invalid-feedback= tournament.errors[:end_date].first
 
-  .col-md-4
+  .col-md-3
     = f.label :max_participants, class: "form-label"
     = f.number_field :max_participants, class: "form-control", min: 2
 
-  .col-md-4
+  .col-md-3
     = f.label :type, class: "form-label"
     = f.select :type, Tournament.types.keys.map { |tp| [t("tournament.type.#{tp}"), tp] }, {}, class: "form-select"
 
