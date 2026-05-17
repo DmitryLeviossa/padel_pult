@@ -39,8 +39,7 @@
           thead
             tr
               th= t('.name_column')
-              th= t('.start_date_column')
-              th= t('.end_date_column')
+              th= t('.dates_column')
               th= t('.location_column')
               th= t('.type_column')
               th= t('.status_column')
@@ -49,8 +48,7 @@
             - visible_tournaments.order(start_date: :asc).each do |tournament|
               tr
                 td= link_to tournament.name, tournament_path(tournament)
-                td= l(tournament.start_date, format: :long)
-                td= l(tournament.end_date, format: :long)
+                td= tournament_date_range(tournament)
                 td= tournament.location.presence || "—"
                 td= t("tournament.type.#{tournament.type}")
                 td

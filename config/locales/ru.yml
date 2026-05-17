@@ -65,6 +65,12 @@ ru:
           attributes:
             invited_user:
               already_member: уже является участником этой лиги
+        tournament:
+          attributes:
+            end_date:
+              before_start_date: не может быть раньше даты начала
+            start_date:
+              in_the_past: не может быть в прошлом
         pair:
           attributes:
             player2:
@@ -159,8 +165,7 @@ ru:
       members_section: Участники
       no_members: Участников пока нет.
       name_column: Название
-      start_date_column: Дата начала
-      end_date_column: Дата окончания
+      dates_column: Даты
       location_column: Место
       type_column: Тип
       status_column: Статус
@@ -269,10 +274,10 @@ ru:
       edit: Редактировать
       fill_results: Заполнить результаты
       placement_points_title: Очки за места
-      place_from: "С места"
-      place_to: "По место"
+      place: Место
       points: Очки
       location: Место
+      date: Дата
       start_date: Дата начала
       end_date: Дата окончания
       type: Тип
