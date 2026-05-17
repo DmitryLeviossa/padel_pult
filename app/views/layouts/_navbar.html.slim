@@ -1,6 +1,8 @@
 nav.navbar.navbar-expand-lg
   .container-fluid
-    = link_to "ПАДЕЛ Пульт", root_path, class: "navbar-brand fw-semibold"
+    = link_to root_path, class: "navbar-brand fw-semibold d-flex align-items-center gap-2" do
+      = image_tag "/icon.svg", width: 28, height: 28, alt: ""
+      | ПАДЕЛ Пульт
 
     button.navbar-toggler type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation"
       span.navbar-toggler-icon
