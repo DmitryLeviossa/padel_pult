@@ -22,7 +22,7 @@
     .d-flex.flex-column.gap-2
       - @tournaments.each do |tournament|
         = link_to tournament_path(tournament), class: "text-decoration-none text-reset"
-          .card.w-100.overflow-hidden style="height: 120px;"
+          .card.card-hoverable.w-100.overflow-hidden style="height: 120px;"
             .d-flex.h-100
               .flex-shrink-0 style="width: 120px;"
                 - if tournament.league.logo.attached?
