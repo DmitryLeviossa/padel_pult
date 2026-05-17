@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2026_05_16_154033) do
+ActiveRecord::Schema[8.0].define(version: 2026_05_17_100816) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -75,8 +75,8 @@ ActiveRecord::Schema[8.0].define(version: 2026_05_16_154033) do
 
   create_table "tournaments", force: :cascade do |t|
     t.string "name", null: false
-    t.date "start_date", null: false
-    t.date "end_date", null: false
+    t.datetime "start_date", null: false
+    t.datetime "end_date", null: false
     t.integer "max_participants", default: 16, null: false
     t.string "location"
     t.string "type", default: "olimpic", null: false
@@ -100,7 +100,9 @@ ActiveRecord::Schema[8.0].define(version: 2026_05_16_154033) do
     t.string "first_name"
     t.string "last_name"
     t.integer "gender"
+    t.string "invitation_token"
     t.index ["email"], name: "index_users_on_email", unique: true
+    t.index ["invitation_token"], name: "index_users_on_invitation_token", unique: true
     t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
   end
 

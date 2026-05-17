@@ -7,6 +7,7 @@
 #  encrypted_password     :string           default(""), not null
 #  first_name             :string
 #  gender                 :integer
+#  invitation_token       :string
 #  last_name              :string
 #  remember_created_at    :datetime
 #  reset_password_sent_at :datetime
@@ -17,6 +18,7 @@
 # Indexes
 #
 #  index_users_on_email                 (email) UNIQUE
+#  index_users_on_invitation_token      (invitation_token) UNIQUE
 #  index_users_on_reset_password_token  (reset_password_token) UNIQUE
 #
 class User < ApplicationRecord
@@ -33,6 +35,10 @@ class User < ApplicationRecord
 
   has_many :league_users
   has_many :leagues, through: :league_users
+
+  def pending_invitation?
+    invitation_token.present?
+  end
 
   ransacker :full_name do
     Arel::Nodes::NamedFunction.new('CONCAT_WS', [Arel::Nodes.build_quoted(' '), arel_table[:first_name], arel_table[:last_name]])

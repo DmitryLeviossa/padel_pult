@@ -17,28 +17,39 @@ function initTomSelects() {
   })
 }
 
-function initDateRangePicker() {
-  const input = document.getElementById("date_range_picker")
-  if (!input || !window.flatpickr) return
+function initDateTimePickers() {
+  const startInput  = document.getElementById("tournament_start_date_picker")
+  const endInput    = document.getElementById("tournament_end_date_picker")
+  if ((!startInput && !endInput) || !window.flatpickr) return
 
   const startHidden = document.getElementById("tournament_start_date")
   const endHidden   = document.getElementById("tournament_end_date")
 
-  const defaultDates = []
-  if (input.dataset.start) defaultDates.push(input.dataset.start)
-  if (input.dataset.end)   defaultDates.push(input.dataset.end)
+  const commonConfig = {
+    enableTime: true,
+    dateFormat: "d.m.Y H:i",
+    time_24hr: true,
+  }
 
-  window.flatpickr(input, {
-    mode: "range",
-    dateFormat: "Y-m-d",
-    altInput: true,
-    altFormat: "d.m.Y",
-    defaultDate: defaultDates.length === 2 ? defaultDates : undefined,
-    onChange(selectedDates) {
-      startHidden.value = selectedDates[0] ? flatpickr.formatDate(selectedDates[0], "Y-m-d") : ""
-      endHidden.value   = selectedDates[1] ? flatpickr.formatDate(selectedDates[1], "Y-m-d") : ""
-    }
-  })
+  if (startInput) {
+    window.flatpickr(startInput, {
+      ...commonConfig,
+      defaultDate: startInput.dataset.value || undefined,
+      onChange(selectedDates) {
+        startHidden.value = selectedDates[0] ? flatpickr.formatDate(selectedDates[0], "Y-m-d H:i") : ""
+      }
+    })
+  }
+
+  if (endInput) {
+    window.flatpickr(endInput, {
+      ...commonConfig,
+      defaultDate: endInput.dataset.value || undefined,
+      onChange(selectedDates) {
+        endHidden.value = selectedDates[0] ? flatpickr.formatDate(selectedDates[0], "Y-m-d H:i") : ""
+      }
+    })
+  }
 }
 
 function initAutoSubmitFilters() {
@@ -60,5 +71,31 @@ function initAutoSubmitFilters() {
   })
 }
 
-document.addEventListener("turbo:load", () => { initTomSelects(); initAutoSubmitFilters(); initDateRangePicker() })
-document.addEventListener("turbo:render", () => { initTomSelects(); initAutoSubmitFilters(); initDateRangePicker() })
+document.addEventListener("click", (e) => {
+  const btn = e.target.closest("[data-copy-url]")
+  if (!btn) return
+  const url = btn.dataset.copyUrl
+  const done = () => {
+    const orig = btn.textContent
+    btn.textContent = "✓ Скопировано"
+    setTimeout(() => { btn.textContent = orig }, 2000)
+  }
+  if (navigator.clipboard) {
+    navigator.clipboard.writeText(url).then(done).catch(() => fallbackCopy(url, done))
+  } else {
+    fallbackCopy(url, done)
+  }
+})
+
+function fallbackCopy(text, done) {
+  const ta = document.createElement("textarea")
+  ta.value = text
+  ta.style.cssText = "position:fixed;opacity:0"
+  document.body.appendChild(ta)
+  ta.focus()
+  ta.select()
+  try { document.execCommand("copy"); done() } finally { ta.remove() }
+}
+
+document.addEventListener("turbo:load", () => { initTomSelects(); initAutoSubmitFilters(); initDateTimePickers() })
+document.addEventListener("turbo:render", () => { initTomSelects(); initAutoSubmitFilters(); initDateTimePickers() })

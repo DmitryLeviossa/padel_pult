@@ -62,7 +62,10 @@
         p.text-muted= t('.no_tournaments')
 
     #league-users.tab-pane.fade role="tabpanel"
-      h5.mb-3= t('.members_section')
+      .d-flex.justify-content-between.align-items-center.mb-3
+        h5.mb-0= t('.members_section')
+        - if @league.owner == current_user
+          = link_to t('.add_member'), new_league_league_user_path(@league), class: "btn btn-primary btn-sm"
 
       - if @league.league_users.any?
         table.table.table-hover
@@ -72,13 +75,22 @@
               th= t('.photo_column')
               th= t('.member_name_column')
               th= t('.score_column')
+              - if @league.owner == current_user
+                th
           tbody
             - @league.league_users.order(score: :desc).each_with_index do |league_user, index|
               tr
                 td= index + 1
                 td
                   = render "shared/avatar", user: league_user.user
-                td= league_user.full_name
+                td
+                  = league_user.full_name
+                  - if league_user.user.pending_invitation?
+                    span.badge.bg-warning.text-dark.ms-2= t('.pending_badge')
                 td= league_user.score
+                - if @league.owner == current_user
+                  td
+                    - if league_user.user.pending_invitation?
+                      = button_tag t('.copy_invite_link'), type: "button", class: "btn btn-outline-secondary btn-sm", data: { copy_url: invitation_url(league_user.user.invitation_token) }
       - else
         p.text-muted= t('.no_members')

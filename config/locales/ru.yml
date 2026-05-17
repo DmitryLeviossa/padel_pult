@@ -164,6 +164,10 @@ ru:
       photo_column: Фото
       member_name_column: Имя
       score_column: Очки
+      add_member: Добавить участника
+      pending_badge: Ожидает регистрации
+      copy_invite_link: Скопировать ссылку
+      not_authorized: Нет доступа.
       join: Вступить в лигу
       leave: Покинуть лигу
       leave_confirm: Вы уверены, что хотите покинуть лигу?
@@ -180,6 +184,22 @@ ru:
       title: Редактировать лигу
       submit: Сохранить
       cancel: Отмена
+    league_users:
+      new:
+        title: Добавить участника
+        submit: Создать
+        cancel: Отмена
+      create:
+        success: Участник добавлен. Скопируйте ссылку для приглашения из списка участников.
+
+  invitations:
+    invalid_token: Ссылка недействительна или уже использована.
+    show:
+      title: Завершите регистрацию
+      greeting: "Привет, %{name}! Придумайте email и пароль для входа в систему."
+      submit: Зарегистрироваться
+    update:
+      success: Добро пожаловать! Вы успешно зарегистрировались.
 
   pairs:
     not_league_member: Вы не являетесь участником этой лиги.
@@ -211,8 +231,9 @@ ru:
       no_tournaments: Турниров пока нет.
     new:
       title: Новый турнир
-      date_range: Даты проведения
-      date_placeholder: Выберите даты
+      start_date: Дата и время начала
+      end_date: Дата и время окончания
+      datetime_placeholder: Выберите дату и время
       submit: Создать турнир
       placement_points_title: Очки за места
       place_from: "С места"

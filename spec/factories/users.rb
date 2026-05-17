@@ -7,6 +7,7 @@
 #  encrypted_password     :string           default(""), not null
 #  first_name             :string
 #  gender                 :integer
+#  invitation_token       :string
 #  last_name              :string
 #  remember_created_at    :datetime
 #  reset_password_sent_at :datetime
@@ -17,6 +18,7 @@
 # Indexes
 #
 #  index_users_on_email                 (email) UNIQUE
+#  index_users_on_invitation_token      (invitation_token) UNIQUE
 #  index_users_on_reset_password_token  (reset_password_token) UNIQUE
 #
 FactoryBot.define do
@@ -27,5 +29,10 @@ FactoryBot.define do
     first_name { "Test" }
     last_name { "User" }
     gender { :male }
+
+    trait :invited do
+      sequence(:email) { |n| "invited_#{n}@padelpult.invited" }
+      invitation_token { SecureRandom.urlsafe_base64(32) }
+    end
   end
 end

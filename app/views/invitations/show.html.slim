@@ -1,0 +1,27 @@
+.container.py-4
+  .row.justify-content-center
+    .col-md-5
+      h1.mb-1= t('.title')
+      p.text-muted.mb-4= t('.greeting', name: @user.full_name)
+
+      = form_with model: @user, url: invitation_path(params[:token]), method: :patch, multipart: true do |f|
+        = render "devise/shared/error_messages", resource: @user
+
+        .mb-3
+          = f.label :photo, t('activerecord.attributes.user.photo'), class: "form-label"
+          = f.file_field :photo, class: "form-control", accept: "image/*"
+
+        .mb-3
+          = f.label :email, t('activerecord.attributes.user.email'), class: "form-label"
+          = f.email_field :email, class: "form-control", autofocus: true, autocomplete: "email"
+
+        .mb-3
+          = f.label :password, t('activerecord.attributes.user.password'), class: "form-label"
+          = f.password_field :password, class: "form-control", autocomplete: "new-password"
+          small.text-muted= t('devise.registrations.new.min_password', count: Devise.password_length.min)
+
+        .mb-4
+          = f.label :password_confirmation, t('activerecord.attributes.user.password_confirmation'), class: "form-label"
+          = f.password_field :password_confirmation, class: "form-control", autocomplete: "new-password"
+
+        = f.submit t('.submit'), class: "btn btn-primary w-100"

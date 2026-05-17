@@ -9,11 +9,15 @@ Rails.application.routes.draw do
 
   resources :leagues do
     resources :tournaments, only: [:new, :create]
+    resources :league_users, only: [:new, :create], module: :leagues
     member do
       post :join
       delete :leave
     end
   end
+
+  get  "invitations/:token", to: "invitations#show",   as: :invitation
+  patch "invitations/:token", to: "invitations#update"
   resources :tournaments do
     resources :pairs, only: [ :create, :destroy ]
     member do
