@@ -29,6 +29,20 @@
 
 en:
   hello: "Hello world"
+  users:
+    show:
+      back: Players
+      member_since: Member since
+      leagues: Leagues
+      tournament_history: Tournament history
+      tournament_column: Tournament
+      league_column: League
+      date_column: Date
+      status_column: Status
+      placement_column: Place
+      partner_column: Partner
+      score_column: Score
+      no_history: No tournaments yet.
   leagues:
     index:
       title: Leagues

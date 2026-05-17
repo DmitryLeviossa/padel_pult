@@ -326,6 +326,19 @@ ru:
       gender_all: Все
       registered_at_column: Дата регистрации
       no_users: Пользователей пока нет.
+    show:
+      back: Игроки
+      member_since: Участник с
+      leagues: Лиги
+      tournament_history: История турниров
+      tournament_column: Турнир
+      league_column: Лига
+      date_column: Дата
+      status_column: Статус
+      placement_column: Место
+      partner_column: Партнёр
+      score_column: Очки
+      no_history: Турниров пока нет.
 
   layouts:
     navbar:

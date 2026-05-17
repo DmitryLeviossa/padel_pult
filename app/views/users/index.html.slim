@@ -17,7 +17,7 @@
   - if @users.any?
     .d-flex.flex-column.gap-2
       - @users.each do |user|
-        .card.w-100.overflow-hidden style="height: 250px;"
+        .card.card-hoverable.w-100.overflow-hidden style="height: 250px;"
           .d-flex.h-100
             .flex-shrink-0 style="width: 25%;"
               - if user.photo.attached?
@@ -28,10 +28,10 @@
                   = initials
             .d-flex.flex-column.justify-content-between.flex-grow-1.p-3
               div
-                .fw-semibold.fs-5= user.full_name
+                = link_to user.full_name, user_path(user), class: "fw-semibold fs-5 text-reset text-decoration-none stretched-link"
                 .d-flex.flex-wrap.gap-1.mt-2
                   - user.leagues.each do |league|
-                    = link_to league.name, league_path(league), class: "badge text-bg-secondary text-decoration-none"
+                    = link_to league.name, league_path(league), class: "badge text-bg-secondary text-decoration-none position-relative"
               .d-flex.align-items-center.justify-content-between
                 - if user.gender_male?
                   span.badge.badge-gender-male М

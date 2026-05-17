@@ -1,0 +1,65 @@
+.container.py-4
+  .d-flex.justify-content-between.align-items-center.mb-4
+    h1.mb-0= @user.full_name
+    = link_to "← #{t('.back')}", users_path, class: "btn btn-outline-secondary btn-sm"
+
+  .row.g-4
+    .col-md-3
+      .card
+        - if @user.photo.attached?
+          = image_tag @user.photo.variant(resize_to_fill: [600, 600]), class: "card-img-top", style: "object-fit: cover; aspect-ratio: 1;"
+        - else
+          - initials = @user.full_name.split.map(&:first).first(2).join.upcase
+          .d-flex.align-items-center.justify-content-center style="aspect-ratio: 1; background: var(--color-bg-surface); border-bottom: 1px solid var(--color-border); font-size: 4rem; font-weight: 600; color: var(--color-text-muted);"
+            = initials
+        .card-body
+          - if @user.gender_male?
+            span.badge.badge-gender-male.mb-2 М
+          - elsif @user.gender_female?
+            span.badge.badge-gender-female.mb-2 Ж
+
+          dl.mb-0
+            dt.small.text-muted= t('.member_since')
+            dd.mb-2= l(@user.created_at.to_date, format: :long)
+
+            - if @user.leagues.any?
+              dt.small.text-muted= t('.leagues')
+              dd.mb-0
+                .d-flex.flex-wrap.gap-1
+                  - @user.leagues.each do |league|
+                    = link_to league.name, league_path(league), class: "badge text-bg-secondary text-decoration-none"
+
+    .col-md-9
+      h4.mb-3= t('.tournament_history')
+      - if @tournament_pairs.any?
+        .table-responsive
+          table.table.table-hover
+            thead
+              tr
+                th= t('.tournament_column')
+                th= t('.league_column')
+                th= t('.date_column')
+                th= t('.status_column')
+                th= t('.placement_column')
+                th= t('.partner_column')
+                th= t('.score_column')
+            tbody
+              - @tournament_pairs.each do |pair|
+                - tournament = pair.tournament
+                - partner = pair.partner_for(@league_user_ids)
+                tr
+                  td= link_to tournament.name, tournament_path(tournament), class: "text-decoration-none fw-semibold"
+                  td= link_to tournament.league.name, league_path(tournament.league), class: "text-decoration-none text-muted"
+                  td.text-nowrap= l(tournament.start_date.to_date, format: :long)
+                  td
+                    - badge_class = { "draft" => "secondary", "registration" => "info", "active" => "success", "completed" => "primary", "cancelled" => "danger" }.fetch(tournament.status, "secondary")
+                    span.badge class="bg-#{badge_class}"
+                      = t("tournament.status.#{tournament.status}")
+                  td= pair.placement.present? ? pair.placement : "—"
+                  td
+                    .d-flex.align-items-center.gap-2
+                      = render "shared/avatar", user: partner.user, size: 28
+                      = partner.full_name
+                  td= pair.score
+      - else
+        p.text-muted= t('.no_history')

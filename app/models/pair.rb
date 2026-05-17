@@ -34,6 +34,10 @@ class Pair < ApplicationRecord
     player1.score + player2.score
   end
 
+  def partner_for(league_user_ids)
+    league_user_ids.include?(player1_id) ? player2 : player1
+  end
+
   private
 
   def players_must_be_different
