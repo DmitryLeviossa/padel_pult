@@ -33,7 +33,7 @@
           tr
             td= link_to tournament.name, tournament_path(tournament)
             td= tournament.location.presence || "—"
-            td= "#{l(tournament.start_date, format: :long)} — #{l(tournament.end_date, format: :long)}"
+            td= tournament_date_range(tournament)
             td= t("tournament.type.#{tournament.type}")
             td
               - badge_class = { "draft" => "secondary", "active" => "success", "completed" => "primary", "cancelled" => "danger" }.fetch(tournament.status, "secondary")

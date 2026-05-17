@@ -18,11 +18,8 @@
         dt.col-sm-3= t('.location')
         dd.col-sm-9= @tournament.location.presence || "—"
 
-        dt.col-sm-3= t('.start_date')
-        dd.col-sm-9= l(@tournament.start_date, format: :long)
-
-        dt.col-sm-3= t('.end_date')
-        dd.col-sm-9= l(@tournament.end_date, format: :long)
+        dt.col-sm-3= t('.date')
+        dd.col-sm-9= tournament_date_range(@tournament)
 
         dt.col-sm-3= t('.type')
         dd.col-sm-9= t("tournament.type.#{@tournament.type}")
@@ -42,14 +39,14 @@
         table.table.table-sm.table-bordered
           thead.table-light
             tr
-              th= t('.place_from')
-              th= t('.place_to')
+              th= t('.place')
               th= t('.points')
           tbody
             - @tournament.placement_points.each do |rule|
               tr
-                td= rule["from"]
-                td= rule["to"]
+                - from = rule["from"].to_i
+                - to = rule["to"].to_i
+                td= from == to ? from.to_s : "#{from} - #{to}"
                 td= rule["points"]
 
   h4.mt-4.mb-3= t('.pairs')

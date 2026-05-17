@@ -33,6 +33,9 @@ class Tournament < ApplicationRecord
   enum :status, { draft: "draft", registration: "registration", active: "active", completed: "completed", cancelled: "cancelled" }
   enum :type, { olimpic: "olimpic", round_robin: "round_robin", mixed: "mixed" }
 
+  validates :start_date, presence: true
+  validates :end_date, presence: true
+  validate :end_date_not_before_start_date
   validate :placement_points_valid
 
   def points_for_place(position)
@@ -49,6 +52,11 @@ class Tournament < ApplicationRecord
   end
 
   private
+
+  def end_date_not_before_start_date
+    return unless start_date && end_date
+    errors.add(:end_date, :before_start_date) if end_date < start_date
+  end
 
   def placement_points_valid
     rules = Array(placement_points)
@@ -71,7 +79,7 @@ class Tournament < ApplicationRecord
     end
 
     # Check for overlapping ranges
-    sorted = rules.map { |r| [r["from"].to_i, r["to"].to_i] }.sort_by(&:first)
+    sorted = rules.map { |r| [ r["from"].to_i, r["to"].to_i ] }.sort_by(&:first)
     sorted.each_cons(2) do |(_, prev_to), (next_from, _)|
       errors.add(:placement_points, "ranges must not overlap") if next_from <= prev_to
     end
