@@ -97,14 +97,12 @@ class TournamentsController < ApplicationController
   end
 
   def fill_results
-    unless @tournament.active?
-      redirect_to tournament_path(@tournament), alert: t(".not_active")
-    end
+    redirect_to tournament_path(@tournament), alert: t(".completed") if @tournament.completed?
   end
 
   def complete
-    unless @tournament.active?
-      redirect_to tournament_path(@tournament), alert: t(".not_active")
+    if @tournament.completed?
+      redirect_to tournament_path(@tournament), alert: t(".completed")
       return
     end
 
