@@ -8,7 +8,7 @@ class ApplicationController < ActionController::Base
   protected
 
   def load_pending_invitations
-    @pending_invitations = current_user.received_league_invitations.pending.includes(:league, :invited_by)
+    @unread_notifications = current_user.notifications.unread.recent
   end
 
   def configure_permitted_parameters

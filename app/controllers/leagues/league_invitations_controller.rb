@@ -16,7 +16,10 @@ class Leagues::LeagueInvitationsController < ApplicationController
         invited_user_id: user_id,
         invited_by: current_user
       )
-      invited_count += 1 if invitation.save
+      if invitation.save
+        invited_count += 1
+        create_invitation_notification(invitation)
+      end
     end
 
     redirect_to league_path(@league, anchor: "league-users"),
@@ -27,6 +30,17 @@ class Leagues::LeagueInvitationsController < ApplicationController
 
   def set_league
     @league = League.find(params[:league_id])
+  end
+
+  def create_invitation_notification(invitation)
+    Notification.create!(
+      user: invitation.invited_user,
+      notification_type: :league_invitation,
+      message: t("leagues.league_invitations.notifications.league_invitation",
+                 league: @league.name,
+                 inviter: current_user.full_name),
+      url: league_path(@league)
+    )
   end
 
   def authorize_owner!

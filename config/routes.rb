@@ -21,6 +21,15 @@ Rails.application.routes.draw do
 
   get  "invitations/:token", to: "invitations#show",   as: :invitation
   patch "invitations/:token", to: "invitations#update"
+  resources :notifications, only: [] do
+    member do
+      get :visit
+    end
+    collection do
+      patch :mark_all_read
+    end
+  end
+
   resources :tournaments do
     resources :pairs, only: [ :create, :destroy ]
     member do

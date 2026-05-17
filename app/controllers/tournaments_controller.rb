@@ -92,6 +92,7 @@ class TournamentsController < ApplicationController
     end
 
     @tournament.registration!
+    notify_league_users_about_registration
     redirect_to league_path(@tournament.league, anchor: "tournaments"), notice: t(".success")
   end
 
@@ -122,6 +123,17 @@ class TournamentsController < ApplicationController
 
   def set_tournament
     @tournament = Tournament.includes(pairs: [ { player1: :user }, { player2: :user } ]).find(params[:id])
+  end
+
+  def notify_league_users_about_registration
+    @tournament.league.league_users.includes(:user).each do |league_user|
+      Notification.create!(
+        user: league_user.user,
+        notification_type: :tournament_registration_open,
+        message: t("tournaments.notifications.registration_open", tournament: @tournament.name),
+        url: tournament_path(@tournament)
+      )
+    end
   end
 
   def authorize_owner!

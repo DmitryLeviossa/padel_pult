@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2026_05_17_104747) do
+ActiveRecord::Schema[8.0].define(version: 2026_05_17_162822) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -74,6 +74,18 @@ ActiveRecord::Schema[8.0].define(version: 2026_05_17_104747) do
     t.index ["owner_id"], name: "index_leagues_on_owner_id"
   end
 
+  create_table "notifications", force: :cascade do |t|
+    t.bigint "user_id", null: false
+    t.string "notification_type", null: false
+    t.string "message", null: false
+    t.string "url"
+    t.datetime "read_at"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["user_id", "read_at"], name: "index_notifications_on_user_id_and_read_at"
+    t.index ["user_id"], name: "index_notifications_on_user_id"
+  end
+
   create_table "pairs", force: :cascade do |t|
     t.bigint "player1_id", null: false
     t.bigint "player2_id", null: false
@@ -127,6 +139,7 @@ ActiveRecord::Schema[8.0].define(version: 2026_05_17_104747) do
   add_foreign_key "league_users", "leagues"
   add_foreign_key "league_users", "users"
   add_foreign_key "leagues", "users", column: "owner_id"
+  add_foreign_key "notifications", "users"
   add_foreign_key "pairs", "league_users", column: "player1_id"
   add_foreign_key "pairs", "league_users", column: "player2_id"
   add_foreign_key "pairs", "tournaments"

@@ -215,6 +215,8 @@ ru:
       create:
         success: "Приглашения отправлены: %{count}"
         no_users_selected: Выберите хотя бы одного игрока.
+      notifications:
+        league_invitation: "%{inviter} пригласил(а) вас в лигу «%{league}»"
 
   league_invitations:
     update:
@@ -242,6 +244,8 @@ ru:
     destroy:
       success: Пара успешно удалена.
     delete_not_allowed: Удаление пар недоступно.
+    notifications:
+      tournament_added: "%{inviter} добавил(а) вас в турнир «%{tournament}»"
 
   tournaments:
     index:
@@ -308,6 +312,8 @@ ru:
     open_registration:
       success: Регистрация на турнир открыта.
       not_draft: Регистрацию можно открыть только для турнира в статусе черновика.
+    notifications:
+      registration_open: "Открыта регистрация на турнир «%{tournament}»"
     fill_results:
       title: "Результаты: %{name}"
       pair_column: Пара
@@ -359,6 +365,8 @@ ru:
       sign_up: Регистрация
       invited_by: "от %{name}"
       no_invitations: Нет новых приглашений
+      no_notifications: Нет новых уведомлений
+      mark_all_read: Отметить всё прочитанным
       accept: Принять
       dismiss: Отклонить
 

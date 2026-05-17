@@ -24,20 +24,19 @@ nav.navbar.navbar-expand-lg
               span.position-relative
                 svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 16 16"
                   path d="M8 16a2 2 0 0 0 2-2H6a2 2 0 0 0 2 2zm.995-14.901a1 1 0 1 0-1.99 0A5.002 5.002 0 0 0 3 6c0 1.098-.5 6-2 7h14c-1.5-1-2-5.902-2-7 0-2.42-1.72-4.44-4.005-4.901z"
-                - if @pending_invitations.any?
+                - if @unread_notifications.any?
                   span.position-absolute.top-0.start-100.translate-middle.badge.rounded-pill.bg-danger style="font-size:0.6rem;"
-                    = @pending_invitations.size
+                    = @unread_notifications.size
             ul.dropdown-menu.dropdown-menu-end style="min-width:300px;"
-              - if @pending_invitations.any?
-                - @pending_invitations.each do |invitation|
-                  li.px-3.py-2.border-bottom
-                    .fw-semibold.small= invitation.league.name
-                    .text-muted.small= t('layouts.navbar.invited_by', name: invitation.invited_by.full_name)
-                    .d-flex.gap-2.mt-2
-                      = button_to t('layouts.navbar.accept'), league_invitation_path(invitation), method: :patch, params: { status: "accepted" }, class: "btn btn-success btn-sm", form: { data: { turbo: false } }
-                      = button_to t('layouts.navbar.dismiss'), league_invitation_path(invitation), method: :patch, params: { status: "dismissed" }, class: "btn btn-outline-secondary btn-sm", form: { data: { turbo: false } }
+              - if @unread_notifications.any?
+                - @unread_notifications.each do |notification|
+                  li
+                    = link_to visit_notification_path(notification), class: "dropdown-item py-2 text-wrap"
+                      .small= notification.message
+                li.px-3.py-2.border-top.text-end
+                  = button_to t('layouts.navbar.mark_all_read'), mark_all_read_notifications_path, method: :patch, class: "btn btn-link btn-sm p-0 text-muted border-0 bg-transparent", form: { data: { turbo: false } }
               - else
-                li.px-3.py-2.text-muted.small= t('layouts.navbar.no_invitations')
+                li.px-3.py-2.text-muted.small= t('layouts.navbar.no_notifications')
           li.nav-item.dropdown
             a.nav-link.dropdown-toggle href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false"
               .d-inline-flex.align-items-center.justify-content-center.rounded-circle style="width:32px;height:32px;background:var(--color-bg-surface);border:1px solid var(--color-border);font-size:0.75rem;font-weight:600;color:var(--color-text-muted);"

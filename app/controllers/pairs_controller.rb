@@ -9,6 +9,7 @@ class PairsController < ApplicationController
   def create
     @pair = @tournament.pairs.build(player1: current_league_user, player2: partner)
     if @pair.save
+      notify_partner
       redirect_to tournament_path(@tournament), notice: t(".success")
     else
       redirect_to tournament_path(@tournament), alert: t(".failure")
@@ -57,6 +58,20 @@ class PairsController < ApplicationController
     if already_in
       redirect_to tournament_path(@tournament), alert: t("pairs.already_registered")
     end
+  end
+
+  def notify_partner
+    partner_user = partner.user
+    return if partner_user == current_user
+
+    Notification.create!(
+      user: partner_user,
+      notification_type: :tournament_added,
+      message: t("pairs.notifications.tournament_added",
+                 tournament: @tournament.name,
+                 inviter: current_user.full_name),
+      url: tournament_path(@tournament)
+    )
   end
 
   def authorize_league_owner!

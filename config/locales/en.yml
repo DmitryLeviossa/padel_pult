@@ -29,6 +29,20 @@
 
 en:
   hello: "Hello world"
+  layouts:
+    navbar:
+      no_notifications: No new notifications
+      mark_all_read: Mark all as read
+  leagues:
+    league_invitations:
+      notifications:
+        league_invitation: "%{inviter} invited you to league \"%{league}\""
+  tournaments:
+    notifications:
+      registration_open: "Registration is open for tournament \"%{tournament}\""
+  pairs:
+    notifications:
+      tournament_added: "%{inviter} added you to tournament \"%{tournament}\""
   users:
     show:
       back: Players

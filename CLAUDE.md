@@ -47,3 +47,8 @@ This is a Ruby on Rails application following Rails conventions.
 - `bundle exec rspec` - Run tests
 - `bin/rails db:migrate` - Run migrations
 - `bin/rubocop` - Run linter
+
+## Release
+
+- Production hosted on heroku
+- Run migrations after deploy

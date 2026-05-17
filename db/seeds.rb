@@ -2,7 +2,7 @@
 
 # Users
 users = [
-  { email: "admin@padel.com",   password: "password123", first_name: "Админ",    last_name: "Пользователь", gender: :male   },
+  { email: "admin@padel.com",   password: "111111", first_name: "Админ",    last_name: "Пользователь", gender: :male   },
   { email: "alexei@padel.com",  password: "password123", first_name: "Алексей",  last_name: "Иванов",       gender: :male   },
   { email: "boris@padel.com",   password: "password123", first_name: "Борис",    last_name: "Смирнов",      gender: :male   },
   { email: "vadim@padel.com",   password: "password123", first_name: "Вадим",    last_name: "Козлов",       gender: :male   },
@@ -34,14 +34,14 @@ league2 = League.find_or_create_by!(name: "Питерская летняя ли�
 end
 
 # League members
-league1_members = [admin, alexei, boris, vadim, darya, elena, fyodor, galina].map do |user|
+league1_members = [ admin, alexei, boris, vadim, darya, elena, fyodor, galina ].map do |user|
   LeagueUser.find_or_create_by!(league_id: league1.id, user_id: user.id) do |lu|
     lu.score = rand(0..100)
   end
 end
 admin_lu1, alexei_lu1, boris_lu1, vadim_lu1, darya_lu1, elena_lu1, fyodor_lu1, galina_lu1 = league1_members
 
-league2_members = [boris, vadim, darya, elena].map do |user|
+league2_members = [ boris, vadim, darya, elena ].map do |user|
   LeagueUser.find_or_create_by!(league_id: league2.id, user_id: user.id) do |lu|
     lu.score = rand(0..50)
   end
@@ -106,4 +106,36 @@ Pair.find_or_create_by!(tournament: t1, player1: galina_lu1, player2: admin_lu1)
 Pair.find_or_create_by!(tournament: t3, player1: boris_lu2, player2: vadim_lu2)
 Pair.find_or_create_by!(tournament: t3, player1: darya_lu2, player2: elena_lu2)
 
-puts "Seeded: #{User.count} users, #{League.count} leagues, #{Tournament.count} tournaments, #{Pair.count} pairs"
+# Notifications
+Notification.destroy_all
+
+# League invitation notifications (alexei invited boris, vadim, darya into league2)
+[ boris, vadim, darya ].each do |user|
+  Notification.create!(
+    user: user,
+    notification_type: :league_invitation,
+    message: "Алексей Иванов пригласил(а) вас в лигу «#{league2.name}»",
+    url: "/leagues/#{league2.id}"
+  )
+end
+
+# Tournament registration open notifications (t2 opened for league1 members)
+[ alexei, boris, vadim, darya, elena, fyodor, galina, admin ].each do |user|
+  Notification.create!(
+    user: user,
+    notification_type: :tournament_registration_open,
+    message: "Открыта регистрация на турнир «#{t2.name}»",
+    url: "/tournaments/#{t2.id}"
+  )
+end
+
+# Tournament added notification (partner added to Spring Cup)
+Notification.create!(
+  user: boris,
+  notification_type: :tournament_added,
+  message: "Алексей Иванов добавил(а) вас в турнир «#{t1.name}»",
+  url: "/tournaments/#{t1.id}",
+  read_at: Time.current
+)
+
+puts "Seeded: #{User.count} users, #{League.count} leagues, #{Tournament.count} tournaments, #{Pair.count} pairs, #{Notification.count} notifications"
