@@ -2,8 +2,8 @@
   h1.mb-4= t('.title')
 
   .mb-3
-    = link_to t('.scope_all'), tournaments_path(scope: "all", q: params[:q]), class: "btn btn-sm #{@scope == 'all' ? 'btn-primary' : 'btn-outline-secondary'} me-1"
-    = link_to t('.scope_my_leagues'), tournaments_path(scope: "my_leagues", q: params[:q]), class: "btn btn-sm #{@scope == 'my_leagues' ? 'btn-primary' : 'btn-outline-secondary'}"
+    = link_to t('.scope_all'), tournaments_path(scope: "all", q: params[:q]&.to_unsafe_h), class: "btn btn-sm #{@scope == 'all' ? 'btn-primary' : 'btn-outline-secondary'} me-1"
+    = link_to t('.scope_my_leagues'), tournaments_path(scope: "my_leagues", q: params[:q]&.to_unsafe_h), class: "btn btn-sm #{@scope == 'my_leagues' ? 'btn-primary' : 'btn-outline-secondary'}"
 
   = search_form_for @q, url: tournaments_path(scope: @scope), method: :get, html: { class: "mb-4", data: { auto_submit: "" } } do |f|
     .row.g-2.align-items-end
