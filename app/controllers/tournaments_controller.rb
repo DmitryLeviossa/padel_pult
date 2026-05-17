@@ -7,7 +7,10 @@ class TournamentsController < ApplicationController
   def index
     filter_params = params[:q]&.to_unsafe_h || {}
     filter_params[:status_in] = %w[registration active] if filter_params[:status_in].blank?
-    @q = Tournament.where.not(status: :draft).ransack(filter_params)
+    @scope = params[:scope].presence_in(%w[all my_leagues]) || "my_leagues"
+    base = Tournament.where.not(status: :draft)
+    base = base.where(league_id: current_user.leagues.select(:id)) if @scope == "my_leagues"
+    @q = base.ransack(filter_params)
     @tournaments = @q.result.includes(:pairs)
   end
 

@@ -1,7 +1,11 @@
 .container.py-4
   h1.mb-4= t('.title')
 
-  = search_form_for @q, url: tournaments_path, method: :get, html: { class: "mb-4", data: { auto_submit: "" } } do |f|
+  .mb-3
+    = link_to t('.scope_all'), tournaments_path(scope: "all", q: params[:q]), class: "btn btn-sm #{@scope == 'all' ? 'btn-primary' : 'btn-outline-secondary'} me-1"
+    = link_to t('.scope_my_leagues'), tournaments_path(scope: "my_leagues", q: params[:q]), class: "btn btn-sm #{@scope == 'my_leagues' ? 'btn-primary' : 'btn-outline-secondary'}"
+
+  = search_form_for @q, url: tournaments_path(scope: @scope), method: :get, html: { class: "mb-4", data: { auto_submit: "" } } do |f|
     .row.g-2.align-items-end
       .col-md-3
         label.form-label= t('.name_label')
@@ -16,7 +20,7 @@
         label.form-label= t('.type_label')
         = f.select :type_eq, [["", ""]] + Tournament.types.keys.map { |tp| [t("tournament.type.#{tp}"), tp] }, {}, class: "form-select"
       .col-md-1
-        = link_to t('.reset'), tournaments_path, class: "btn btn-outline-secondary w-100"
+        = link_to t('.reset'), tournaments_path(scope: @scope), class: "btn btn-outline-secondary w-100"
 
   - if @tournaments.any?
     .d-flex.flex-column.gap-2

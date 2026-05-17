@@ -57,3 +57,16 @@ en:
       filter_mine: My leagues
       filter_owned: Created by me
       reset: Reset
+  tournaments:
+    index:
+      title: Tournaments
+      scope_all: All tournaments
+      scope_my_leagues: My leagues
+      name_label: Name
+      location_label: Location
+      status_label: Status
+      type_label: Type
+      search_placeholder: Search by name
+      location_placeholder: Location
+      reset: Reset
+      no_tournaments: No tournaments found.

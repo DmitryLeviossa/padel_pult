@@ -240,6 +240,8 @@ ru:
   tournaments:
     index:
       title: Турниры
+      scope_all: Все турниры
+      scope_my_leagues: Мои лиги
       name_label: Название
       location_label: Место
       status_label: Статус
