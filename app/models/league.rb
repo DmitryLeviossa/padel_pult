@@ -23,6 +23,7 @@ class League < ApplicationRecord
   has_many :tournaments
   has_many :league_users
   has_many :users, through: :league_users
+  has_many :league_invitations
 
   has_one_attached :logo
 

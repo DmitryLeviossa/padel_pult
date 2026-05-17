@@ -61,6 +61,10 @@ ru:
   activerecord:
     errors:
       models:
+        league_invitation:
+          attributes:
+            invited_user:
+              already_member: уже является участником этой лиги
         pair:
           attributes:
             player2:
@@ -164,7 +168,12 @@ ru:
       photo_column: Фото
       member_name_column: Имя
       score_column: Очки
-      add_member: Добавить участника
+      add_member: Добавить нового участника
+      invite_users: Пригласить игроков
+      invite_modal_title: Пригласить игроков в лигу
+      invite_users_label: Выберите игроков
+      invite_submit: Отправить приглашения
+      cancel: Отмена
       pending_badge: Ожидает регистрации
       copy_invite_link: Скопировать ссылку
       not_authorized: Нет доступа.
@@ -186,11 +195,22 @@ ru:
       cancel: Отмена
     league_users:
       new:
-        title: Добавить участника
+        title: Добавить нового участника
         submit: Создать
         cancel: Отмена
       create:
         success: Участник добавлен. Скопируйте ссылку для приглашения из списка участников.
+    league_invitations:
+      create:
+        success: "Приглашения отправлены: %{count}"
+        no_users_selected: Выберите хотя бы одного игрока.
+
+  league_invitations:
+    update:
+      accepted: Вы вступили в лигу!
+      dismissed: Приглашение отклонено.
+      failed: Не удалось обработать приглашение.
+      not_found: Приглашение не найдено.
 
   invitations:
     invalid_token: Ссылка недействительна или уже использована.
@@ -311,6 +331,10 @@ ru:
       sign_out: Выйти
       sign_in: Войти
       sign_up: Регистрация
+      invited_by: "от %{name}"
+      no_invitations: Нет новых приглашений
+      accept: Принять
+      dismiss: Отклонить
 
   devise:
     sessions:

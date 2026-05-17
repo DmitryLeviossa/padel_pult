@@ -35,6 +35,9 @@ class User < ApplicationRecord
 
   has_many :league_users
   has_many :leagues, through: :league_users
+  has_many :received_league_invitations, class_name: "LeagueInvitation",
+                                         foreign_key: :invited_user_id,
+                                         dependent: :destroy
 
   def pending_invitation?
     invitation_token.present?

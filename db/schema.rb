@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2026_05_17_100816) do
+ActiveRecord::Schema[8.0].define(version: 2026_05_17_104747) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -40,6 +40,19 @@ ActiveRecord::Schema[8.0].define(version: 2026_05_17_100816) do
     t.bigint "blob_id", null: false
     t.string "variation_digest", null: false
     t.index ["blob_id", "variation_digest"], name: "index_active_storage_variant_records_uniqueness", unique: true
+  end
+
+  create_table "league_invitations", force: :cascade do |t|
+    t.bigint "league_id", null: false
+    t.bigint "invited_user_id", null: false
+    t.bigint "invited_by_id", null: false
+    t.integer "status", default: 0, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["invited_by_id"], name: "index_league_invitations_on_invited_by_id"
+    t.index ["invited_user_id"], name: "index_league_invitations_on_invited_user_id"
+    t.index ["league_id", "invited_user_id"], name: "index_league_invitations_on_league_id_and_invited_user_id", unique: true
+    t.index ["league_id"], name: "index_league_invitations_on_league_id"
   end
 
   create_table "league_users", force: :cascade do |t|
@@ -108,6 +121,9 @@ ActiveRecord::Schema[8.0].define(version: 2026_05_17_100816) do
 
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
+  add_foreign_key "league_invitations", "leagues"
+  add_foreign_key "league_invitations", "users", column: "invited_by_id"
+  add_foreign_key "league_invitations", "users", column: "invited_user_id"
   add_foreign_key "league_users", "leagues"
   add_foreign_key "league_users", "users"
   add_foreign_key "leagues", "users", column: "owner_id"

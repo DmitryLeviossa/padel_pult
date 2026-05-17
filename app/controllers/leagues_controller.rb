@@ -6,6 +6,10 @@ class LeaguesController < ApplicationController
 
   def show
     @league = League.find(params[:id])
+    if @league.owner == current_user
+      excluded_ids = @league.user_ids + @league.league_invitations.pending.pluck(:invited_user_id)
+      @invitable_users = User.where.not(id: excluded_ids).order(:first_name, :last_name)
+    end
   end
 
   def new
