@@ -12,9 +12,9 @@
 #
 # Indexes
 #
-#  index_league_invitations_on_invited_by_id                (invited_by_id)
-#  index_league_invitations_on_invited_user_id              (invited_user_id)
-#  index_league_invitations_on_league_id                    (league_id)
+#  index_league_invitations_on_invited_by_id                  (invited_by_id)
+#  index_league_invitations_on_invited_user_id                (invited_user_id)
+#  index_league_invitations_on_league_id                      (league_id)
 #  index_league_invitations_on_league_id_and_invited_user_id  (league_id,invited_user_id) UNIQUE
 #
 # Foreign Keys
