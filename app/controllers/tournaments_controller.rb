@@ -59,7 +59,7 @@ class TournamentsController < ApplicationController
     @tournament = @league.tournaments.build(tournament_params)
 
     if @tournament.save
-      redirect_to league_path(@league), notice: "Tournament created successfully."
+      redirect_to league_path(@league, anchor: "tournaments"), notice: "Tournament created successfully."
     else
       render :new, status: :unprocessable_entity
     end
@@ -84,12 +84,12 @@ class TournamentsController < ApplicationController
 
   def open_registration
     unless @tournament.draft?
-      redirect_to league_path(@tournament.league), alert: t(".not_draft")
+      redirect_to league_path(@tournament.league, anchor: "tournaments"), alert: t(".not_draft")
       return
     end
 
     @tournament.registration!
-    redirect_to league_path(@tournament.league), notice: t(".success")
+    redirect_to league_path(@tournament.league, anchor: "tournaments"), notice: t(".success")
   end
 
   def fill_results

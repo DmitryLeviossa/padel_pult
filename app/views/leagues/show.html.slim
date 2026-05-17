@@ -18,7 +18,7 @@
 
   p.text-muted.small= t('.created_by', date: l(@league.created_at.to_date, format: :long), owner: @league.owner.email)
 
-  ul.nav.nav-tabs.mt-4 role="tablist"
+  ul.nav.nav-tabs.mt-4 role="tablist" data-controller="tabs"
     li.nav-item role="presentation"
       button.nav-link.active type="button" role="tab" data-bs-toggle="tab" data-bs-target="#tournaments" aria-controls="tournaments" aria-selected="true"
         = t('.tournaments_tab')

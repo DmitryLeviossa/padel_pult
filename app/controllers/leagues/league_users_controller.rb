@@ -17,7 +17,7 @@ class Leagues::LeagueUsersController < ApplicationController
       @league.league_users.create!(user: @user)
     end
 
-    redirect_to league_path(@league), notice: t(".success")
+    redirect_to league_path(@league, anchor: "league-users"), notice: t(".success")
   rescue ActiveRecord::RecordInvalid
     render :new, status: :unprocessable_entity
   end
