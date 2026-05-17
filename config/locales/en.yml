@@ -29,3 +29,17 @@
 
 en:
   hello: "Hello world"
+  leagues:
+    index:
+      title: Leagues
+      new_league: New League
+      owner: Owner
+      created_at: "Created %{date}"
+      no_leagues: No leagues found.
+      search_label: Name
+      search_placeholder: Search by name
+      filter_label: Filter
+      filter_all: All leagues
+      filter_mine: My leagues
+      filter_owned: Created by me
+      reset: Reset

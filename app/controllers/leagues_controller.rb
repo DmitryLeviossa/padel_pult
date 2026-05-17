@@ -72,13 +72,13 @@ class LeaguesController < ApplicationController
 
   def leagues_scope
     case params[:filter]
-    when "mine"
-      member_ids = LeagueUser.where(user: current_user).select(:league_id)
-      League.where(id: member_ids)
+    when "all"
+      League.all
     when "owned"
       League.where(owner: current_user)
     else
-      League.all
+      member_ids = LeagueUser.where(user: current_user).select(:league_id)
+      League.where(id: member_ids)
     end
   end
 

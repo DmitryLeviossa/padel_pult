@@ -3,13 +3,21 @@
     h1.mb-0= t('.title')
     = link_to t('.new_league'), new_league_path, class: "btn btn-primary"
 
+  ul.nav.nav-pills.mb-3
+    li.nav-item
+      = link_to t('.filter_mine'), leagues_path(q: params[:q]), class: "nav-link #{'active' if params[:filter] != 'all'}"
+    li.nav-item
+      = link_to t('.filter_all'), leagues_path(filter: 'all', q: params[:q]), class: "nav-link #{'active' if params[:filter] == 'all'}"
+
   = search_form_for @q, url: leagues_path, method: :get, html: { class: "mb-4", data: { auto_submit: "" } } do |f|
+    - if params[:filter] == 'all'
+      = hidden_field_tag :filter, params[:filter]
     .row.g-2.align-items-end
       .col-md-10
         label.form-label= t('.search_label')
         = f.search_field :name_cont, class: "form-control", placeholder: t('.search_placeholder')
       .col-md-2
-        = link_to t('.reset'), leagues_path, class: "btn btn-outline-secondary w-100"
+        = link_to t('.reset'), leagues_path(filter: params[:filter] == 'all' ? 'all' : nil), class: "btn btn-outline-secondary w-100"
 
   - if @leagues.any?
     .row.row-cols-1.row-cols-md-2.row-cols-lg-3.g-4
