@@ -34,6 +34,8 @@
                     span.badge.badge-gender-male М
                   - elsif user.gender_female?
                     span.badge.badge-gender-female Ж
+                  - if user.pending_invitation?
+                    span.badge.bg-warning.text-dark= t('.awaiting_registration')
                 .d-flex.flex-wrap.gap-2.mt-2
                   - user.leagues.each do |league|
                     = link_to league_path(league), class: "position-relative d-inline-block text-decoration-none", title: league.name do

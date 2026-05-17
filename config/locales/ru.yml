@@ -339,6 +339,7 @@ ru:
       gender_label: Пол
       gender_all: Все
       registered_at_column: Дата регистрации
+      awaiting_registration: Ожидает регистрации
       no_users: Пользователей пока нет.
     show:
       back: Игроки

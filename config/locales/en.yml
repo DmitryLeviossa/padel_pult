@@ -44,6 +44,8 @@ en:
     notifications:
       tournament_added: "%{inviter} added you to tournament \"%{tournament}\""
   users:
+    index:
+      awaiting_registration: Awaiting registration
     show:
       back: Players
       member_since: Member since
