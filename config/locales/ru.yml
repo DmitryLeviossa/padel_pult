@@ -154,6 +154,11 @@ ru:
       filter_mine: Мои лиги
       filter_owned: Я создал
       reset: Сбросить
+    edit:
+      title: Редактировать лигу
+      submit: Сохранить
+      cancel: Отмена
+      owner: Владелец
     show:
       edit: Редактировать
       back: "← Лиги"

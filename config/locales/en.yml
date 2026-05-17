@@ -57,6 +57,11 @@ en:
       filter_mine: My leagues
       filter_owned: Created by me
       reset: Reset
+    edit:
+      title: Edit League
+      submit: Save changes
+      cancel: Cancel
+      owner: Owner
   tournaments:
     index:
       title: Tournaments

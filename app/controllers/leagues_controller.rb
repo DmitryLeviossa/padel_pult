@@ -55,6 +55,7 @@ class LeaguesController < ApplicationController
   def edit
     @league = League.find(params[:id])
     authorize_owner!
+    @league_members = @league.users.order(:first_name, :last_name)
   end
 
   def update
@@ -64,6 +65,7 @@ class LeaguesController < ApplicationController
     if @league.update(league_params)
       redirect_to @league, notice: "Лига обновлена."
     else
+      @league_members = @league.users.order(:first_name, :last_name)
       render :edit, status: :unprocessable_entity
     end
   end
@@ -87,6 +89,6 @@ class LeaguesController < ApplicationController
   end
 
   def league_params
-    params.require(:league).permit(:name, :description, :logo)
+    params.require(:league).permit(:name, :description, :logo, :owner_id)
   end
 end
