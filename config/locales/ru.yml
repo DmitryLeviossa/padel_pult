@@ -337,11 +337,61 @@ ru:
       dismiss: Отклонить
 
   devise:
-    sessions:
+    confirmations:
+      confirmed: "Ваш email успешно подтверждён."
+      send_instructions: "Вы получите письмо с инструкциями по подтверждению email через несколько минут."
+      send_paranoid_instructions: "Если ваш email есть в нашей базе, вы получите письмо с инструкциями."
       new:
-        title: Войти
-        submit: Войти
+        title: Повторная отправка инструкций подтверждения
+        submit: Повторно отправить
+    failure:
+      already_authenticated: "Вы уже вошли в систему."
+      inactive: "Ваш аккаунт ещё не активирован."
+      invalid: "Неверный %{authentication_keys} или пароль."
+      locked: "Ваш аккаунт заблокирован."
+      last_attempt: "Осталась одна попытка перед блокировкой аккаунта."
+      not_found_in_database: "Неверный %{authentication_keys} или пароль."
+      timeout: "Сессия истекла. Пожалуйста, войдите снова."
+      unauthenticated: "Необходимо войти или зарегистрироваться."
+      unconfirmed: "Необходимо подтвердить email перед входом."
+    mailer:
+      confirmation_instructions:
+        subject: "Инструкции по подтверждению"
+      reset_password_instructions:
+        subject: "Инструкции по сбросу пароля"
+      unlock_instructions:
+        subject: "Инструкции по разблокировке"
+      email_changed:
+        subject: "Email изменён"
+      password_change:
+        subject: "Пароль изменён"
+    omniauth_callbacks:
+      failure: "Не удалось выполнить вход через %{kind}: \"%{reason}\"."
+      success: "Вы успешно вошли через %{kind}."
+    passwords:
+      no_token: "Страница недоступна без перехода по ссылке из письма сброса пароля."
+      send_instructions: "Вы получите письмо с инструкциями по сбросу пароля через несколько минут."
+      send_paranoid_instructions: "Если ваш email есть в нашей базе, вы получите письмо со ссылкой для сброса пароля."
+      updated: "Пароль успешно изменён. Вы вошли в систему."
+      updated_not_active: "Пароль успешно изменён."
+      new:
+        title: Забыли пароль?
+        submit: Отправить инструкции по сбросу пароля
+      edit:
+        title: Изменить пароль
+        new_password: Новый пароль
+        confirm_password: Подтвердите новый пароль
+        min_password: "Минимум %{count} символов"
+        submit: Изменить пароль
     registrations:
+      destroyed: "До свидания! Аккаунт успешно удалён."
+      signed_up: "Добро пожаловать! Вы успешно зарегистрировались."
+      signed_up_but_inactive: "Вы зарегистрировались, но не можете войти — аккаунт ещё не активирован."
+      signed_up_but_locked: "Вы зарегистрировались, но не можете войти — аккаунт заблокирован."
+      signed_up_but_unconfirmed: "Письмо со ссылкой для подтверждения отправлено на ваш email. Перейдите по ссылке для активации."
+      update_needs_confirmation: "Аккаунт обновлён, но необходимо подтвердить новый email. Проверьте почту."
+      updated: "Аккаунт успешно обновлён."
+      updated_but_not_signed_in: "Аккаунт обновлён, но так как пароль изменён — войдите снова."
       new:
         title: Регистрация
         min_password: "Минимум %{count} символов"
@@ -357,21 +407,17 @@ ru:
         delete_confirmation: Вы уверены, что хотите удалить аккаунт?
         delete_submit: Удалить мой аккаунт
         confirm_delete: Вы уверены?
-    passwords:
+    sessions:
+      signed_in: "Вы успешно вошли."
+      signed_out: "Вы вышли из системы."
+      already_signed_out: "Вы вышли из системы."
       new:
-        title: Забыли пароль?
-        submit: Отправить инструкции по сбросу пароля
-      edit:
-        title: Изменить пароль
-        new_password: Новый пароль
-        confirm_password: Подтвердите новый пароль
-        min_password: "Минимум %{count} символов"
-        submit: Изменить пароль
-    confirmations:
-      new:
-        title: Повторная отправка инструкций подтверждения
-        submit: Повторно отправить
+        title: Войти
+        submit: Войти
     unlocks:
+      send_instructions: "Вы получите письмо с инструкциями по разблокировке через несколько минут."
+      send_paranoid_instructions: "Если аккаунт существует, вы получите письмо с инструкциями."
+      unlocked: "Аккаунт разблокирован. Войдите в систему."
       new:
         title: Повторная отправка инструкций разблокировки
         submit: Повторно отправить
