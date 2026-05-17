@@ -71,14 +71,22 @@ function initAutoSubmitFilters() {
   })
 }
 
+function initTooltips() {
+  document.querySelectorAll("[data-bs-toggle='tooltip']").forEach(el => {
+    new bootstrap.Tooltip(el)
+  })
+}
+
 document.addEventListener("click", (e) => {
   const btn = e.target.closest("[data-copy-url]")
   if (!btn) return
   const url = btn.dataset.copyUrl
+  const icon = btn.querySelector("i")
   const done = () => {
-    const orig = btn.textContent
-    btn.textContent = "✓ Скопировано"
-    setTimeout(() => { btn.textContent = orig }, 2000)
+    if (icon) {
+      icon.className = "bi bi-check-lg"
+      setTimeout(() => { icon.className = "bi bi-link-45deg" }, 2000)
+    }
   }
   if (navigator.clipboard) {
     navigator.clipboard.writeText(url).then(done).catch(() => fallbackCopy(url, done))
@@ -97,5 +105,5 @@ function fallbackCopy(text, done) {
   try { document.execCommand("copy"); done() } finally { ta.remove() }
 }
 
-document.addEventListener("turbo:load", () => { initTomSelects(); initAutoSubmitFilters(); initDateTimePickers() })
-document.addEventListener("turbo:render", () => { initTomSelects(); initAutoSubmitFilters(); initDateTimePickers() })
+document.addEventListener("turbo:load", () => { initTomSelects(); initAutoSubmitFilters(); initDateTimePickers(); initTooltips() })
+document.addEventListener("turbo:render", () => { initTomSelects(); initAutoSubmitFilters(); initDateTimePickers(); initTooltips() })

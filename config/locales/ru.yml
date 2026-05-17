@@ -186,6 +186,7 @@ ru:
       cancel: Отмена
       pending_badge: Ожидает регистрации
       copy_invite_link: Скопировать ссылку
+      copy_invite_link_tooltip: Скопировать ссылку для приглашения
       not_authorized: Нет доступа.
       join: Вступить в лигу
       leave: Покинуть лигу

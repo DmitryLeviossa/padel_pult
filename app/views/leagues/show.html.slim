@@ -92,7 +92,8 @@
                 - if @league.owner == current_user
                   td
                     - if league_user.user.pending_invitation?
-                      = button_tag t('.copy_invite_link'), type: "button", class: "btn btn-outline-secondary btn-sm", data: { copy_url: invitation_url(league_user.user.invitation_token) }
+                      = button_tag type: "button", class: "btn btn-outline-secondary btn-sm", data: { copy_url: invitation_url(league_user.user.invitation_token), bs_toggle: "tooltip", bs_placement: "top", bs_title: t('.copy_invite_link_tooltip') } do
+                        i.bi.bi-link-45deg
       - else
         p.text-muted= t('.no_members')
 
