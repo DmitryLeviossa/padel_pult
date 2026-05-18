@@ -1,8 +1,8 @@
 class TournamentsController < ApplicationController
   before_action :set_league, only: [ :new, :create ]
-  before_action :set_tournament, only: [ :show, :edit, :update, :open_registration, :fill_results, :complete ]
+  before_action :set_tournament, only: [ :show, :edit, :update, :destroy, :open_registration, :activate, :cancel, :fill_results, :complete ]
   before_action :authorize_owner!, only: [ :new, :create ]
-  before_action :authorize_tournament_owner!, only: [ :edit, :update, :open_registration, :fill_results, :complete ]
+  before_action :authorize_tournament_owner!, only: [ :edit, :update, :destroy, :open_registration, :activate, :cancel, :fill_results, :complete ]
 
   def index
     filter_params = params[:q]&.to_unsafe_h || {}
@@ -68,6 +68,16 @@ class TournamentsController < ApplicationController
     end
   end
 
+  def destroy
+    unless @tournament.draft?
+      redirect_to tournament_path(@tournament), alert: t(".not_draft")
+      return
+    end
+
+    @tournament.destroy
+    redirect_to league_path(@tournament.league, anchor: "tournaments"), notice: t(".success")
+  end
+
   def edit
     redirect_to tournament_path(@tournament), alert: t(".not_draft") unless @tournament.draft?
   end
@@ -94,6 +104,27 @@ class TournamentsController < ApplicationController
     @tournament.registration!
     notify_league_users_about_registration
     redirect_to league_path(@tournament.league, anchor: "tournaments"), notice: t(".success")
+  end
+
+  def activate
+    unless @tournament.registration?
+      redirect_to tournament_path(@tournament), alert: t(".not_registration")
+      return
+    end
+
+    @tournament.active!
+    redirect_to tournament_path(@tournament), notice: t(".success")
+  end
+
+  def cancel
+    unless @tournament.registration?
+      redirect_to tournament_path(@tournament), alert: t(".not_registration")
+      return
+    end
+
+    @tournament.cancelled!
+    notify_registered_players_about_cancellation
+    redirect_to tournament_path(@tournament), notice: t(".success")
   end
 
   def fill_results
@@ -129,6 +160,21 @@ class TournamentsController < ApplicationController
         user: league_user.user,
         notification_type: :tournament_registration_open,
         message: t("tournaments.notifications.registration_open", tournament: @tournament.name),
+        url: tournament_path(@tournament)
+      )
+    end
+  end
+
+  def notify_registered_players_about_cancellation
+    registered_users = @tournament.pairs.includes(player1: :user, player2: :user).flat_map do |pair|
+      [ pair.player1.user, pair.player2.user ]
+    end.uniq
+
+    registered_users.each do |user|
+      Notification.create!(
+        user: user,
+        notification_type: :tournament_cancelled,
+        message: t("tournaments.notifications.cancelled", tournament: @tournament.name),
         url: tournament_path(@tournament)
       )
     end

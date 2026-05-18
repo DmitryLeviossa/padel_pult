@@ -13,8 +13,8 @@
 #
 # Indexes
 #
-#  index_notifications_on_user_id          (user_id)
-#  index_notifications_on_user_id_read_at  (user_id,read_at)
+#  index_notifications_on_user_id              (user_id)
+#  index_notifications_on_user_id_and_read_at  (user_id,read_at)
 #
 # Foreign Keys
 #
@@ -23,7 +23,7 @@
 class Notification < ApplicationRecord
   belongs_to :user
 
-  enum :notification_type, { tournament_added: "tournament_added", league_invitation: "league_invitation", tournament_registration_open: "tournament_registration_open" }
+  enum :notification_type, { tournament_added: "tournament_added", league_invitation: "league_invitation", tournament_registration_open: "tournament_registration_open", tournament_cancelled: "tournament_cancelled" }
 
   scope :unread, -> { where(read_at: nil) }
   scope :recent, -> { order(created_at: :desc) }

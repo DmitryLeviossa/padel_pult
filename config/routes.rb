@@ -34,6 +34,8 @@ Rails.application.routes.draw do
     resources :pairs, only: [ :create, :destroy ]
     member do
       post :open_registration
+      post :activate
+      post :cancel
       get :fill_results
       patch :complete
     end

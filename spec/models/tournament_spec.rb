@@ -11,7 +11,7 @@
 #  placement_points :jsonb            not null
 #  start_date       :datetime         not null
 #  status           :string           default("draft"), not null
-#  type             :string           default("olimpic"), not null
+#  type             :string           default("olympic"), not null
 #  created_at       :datetime         not null
 #  updated_at       :datetime         not null
 #  league_id        :bigint           not null

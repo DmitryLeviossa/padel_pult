@@ -1,16 +1,27 @@
-# Idempotent seeds — safe to run multiple times
+# Clean slate (order matters due to foreign keys)
+[Notification, Pair, Tournament, LeagueInvitation, LeagueUser, League].each(&:destroy_all)
 
-# Users
-users = [
-  { email: "admin@padel.com",   password: "111111", first_name: "Админ",    last_name: "Пользователь", gender: :male   },
-  { email: "alexei@padel.com",  password: "password123", first_name: "Алексей",  last_name: "Иванов",       gender: :male   },
-  { email: "boris@padel.com",   password: "password123", first_name: "Борис",    last_name: "Смирнов",      gender: :male   },
-  { email: "vadim@padel.com",   password: "password123", first_name: "Вадим",    last_name: "Козлов",       gender: :male   },
-  { email: "darya@padel.com",   password: "password123", first_name: "Дарья",    last_name: "Новикова",     gender: :female },
-  { email: "elena@padel.com",   password: "password123", first_name: "Елена",    last_name: "Морозова",     gender: :female },
-  { email: "fyodor@padel.com",  password: "password123", first_name: "Фёдор",    last_name: "Волков",       gender: :male   },
-  { email: "galina@padel.com",  password: "password123", first_name: "Галина",   last_name: "Петрова",      gender: :female }
-].map do |attrs|
+# Users — idempotent, kept across reruns
+users_data = [
+  { email: "admin@padel.com",      password: "111111",      first_name: "Админ",      last_name: "Пользователь", gender: :male   },
+  { email: "alexei@padel.com",     password: "password123", first_name: "Алексей",    last_name: "Иванов",       gender: :male   },
+  { email: "boris@padel.com",      password: "password123", first_name: "Борис",      last_name: "Смирнов",      gender: :male   },
+  { email: "vadim@padel.com",      password: "password123", first_name: "Вадим",      last_name: "Козлов",       gender: :male   },
+  { email: "darya@padel.com",      password: "password123", first_name: "Дарья",      last_name: "Новикова",     gender: :female },
+  { email: "elena@padel.com",      password: "password123", first_name: "Елена",      last_name: "Морозова",     gender: :female },
+  { email: "fyodor@padel.com",     password: "password123", first_name: "Фёдор",      last_name: "Волков",       gender: :male   },
+  { email: "galina@padel.com",     password: "password123", first_name: "Галина",     last_name: "Петрова",      gender: :female },
+  { email: "igor@padel.com",       password: "password123", first_name: "Игорь",      last_name: "Кузнецов",     gender: :male   },
+  { email: "julia@padel.com",      password: "password123", first_name: "Юлия",       last_name: "Белова",       gender: :female },
+  { email: "konstantin@padel.com", password: "password123", first_name: "Константин", last_name: "Орлов",        gender: :male   },
+  { email: "larisa@padel.com",     password: "password123", first_name: "Лариса",     last_name: "Соколова",     gender: :female },
+  { email: "mikhail@padel.com",    password: "password123", first_name: "Михаил",     last_name: "Лебедев",      gender: :male   },
+  { email: "natasha@padel.com",    password: "password123", first_name: "Наталья",    last_name: "Зайцева",      gender: :female },
+  { email: "oleg@padel.com",       password: "password123", first_name: "Олег",       last_name: "Семёнов",      gender: :male   },
+  { email: "polina@padel.com",     password: "password123", first_name: "Полина",     last_name: "Степанова",    gender: :female }
+]
+
+users = users_data.map do |attrs|
   User.find_or_create_by!(email: attrs[:email]) do |u|
     u.password              = attrs[:password]
     u.password_confirmation = attrs[:password]
@@ -20,33 +31,41 @@ users = [
   end
 end
 
-admin, alexei, boris, vadim, darya, elena, fyodor, galina = users
+admin, alexei, boris, vadim, darya, elena, fyodor, galina,
+  igor, julia, konstantin, larisa, mikhail, natasha, oleg, polina = users
 
 # Leagues
-league1 = League.find_or_create_by!(name: "Московская открытая лига") do |l|
-  l.description = "Соревновательная лига по падел-теннису в Москве"
-  l.owner = admin
-end
+league1 = League.create!(
+  name: "Московская открытая лига",
+  description: "Соревновательная лига по падел-теннису в Москве",
+  owner: admin
+)
 
-league2 = League.find_or_create_by!(name: "Питерская летняя лига") do |l|
-  l.description = "Сезонная лига по падел-теннису для игроков Санкт-Петербурга"
-  l.owner = alexei
-end
+league2 = League.create!(
+  name: "Питерская летняя лига",
+  description: "Сезонная лига по падел-теннису для игроков Санкт-Петербурга",
+  owner: alexei
+)
 
 # League members
-league1_members = [ admin, alexei, boris, vadim, darya, elena, fyodor, galina ].map do |user|
+# league1: all 16 users → 8 pairs max
+league1_users = [
+  admin, alexei, boris, vadim, darya, elena, fyodor, galina,
+  igor, julia, konstantin, larisa, mikhail, natasha, oleg, polina
+]
+league1_members = league1_users.map do |user|
   LeagueUser.find_or_create_by!(league_id: league1.id, user_id: user.id) do |lu|
-    lu.score = rand(0..100)
+    lu.score = rand(10..100)
   end
 end
-admin_lu1, alexei_lu1, boris_lu1, vadim_lu1, darya_lu1, elena_lu1, fyodor_lu1, galina_lu1 = league1_members
 
-league2_members = [ boris, vadim, darya, elena ].map do |user|
+# league2: 8 users → 4 pairs max (alexei auto-added as owner)
+league2_users = [alexei, boris, vadim, darya, elena, igor, julia, konstantin]
+league2_members = league2_users.map do |user|
   LeagueUser.find_or_create_by!(league_id: league2.id, user_id: user.id) do |lu|
-    lu.score = rand(0..50)
+    lu.score = rand(10..80)
   end
 end
-boris_lu2, vadim_lu2, darya_lu2, elena_lu2 = league2_members
 
 standard_points = [
   { "from" => 1,  "to" => 1,  "points" => 10 },
@@ -63,78 +82,115 @@ small_points = [
 ]
 
 # Tournaments
-t1 = Tournament.find_or_create_by!(name: "Весенний кубок 2026", league: league1) do |t|
-  t.start_date       = Date.new(2026, 5, 15)
-  t.end_date         = Date.new(2026, 5, 17)
-  t.max_participants = 16
-  t.location         = "Московский спортивный центр"
-  t.type             = "olimpic"
-  t.status           = "active"
-  t.description      = "Ежегодный весенний турнир, открытый для всех участников лиги"
-  t.placement_points = standard_points
+t_completed_1 = Tournament.create!(
+  name:              "Весенний кубок 2026",
+  league:            league1,
+  start_date:        Date.new(2026, 3, 1),
+  end_date:          Date.new(2026, 3, 3),
+  max_participants:  8,
+  location:          "Московский спортивный центр",
+  type:              "olympic",
+  status:            "completed",
+  description:       "Завершённый весенний кубок Московской лиги",
+  placement_points:  standard_points
+)
+
+t_completed_2 = Tournament.create!(
+  name:              "Зимний кубок Петербурга 2026",
+  league:            league2,
+  start_date:        Date.new(2026, 2, 10),
+  end_date:          Date.new(2026, 2, 12),
+  max_participants:  4,
+  location:          "СКК «Петербургский»",
+  type:              "olympic",
+  status:            "completed",
+  description:       "Завершённый зимний кубок Питерской лиги",
+  placement_points:  small_points
+)
+
+t_active = Tournament.create!(
+  name:              "Майский турнир 2026",
+  league:            league1,
+  start_date:        Date.new(2026, 5, 20),
+  end_date:          Date.new(2026, 5, 22),
+  max_participants:  8,
+  location:          "Олимпийский комплекс «Лужники»",
+  type:              "olympic",
+  status:            "active",
+  description:       "Активный майский турнир Московской лиги",
+  placement_points:  standard_points
+)
+
+t_draft = Tournament.create!(
+  name:              "Летний удар 2026",
+  league:            league1,
+  start_date:        Date.new(2026, 7, 1),
+  end_date:          Date.new(2026, 7, 3),
+  max_participants:  8,
+  location:          "Спортивный клуб «Динамо»",
+  type:              "olympic",
+  status:            "draft",
+  description:       "Предстоящий летний турнир (черновик)",
+  placement_points:  standard_points
+)
+
+t_registration = Tournament.create!(
+  name:              "Петербургский открытый 2026",
+  league:            league2,
+  start_date:        Date.new(2026, 6, 10),
+  end_date:          Date.new(2026, 6, 12),
+  max_participants:  4,
+  location:          "СКК «Петербургский»",
+  type:              "olympic",
+  status:            "registration",
+  description:       "Открыта регистрация на главный летний турнир Питерской лиги",
+  placement_points:  small_points
+)
+
+# Pairs for completed_1 (league1): 4 pairs from first 8 members
+league1_members.first(8).each_slice(2) do |p1, p2|
+  Pair.create!(tournament: t_completed_1, player1: p1, player2: p2)
 end
 
-t2 = Tournament.find_or_create_by!(name: "Летний удар 2026", league: league1) do |t|
-  t.start_date       = Date.new(2026, 7, 1)
-  t.end_date         = Date.new(2026, 7, 3)
-  t.max_participants = 8
-  t.location         = "Олимпийский комплекс «Лужники»"
-  t.type             = "olimpic"
-  t.status           = "draft"
-  t.description      = "Летний инвитейшнл для лучших игроков лиги"
-  t.placement_points = small_points
+# Pairs for completed_2 (league2): 2 pairs from first 4 members
+league2_members.first(4).each_slice(2) do |p1, p2|
+  Pair.create!(tournament: t_completed_2, player1: p1, player2: p2)
 end
 
-t3 = Tournament.find_or_create_by!(name: "Петербургский открытый 2026", league: league2) do |t|
-  t.start_date       = Date.new(2026, 6, 10)
-  t.end_date         = Date.new(2026, 6, 12)
-  t.max_participants = 8
-  t.location         = "СКК «Петербургский»"
-  t.type             = "olimpic"
-  t.status           = "draft"
-  t.description      = "Главный турнир Питерской лиги"
-  t.placement_points = small_points
+# Pairs for active (league1): max = 8 pairs using all 16 members
+league1_members.each_slice(2) do |p1, p2|
+  Pair.create!(tournament: t_active, player1: p1, player2: p2)
 end
 
-# Pairs for Spring Cup
-Pair.find_or_create_by!(tournament: t1, player1: alexei_lu1, player2: boris_lu1)
-Pair.find_or_create_by!(tournament: t1, player1: vadim_lu1, player2: darya_lu1)
-Pair.find_or_create_by!(tournament: t1, player1: elena_lu1, player2: fyodor_lu1)
-Pair.find_or_create_by!(tournament: t1, player1: galina_lu1, player2: admin_lu1)
-
-# Pairs for Saint Petersburg Open
-Pair.find_or_create_by!(tournament: t3, player1: boris_lu2, player2: vadim_lu2)
-Pair.find_or_create_by!(tournament: t3, player1: darya_lu2, player2: elena_lu2)
+# Pairs for registration (league2): max = 4 pairs using all 8 members
+league2_members.each_slice(2) do |p1, p2|
+  Pair.create!(tournament: t_registration, player1: p1, player2: p2)
+end
 
 # Notifications
-Notification.destroy_all
-
-# League invitation notifications (alexei invited boris, vadim, darya into league2)
-[ boris, vadim, darya ].each do |user|
+[boris, vadim, darya].each do |user|
   Notification.create!(
     user: user,
     notification_type: :league_invitation,
-    message: "Алексей Иванов пригласил(а) вас в лигу «#{league2.name}»",
+    message: "Алексей Иванов пригласил вас в лигу «#{league2.name}»",
     url: "/leagues/#{league2.id}"
   )
 end
 
-# Tournament registration open notifications (t2 opened for league1 members)
-[ alexei, boris, vadim, darya, elena, fyodor, galina, admin ].each do |user|
+league2_members.map(&:user).each do |user|
   Notification.create!(
     user: user,
     notification_type: :tournament_registration_open,
-    message: "Открыта регистрация на турнир «#{t2.name}»",
-    url: "/tournaments/#{t2.id}"
+    message: "Открыта регистрация на турнир «#{t_registration.name}»",
+    url: "/tournaments/#{t_registration.id}"
   )
 end
 
-# Tournament added notification (partner added to Spring Cup)
 Notification.create!(
   user: boris,
   notification_type: :tournament_added,
-  message: "Алексей Иванов добавил(а) вас в турнир «#{t1.name}»",
-  url: "/tournaments/#{t1.id}",
+  message: "Вас добавили в турнир «#{t_active.name}»",
+  url: "/tournaments/#{t_active.id}",
   read_at: Time.current
 )
 

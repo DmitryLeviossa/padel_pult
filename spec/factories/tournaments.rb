@@ -11,7 +11,7 @@
 #  placement_points :jsonb            not null
 #  start_date       :datetime         not null
 #  status           :string           default("draft"), not null
-#  type             :string           default("olimpic"), not null
+#  type             :string           default("olympic"), not null
 #  created_at       :datetime         not null
 #  updated_at       :datetime         not null
 #  league_id        :bigint           not null
@@ -31,9 +31,13 @@ FactoryBot.define do
     end_date { Date.today + 1.month + 6.days }
     max_participants { 16 }
     status { :draft }
-    type { :olimpic }
+    type { :olympic }
     placement_points { [] }
     association :league
+
+    trait :registration do
+      status { :registration }
+    end
 
     trait :active do
       status { :active }

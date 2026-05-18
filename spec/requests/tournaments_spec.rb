@@ -7,6 +7,42 @@ RSpec.describe "Tournaments", type: :request do
   let(:draft_tournament) { create(:tournament, league: league) }
   let(:active_tournament) { create(:tournament, :active, league: league) }
 
+  describe "DELETE /tournaments/:id" do
+    context "as owner" do
+      before { sign_in owner }
+
+      it "deletes draft tournament and redirects to league" do
+        delete tournament_path(draft_tournament)
+        expect(response).to redirect_to(league_path(league, anchor: "tournaments"))
+        expect(Tournament.exists?(draft_tournament.id)).to be false
+      end
+
+      it "does not delete non-draft tournament" do
+        delete tournament_path(active_tournament)
+        expect(response).to redirect_to(tournament_path(active_tournament))
+        expect(Tournament.exists?(active_tournament.id)).to be true
+      end
+    end
+
+    context "as non-owner" do
+      before { sign_in other_user }
+
+      it "does not delete tournament and redirects to league" do
+        delete tournament_path(draft_tournament)
+        expect(response).to redirect_to(league_path(draft_tournament.league))
+        expect(Tournament.exists?(draft_tournament.id)).to be true
+      end
+    end
+
+    context "unauthenticated" do
+      it "redirects to sign in" do
+        delete tournament_path(draft_tournament)
+        expect(response).to redirect_to(new_user_session_path)
+        expect(Tournament.exists?(draft_tournament.id)).to be true
+      end
+    end
+  end
+
   describe "GET /tournaments/:id/fill_results" do
     context "as owner" do
       before { sign_in owner }
@@ -83,6 +119,55 @@ RSpec.describe "Tournaments", type: :request do
     context "unauthenticated" do
       it "redirects to sign in" do
         patch complete_tournament_path(tournament)
+        expect(response).to redirect_to(new_user_session_path)
+      end
+    end
+  end
+
+  describe "POST /tournaments/:id/cancel" do
+    let(:registration_tournament) { create(:tournament, :registration, league: league) }
+    let(:lu1) { create(:league_user, league: league) }
+    let(:lu2) { create(:league_user, league: league) }
+    let!(:pair) { create(:pair, tournament: registration_tournament, player1: lu1, player2: lu2) }
+
+    context "as owner" do
+      before { sign_in owner }
+
+      it "cancels the tournament and redirects" do
+        post cancel_tournament_path(registration_tournament)
+        expect(response).to redirect_to(tournament_path(registration_tournament))
+        expect(registration_tournament.reload.status).to eq("cancelled")
+      end
+
+      it "notifies registered players" do
+        expect {
+          post cancel_tournament_path(registration_tournament)
+        }.to change(Notification, :count).by(2)
+
+        notification = Notification.last
+        expect(notification.notification_type).to eq("tournament_cancelled")
+      end
+
+      it "does not cancel a non-registration tournament" do
+        post cancel_tournament_path(draft_tournament)
+        expect(response).to redirect_to(tournament_path(draft_tournament))
+        expect(draft_tournament.reload.status).to eq("draft")
+      end
+    end
+
+    context "as non-owner" do
+      before { sign_in other_user }
+
+      it "does not cancel tournament and redirects to league" do
+        post cancel_tournament_path(registration_tournament)
+        expect(response).to redirect_to(league_path(registration_tournament.league))
+        expect(registration_tournament.reload.status).to eq("registration")
+      end
+    end
+
+    context "unauthenticated" do
+      it "redirects to sign in" do
+        post cancel_tournament_path(registration_tournament)
         expect(response).to redirect_to(new_user_session_path)
       end
     end

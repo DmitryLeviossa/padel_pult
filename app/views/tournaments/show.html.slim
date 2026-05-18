@@ -5,6 +5,10 @@
       - if @tournament.draft? && @tournament.league.owner == current_user
         = link_to t('tournaments.show.edit'), edit_tournament_path(@tournament), class: "btn btn-outline-primary btn-sm"
         = button_to t('tournaments.show.open_registration'), open_registration_tournament_path(@tournament), method: :post, class: "btn btn-outline-success btn-sm"
+        = button_to t('tournaments.show.delete'), tournament_path(@tournament), method: :delete, class: "btn btn-outline-danger btn-sm", form: { data: { turbo_confirm: t('tournaments.show.delete_confirm') } }
+      - if @tournament.registration? && @tournament.league.owner == current_user
+        = button_to t('tournaments.show.activate'), activate_tournament_path(@tournament), method: :post, class: "btn btn-success btn-sm"
+        = button_to t('tournaments.show.cancel'), cancel_tournament_path(@tournament), method: :post, class: "btn btn-outline-danger btn-sm", form: { data: { turbo_confirm: t('tournaments.show.cancel_confirm') } }
       - if !@tournament.completed? && @tournament.league.owner == current_user
         = link_to t('tournaments.show.fill_results'), fill_results_tournament_path(@tournament), class: "btn btn-primary btn-sm"
       = link_to "← #{@tournament.league.name}", league_path(@tournament.league), class: "btn btn-outline-secondary btn-sm"

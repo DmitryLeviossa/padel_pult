@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2026_05_17_162822) do
+ActiveRecord::Schema[8.0].define(version: 2026_05_18_000001) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -104,7 +104,7 @@ ActiveRecord::Schema[8.0].define(version: 2026_05_17_162822) do
     t.datetime "end_date", null: false
     t.integer "max_participants", default: 16, null: false
     t.string "location"
-    t.string "type", default: "olimpic", null: false
+    t.string "type", default: "olympic", null: false
     t.string "status", default: "draft", null: false
     t.text "description"
     t.bigint "league_id", null: false

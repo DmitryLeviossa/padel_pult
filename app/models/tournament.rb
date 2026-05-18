@@ -11,7 +11,7 @@
 #  placement_points :jsonb            not null
 #  start_date       :datetime         not null
 #  status           :string           default("draft"), not null
-#  type             :string           default("olimpic"), not null
+#  type             :string           default("olympic"), not null
 #  created_at       :datetime         not null
 #  updated_at       :datetime         not null
 #  league_id        :bigint           not null
@@ -31,7 +31,7 @@ class Tournament < ApplicationRecord
   has_many :pairs, dependent: :destroy
 
   enum :status, { draft: "draft", registration: "registration", active: "active", completed: "completed", cancelled: "cancelled" }
-  enum :type, { olimpic: "olimpic", round_robin: "round_robin", mixed: "mixed" }
+  enum :type, { olympic: "olympic", round_robin: "round_robin", mixed: "mixed" }
 
   validates :start_date, presence: true
   validates :end_date, presence: true
