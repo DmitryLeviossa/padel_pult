@@ -1,0 +1,54 @@
+.container.py-4
+  h1.mb-4= t('.title')
+
+  .mb-3
+    = link_to t('.scope_all'), tournaments_path(scope: "all", q: params[:q]&.to_unsafe_h), class: "btn btn-sm #{@scope == 'all' ? 'btn-primary' : 'btn-outline-secondary'} me-1"
+    = link_to t('.scope_my_leagues'), tournaments_path(scope: "my_leagues", q: params[:q]&.to_unsafe_h), class: "btn btn-sm #{@scope == 'my_leagues' ? 'btn-primary' : 'btn-outline-secondary'}"
+
+  = search_form_for @q, url: tournaments_path(scope: @scope), method: :get, html: { class: "mb-4", data: { auto_submit: "" } } do |f|
+    .row.g-2.align-items-end
+      .col-md-3
+        label.form-label= t('.name_label')
+        = f.search_field :name_cont, class: "form-control", placeholder: t('.search_placeholder')
+      .col-md-2
+        label.form-label= t('.location_label')
+        = f.search_field :location_cont, class: "form-control", placeholder: t('.location_placeholder')
+      .col-md-4
+        label.form-label= t('.status_label')
+        = f.select :status_in, Tournament.statuses.keys.map { |s| [t("tournament.status.#{s}"), s] }.reject { |_, s| s == "draft" }, {}, class: "form-select", multiple: true
+      .col-md-2
+        label.form-label= t('.type_label')
+        = f.select :type_eq, [["", ""]] + Tournament.types.keys.map { |tp| [t("tournament.type.#{tp}"), tp] }, {}, class: "form-select"
+      .col-md-1
+        = link_to t('.reset'), tournaments_path(scope: @scope), class: "btn btn-outline-secondary w-100"
+
+  - if @tournaments.any?
+    .d-flex.flex-column.gap-2
+      - @tournaments.each do |tournament|
+        = link_to tournament_path(tournament), class: "text-decoration-none text-reset"
+          .card.card-hoverable.w-100.overflow-hidden style="height: 120px;"
+            .d-flex.h-100
+              .flex-shrink-0 style="width: 120px;"
+                - if tournament.league.logo.attached?
+                  = image_tag tournament.league.logo.variant(resize_to_fill: [240, 240]), style: "width: 100%; height: 100%; object-fit: cover;"
+                - else
+                  - initials = tournament.league.name.split.map(&:first).first(2).join.upcase
+                  .d-flex.align-items-center.justify-content-center.h-100 style="background: var(--color-bg-surface); border-right: 1px solid var(--color-border); font-size: 2rem; font-weight: 600; color: var(--color-text-muted);"
+                    = initials
+              .d-flex.flex-column.justify-content-between.flex-grow-1.p-3
+                div
+                  .fw-semibold.fs-6= tournament.name
+                  .text-muted.small= tournament.league.name
+                .d-flex.align-items-center.justify-content-between.flex-wrap.gap-2
+                  .d-flex.align-items-center.gap-3
+                    - if tournament.location.present?
+                      small.text-muted= tournament.location
+                    small.text-muted= tournament_date_range(tournament)
+                    small.text-muted= t("tournament.type.#{tournament.type}")
+                  .d-flex.align-items-center.gap-2
+                    - badge_class = { "draft" => "secondary", "registration" => "info", "active" => "success", "completed" => "primary", "cancelled" => "danger" }.fetch(tournament.status, "secondary")
+                    span.badge class="bg-#{badge_class}"
+                      = t("tournament.status.#{tournament.status}")
+                    small.text-muted= "#{tournament.pairs.size * 2}/#{tournament.max_participants}"
+  - else
+    p.text-muted= t('.no_tournaments')

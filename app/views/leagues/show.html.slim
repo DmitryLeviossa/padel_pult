@@ -1,0 +1,117 @@
+.container.py-4
+  .d-flex.justify-content-between.align-items-center.mb-4
+    .d-flex.align-items-center.gap-3
+      - if @league.logo.attached?
+        = image_tag @league.logo, class: "rounded", style: "width: 64px; height: 64px; object-fit: cover;"
+      h1.mb-0= @league.name
+    .d-flex.gap-2
+      - if @league.owner == current_user
+        = link_to t('.edit'), edit_league_path(@league), class: "btn btn-outline-primary btn-sm"
+      - elsif @league.users.include?(current_user)
+        = button_to t('.leave'), leave_league_path(@league), method: :delete, class: "btn btn-outline-danger btn-sm", data: { turbo_confirm: t('.leave_confirm') }
+      - else
+        = button_to t('.join'), join_league_path(@league), method: :post, class: "btn btn-primary btn-sm"
+      = link_to t('.back'), leagues_path, class: "btn btn-outline-secondary btn-sm"
+
+  - if @league.description.present?
+    p.text-muted= @league.description
+
+  p.text-muted.small= t('.created_by', date: l(@league.created_at.to_date, format: :long), owner: @league.owner.email)
+
+  ul.nav.nav-tabs.mt-4 role="tablist" data-controller="tabs"
+    li.nav-item role="presentation"
+      button.nav-link.active type="button" role="tab" data-bs-toggle="tab" data-bs-target="#tournaments" aria-controls="tournaments" aria-selected="true"
+        = t('.tournaments_tab')
+    li.nav-item role="presentation"
+      button.nav-link type="button" role="tab" data-bs-toggle="tab" data-bs-target="#league-users" aria-controls="league-users" aria-selected="false"
+        = t('.members_tab')
+
+  .tab-content.mt-3
+    #tournaments.tab-pane.fade.show.active role="tabpanel"
+      .d-flex.justify-content-between.align-items-center.mb-2
+        h5.mb-0= t('.tournaments_tab')
+        - if @league.owner == current_user
+          = link_to t('.new_tournament'), new_league_tournament_path(@league), class: "btn btn-primary btn-sm"
+
+      - visible_tournaments = @league.owner == current_user ? @league.tournaments : @league.tournaments.where.not(status: :draft)
+      - if visible_tournaments.any?
+        table.table.table-hover
+          thead
+            tr
+              th= t('.name_column')
+              th= t('.dates_column')
+              th= t('.location_column')
+              th= t('.type_column')
+              th= t('.status_column')
+              th= t('.participants_column')
+          tbody
+            - visible_tournaments.order(start_date: :asc).each do |tournament|
+              tr
+                td= link_to tournament.name, tournament_path(tournament)
+                td= tournament_date_range(tournament)
+                td= tournament.location.presence || "—"
+                td= t("tournament.type.#{tournament.type}")
+                td
+                  - badge_class = { "draft" => "secondary", "registration" => "info", "active" => "success", "completed" => "primary", "cancelled" => "danger" }.fetch(tournament.status, "secondary")
+                  span.badge class="bg-#{badge_class}"
+                    = t("tournament.status.#{tournament.status}")
+                td= "#{tournament.pairs.count * 2} / #{tournament.max_participants}"
+      - else
+        p.text-muted= t('.no_tournaments')
+
+    #league-users.tab-pane.fade role="tabpanel"
+      .d-flex.justify-content-between.align-items-center.mb-3
+        h5.mb-0= t('.members_section')
+        - if @league.owner == current_user
+          .d-flex.gap-2
+            = link_to t('.add_member'), new_league_league_user_path(@league), class: "btn btn-outline-secondary btn-sm"
+            button.btn.btn-primary.btn-sm type="button" data-bs-toggle="modal" data-bs-target="#inviteUsersModal"
+              = t('.invite_users')
+
+      - if @league.league_users.any?
+        table.table.table-hover
+          thead
+            tr
+              th #
+              th= t('.photo_column')
+              th= t('.member_name_column')
+              th= t('.score_column')
+              - if @league.owner == current_user
+                th
+          tbody
+            - @league.league_users.order(score: :desc).each_with_index do |league_user, index|
+              tr
+                td= index + 1
+                td
+                  = render "shared/avatar", user: league_user.user
+                td
+                  = league_user.full_name
+                  - if league_user.user.pending_invitation?
+                    span.badge.bg-warning.text-dark.ms-2= t('.pending_badge')
+                td= league_user.score
+                - if @league.owner == current_user
+                  td
+                    - if league_user.user.pending_invitation?
+                      = button_tag type: "button", class: "btn btn-outline-secondary btn-sm", data: { copy_url: invitation_url(league_user.user.invitation_token), bs_toggle: "tooltip", bs_placement: "top", bs_title: t('.copy_invite_link_tooltip') } do
+                        i.bi.bi-link-45deg
+      - else
+        p.text-muted= t('.no_members')
+
+- if @league.owner == current_user
+  #inviteUsersModal.modal.fade aria-hidden="true" aria-labelledby="inviteUsersModalLabel" tabindex="-1"
+    .modal-dialog
+      .modal-content
+        .modal-header
+          h5.modal-title#inviteUsersModalLabel= t('.invite_modal_title')
+          button.btn-close type="button" data-bs-dismiss="modal" aria-label="Close"
+        = form_with url: league_league_invitations_path(@league), scope: :league_invitation do |f|
+          .modal-body
+            .mb-3
+              = f.label :invited_user_ids, t('.invite_users_label'), class: "form-label"
+              = f.select :invited_user_ids,
+                @invitable_users.map { |u| [u.full_name, u.id] },
+                { include_hidden: false },
+                { class: "form-select", multiple: true }
+          .modal-footer
+            button.btn.btn-secondary type="button" data-bs-dismiss="modal"= t('.cancel')
+            = f.submit t('.invite_submit'), class: "btn btn-primary"

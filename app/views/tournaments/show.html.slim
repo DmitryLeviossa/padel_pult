@@ -1,0 +1,105 @@
+.container.py-4
+  .d-flex.justify-content-between.align-items-center.mb-4
+    h1.mb-0= @tournament.name
+    .d-flex.gap-2
+      - if @tournament.draft? && @tournament.league.owner == current_user
+        = link_to t('tournaments.show.edit'), edit_tournament_path(@tournament), class: "btn btn-outline-primary btn-sm"
+        = button_to t('tournaments.show.open_registration'), open_registration_tournament_path(@tournament), method: :post, class: "btn btn-outline-success btn-sm"
+        = button_to t('tournaments.show.delete'), tournament_path(@tournament), method: :delete, class: "btn btn-outline-danger btn-sm", form: { data: { turbo_confirm: t('tournaments.show.delete_confirm') } }
+      - if @tournament.registration? && @tournament.league.owner == current_user
+        = button_to t('tournaments.show.activate'), activate_tournament_path(@tournament), method: :post, class: "btn btn-success btn-sm"
+        = button_to t('tournaments.show.cancel'), cancel_tournament_path(@tournament), method: :post, class: "btn btn-outline-danger btn-sm", form: { data: { turbo_confirm: t('tournaments.show.cancel_confirm') } }
+      - if !@tournament.completed? && @tournament.league.owner == current_user
+        = link_to t('tournaments.show.fill_results'), fill_results_tournament_path(@tournament), class: "btn btn-primary btn-sm"
+      = link_to "← #{@tournament.league.name}", league_path(@tournament.league), class: "btn btn-outline-secondary btn-sm"
+
+  .row.mb-4
+    .col-md-8
+      - if @tournament.description.present?
+        p.text-muted= @tournament.description
+
+      dl.row
+        dt.col-sm-3= t('.location')
+        dd.col-sm-9= @tournament.location.presence || "—"
+
+        dt.col-sm-3= t('.date')
+        dd.col-sm-9= tournament_date_range(@tournament)
+
+        dt.col-sm-3= t('.type')
+        dd.col-sm-9= t("tournament.type.#{@tournament.type}")
+
+        dt.col-sm-3= t('.max_participants')
+        dd.col-sm-9= @tournament.max_participants
+
+        dt.col-sm-3= t('.status')
+        dd.col-sm-9
+          - badge_class = { "draft" => "secondary", "registration" => "info", "active" => "success", "completed" => "primary", "cancelled" => "danger" }.fetch(@tournament.status, "secondary")
+          span.badge class="bg-#{badge_class}"
+            = t("tournament.status.#{@tournament.status}")
+
+    - if @tournament.placement_points.present?
+      .col-md-4
+        h5.mb-3= t('.placement_points_title')
+        table.table.table-sm.table-bordered
+          thead.table-light
+            tr
+              th= t('.place')
+              th= t('.points')
+          tbody
+            - @tournament.placement_points.each do |rule|
+              tr
+                - from = rule["from"].to_i
+                - to = rule["to"].to_i
+                td= from == to ? from.to_s : "#{from} - #{to}"
+                td= rule["points"]
+
+  h4.mt-4.mb-3= t('.pairs')
+
+  - if @available_partners
+    = form_with url: tournament_pairs_path(@tournament), method: :post, scope: :pair, class: "d-flex align-items-center gap-2 mb-3" do |f|
+      = f.select :player2_id,
+          @available_partners.map { |lu| [ lu.full_name, lu.id ] },
+          { prompt: t('.partner_prompt') },
+          class: "form-select form-select-sm w-auto"
+      = f.submit t('.apply'), class: "btn btn-success btn-sm"
+  - elsif @current_league_user
+    .alert.alert-info.mb-3= t('.already_registered')
+  - if @tournament.pairs.any?
+    table.table.table-hover
+      thead
+        tr
+          - if @tournament.completed?
+            th= sort_link(@tournament, "placement", t('.placement_column'), @sort, @direction)
+          - else
+            th #
+          th= t('.photo_column')
+          th= sort_link(@tournament, "player1", t('.player1_column'), @sort, @direction)
+          th= sort_link(@tournament, "player1_score", t('.score_column'), @sort, @direction)
+          th= t('.photo_column')
+          th= sort_link(@tournament, "player2", t('.player2_column'), @sort, @direction)
+          th= sort_link(@tournament, "player2_score", t('.score_column'), @sort, @direction)
+          th= sort_link(@tournament, "score", t('.pair_score_column'), @sort, @direction)
+          th= sort_link(@tournament, "created_at", t('.submitted_at_column'), @sort, @direction)
+          - if @tournament.registration? && @tournament.league.owner == current_user
+            th
+      tbody
+        - @pairs.each_with_index do |pair, index|
+          tr
+            - if @tournament.completed?
+              td= pair.placement
+            - else
+              td= index + 1
+            td
+              = render "shared/avatar", user: pair.player1.user
+            td= pair.player1.full_name
+            td= pair.player1.score
+            td
+              = render "shared/avatar", user: pair.player2.user
+            td= pair.player2.full_name
+            td= pair.player2.score
+            td= pair.score
+            td= l(pair.created_at.to_date, format: :long)
+            - if @tournament.registration? && @tournament.league.owner == current_user
+              td= button_to t('.delete_pair'), tournament_pair_path(@tournament, pair), method: :delete, class: "btn btn-danger btn-sm", form: { data: { turbo_confirm: t('.delete_pair_confirm') } }
+  - else
+    p.text-muted= t('.no_pairs')

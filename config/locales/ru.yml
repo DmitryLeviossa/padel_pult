@@ -1,0 +1,482 @@
+ru:
+  date:
+    formats:
+      default: "%d.%m.%Y"
+      short: "%d %b %Y"
+      long: "%-d %B %Y г."
+    day_names:
+      - воскресенье
+      - понедельник
+      - вторник
+      - среда
+      - четверг
+      - пятница
+      - суббота
+    abbreviated_day_names:
+      - вс
+      - пн
+      - вт
+      - ср
+      - чт
+      - пт
+      - сб
+    month_names:
+      - ~
+      - января
+      - февраля
+      - марта
+      - апреля
+      - мая
+      - июня
+      - июля
+      - августа
+      - сентября
+      - октября
+      - ноября
+      - декабря
+    abbreviated_month_names:
+      - ~
+      - янв
+      - фев
+      - мар
+      - апр
+      - май
+      - июн
+      - июл
+      - авг
+      - сен
+      - окт
+      - ноя
+      - дек
+    order:
+      - :day
+      - :month
+      - :year
+  time:
+    formats:
+      default: "%d.%m.%Y %H:%M"
+      short: "%d %b %H:%M"
+      long: "%-d %B %Y г., %H:%M"
+
+  activerecord:
+    errors:
+      models:
+        league_invitation:
+          attributes:
+            invited_user:
+              already_member: уже является участником этой лиги
+        tournament:
+          attributes:
+            end_date:
+              before_start_date: не может быть раньше даты начала
+            start_date:
+              in_the_past: не может быть в прошлом
+        pair:
+          attributes:
+            player2:
+              same_as_player1: не может совпадать с игроком 1
+          messages:
+            player_already_registered: один из игроков уже зарегистрирован на этот турнир
+    models:
+      league:
+        one: Лига
+        other: Лиги
+      tournament:
+        one: Турнир
+        other: Турниры
+      user:
+        one: Пользователь
+        other: Пользователи
+    attributes:
+      league:
+        name: Название
+        description: Описание
+        logo: Логотип
+      tournament:
+        name: Название
+        location: Место
+        start_date: Дата начала
+        end_date: Дата окончания
+        max_participants: Макс. участников
+        type: Тип
+        description: Описание
+        status: Статус
+      user:
+        first_name: Имя
+        last_name: Фамилия
+        email: Email
+        password: Пароль
+        password_confirmation: Подтверждение пароля
+        remember_me: Запомнить меня
+        photo: Фото профиля
+        gender: Пол
+        genders:
+          male: Мужской
+          female: Женский
+
+  tournament:
+    status:
+      draft: Черновик
+      registration: Регистрация
+      active: Активный
+      completed: Завершён
+      cancelled: Отменён
+    type:
+      olympic: Олимпийский
+      round_robin: Круговой
+      mixed: Смешанный
+
+  dashboard:
+    index:
+      welcome: "Добро пожаловать, %{name}!"
+      my_leagues: Мои лиги
+      my_tournaments: Мои турниры
+      owner: Владелец
+      no_leagues: Вы ещё не создали ни одной лиги.
+      no_tournaments: Турниров пока нет.
+      all_leagues: Все лиги
+      create_league: Создать лигу
+      all_tournaments: Все турниры
+      recent_leagues: Последние лиги
+      no_recent_leagues: Лиг пока нет.
+
+  leagues:
+    index:
+      title: Лиги
+      new_league: Новая лига
+      owner: Владелец
+      created_at: "Создано %{date}"
+      no_leagues: Лиг пока нет.
+      search_label: Название
+      search_placeholder: Поиск по названию
+      filter_label: Участие
+      filter_all: Все лиги
+      filter_mine: Мои лиги
+      filter_owned: Я создал
+      reset: Сбросить
+    edit:
+      title: Редактировать лигу
+      submit: Сохранить
+      cancel: Отмена
+      owner: Владелец
+    show:
+      edit: Редактировать
+      back: "← Лиги"
+      created_by: "Создано %{date} пользователем %{owner}"
+      tournaments_tab: Турниры
+      members_tab: Участники
+      new_tournament: Новый турнир
+      no_tournaments: Турниров пока нет.
+      members_section: Участники
+      no_members: Участников пока нет.
+      name_column: Название
+      dates_column: Даты
+      location_column: Место
+      type_column: Тип
+      status_column: Статус
+      participants_column: Участники
+      photo_column: Фото
+      member_name_column: Имя
+      score_column: Очки
+      add_member: Добавить нового участника
+      invite_users: Пригласить игроков
+      invite_modal_title: Пригласить игроков в лигу
+      invite_users_label: Выберите игроков
+      invite_submit: Отправить приглашения
+      cancel: Отмена
+      pending_badge: Ожидает регистрации
+      copy_invite_link: Скопировать ссылку
+      copy_invite_link_tooltip: Скопировать ссылку для приглашения
+      not_authorized: Нет доступа.
+      join: Вступить в лигу
+      leave: Покинуть лигу
+      leave_confirm: Вы уверены, что хотите покинуть лигу?
+      joined: Вы вступили в лигу.
+      left: Вы покинули лигу.
+      already_member: Вы уже являетесь участником этой лиги.
+      not_member: Вы не являетесь участником этой лиги.
+      owner_cannot_leave: Владелец не может покинуть лигу.
+    new:
+      title: Новая лига
+      submit: Создать лигу
+      cancel: Отмена
+    edit:
+      title: Редактировать лигу
+      submit: Сохранить
+      cancel: Отмена
+    league_users:
+      new:
+        title: Добавить нового участника
+        submit: Создать
+        cancel: Отмена
+      create:
+        success: Участник добавлен. Скопируйте ссылку для приглашения из списка участников.
+    league_invitations:
+      create:
+        success: "Приглашения отправлены: %{count}"
+        no_users_selected: Выберите хотя бы одного игрока.
+      notifications:
+        league_invitation: "%{inviter} пригласил(а) вас в лигу «%{league}»"
+
+  league_invitations:
+    update:
+      accepted: Вы вступили в лигу!
+      dismissed: Приглашение отклонено.
+      failed: Не удалось обработать приглашение.
+      not_found: Приглашение не найдено.
+
+  invitations:
+    invalid_token: Ссылка недействительна или уже использована.
+    show:
+      title: Завершите регистрацию
+      greeting: "Привет, %{name}! Придумайте email и пароль для входа в систему."
+      submit: Зарегистрироваться
+    update:
+      success: Добро пожаловать! Вы успешно зарегистрировались.
+
+  pairs:
+    not_league_member: Вы не являетесь участником этой лиги.
+    registration_closed: Регистрация на этот турнир закрыта.
+    already_registered: Вы уже зарегистрированы на этот турнир.
+    create:
+      success: Вы успешно зарегистрировались на турнир!
+      failure: Не удалось подать заявку. Попробуйте ещё раз.
+    destroy:
+      success: Пара успешно удалена.
+    delete_not_allowed: Удаление пар недоступно.
+    notifications:
+      tournament_added: "%{inviter} добавил(а) вас в турнир «%{tournament}»"
+
+  tournaments:
+    index:
+      title: Турниры
+      scope_all: Все турниры
+      scope_my_leagues: Мои лиги
+      name_label: Название
+      location_label: Место
+      status_label: Статус
+      type_label: Тип
+      search_placeholder: Поиск по названию
+      location_placeholder: Место
+      reset: Сбросить
+      name_column: Название
+      location_column: Место
+      dates_column: Даты
+      type_column: Тип
+      status_column: Статус
+      max_participants_column: Макс. участников
+      no_tournaments: Турниров пока нет.
+    new:
+      title: Новый турнир
+      start_date: Дата и время начала
+      end_date: Дата и время окончания
+      datetime_placeholder: Выберите дату и время
+      submit: Создать турнир
+      placement_points_title: Очки за места
+      place_from: "С места"
+      place_to: "По место"
+      points: Очки
+      add_rule: "+ Добавить правило"
+    edit:
+      title: Редактировать турнир
+      submit: Сохранить изменения
+      not_draft: Редактировать можно только черновик.
+      success: Турнир успешно обновлён.
+    show:
+      edit: Редактировать
+      fill_results: Заполнить результаты
+      open_registration: Открыть регистрацию
+      activate: Активировать турнир
+      placement_points_title: Очки за места
+      place: Место
+      points: Очки
+      location: Место
+      date: Дата
+      start_date: Дата начала
+      end_date: Дата окончания
+      type: Тип
+      max_participants: Макс. участников
+      status: Статус
+      pairs: Пары
+      no_pairs: Пар пока нет.
+      apply: Подать заявку
+      partner_prompt: "— выберите партнёра —"
+      already_registered: Вы уже зарегистрированы на этот турнир.
+      photo_column: Фото
+      player1_column: Игрок 1
+      score_column: Очки
+      player2_column: Игрок 2
+      pair_score_column: Очки пары
+      submitted_at_column: Дата подачи заявки
+      placement_column: Место
+      delete: Удалить турнир
+      delete_confirm: Вы уверены, что хотите удалить этот турнир? Это действие необратимо.
+      cancel: Отменить турнир
+      cancel_confirm: Вы уверены, что хотите отменить этот турнир? Все зарегистрированные участники получат уведомление.
+      delete_pair: Удалить
+      delete_pair_confirm: Вы уверены, что хотите удалить эту пару?
+    destroy:
+      success: Турнир удалён.
+      not_draft: Удалить можно только черновик.
+    open_registration:
+      success: Регистрация на турнир открыта.
+      not_draft: Регистрацию можно открыть только для турнира в статусе черновика.
+    activate:
+      success: Турнир активирован.
+      not_registration: Активировать можно только турнир с открытой регистрацией.
+    cancel:
+      success: Турнир отменён. Участники уведомлены.
+      not_registration: Отменить можно только турнир с открытой регистрацией.
+    notifications:
+      registration_open: "Открыта регистрация на турнир «%{tournament}»"
+      cancelled: "Турнир «%{tournament}» был отменён"
+    fill_results:
+      title: "Результаты: %{name}"
+      pair_column: Пара
+      placement_column: Место
+      submit: Завершить турнир
+      completed: Заполнить результаты можно только не для завершенного турнира.
+    complete:
+      success: Турнир завершён, очки начислены.
+      completed: Турнир уже завершен.
+      failure: Не удалось завершить турнир. Попробуйте ещё раз.
+
+  users:
+    index:
+      title: Пользователи
+      name_label: Имя
+      search_placeholder: Поиск по имени
+      submit: Применить
+      reset: Сбросить
+      photo_column: Фото
+      name_column: Имя
+      leagues_column: Лиги
+      gender_column: Пол
+      gender_label: Пол
+      gender_all: Все
+      registered_at_column: Дата регистрации
+      awaiting_registration: Ожидает регистрации
+      no_users: Пользователей пока нет.
+    show:
+      back: Игроки
+      member_since: Участник с
+      leagues: Лиги
+      tournament_history: История турниров
+      tournament_column: Турнир
+      league_column: Лига
+      date_column: Дата
+      status_column: Статус
+      placement_column: Место
+      partner_column: Партнёр
+      score_column: Очки
+      no_history: Турниров пока нет.
+
+  layouts:
+    navbar:
+      leagues: Лиги
+      tournaments: Турниры
+      players: Игроки
+      edit_account: Редактировать аккаунт
+      sign_out: Выйти
+      sign_in: Войти
+      sign_up: Регистрация
+      invited_by: "от %{name}"
+      no_invitations: Нет новых приглашений
+      no_notifications: Нет новых уведомлений
+      mark_all_read: Отметить всё прочитанным
+      accept: Принять
+      dismiss: Отклонить
+
+  devise:
+    confirmations:
+      confirmed: "Ваш email успешно подтверждён."
+      send_instructions: "Вы получите письмо с инструкциями по подтверждению email через несколько минут."
+      send_paranoid_instructions: "Если ваш email есть в нашей базе, вы получите письмо с инструкциями."
+      new:
+        title: Повторная отправка инструкций подтверждения
+        submit: Повторно отправить
+    failure:
+      already_authenticated: "Вы уже вошли в систему."
+      inactive: "Ваш аккаунт ещё не активирован."
+      invalid: "Неверный %{authentication_keys} или пароль."
+      locked: "Ваш аккаунт заблокирован."
+      last_attempt: "Осталась одна попытка перед блокировкой аккаунта."
+      not_found_in_database: "Неверный %{authentication_keys} или пароль."
+      timeout: "Сессия истекла. Пожалуйста, войдите снова."
+      unauthenticated: "Необходимо войти или зарегистрироваться."
+      unconfirmed: "Необходимо подтвердить email перед входом."
+    mailer:
+      confirmation_instructions:
+        subject: "Инструкции по подтверждению"
+      reset_password_instructions:
+        subject: "Инструкции по сбросу пароля"
+      unlock_instructions:
+        subject: "Инструкции по разблокировке"
+      email_changed:
+        subject: "Email изменён"
+      password_change:
+        subject: "Пароль изменён"
+    omniauth_callbacks:
+      failure: "Не удалось выполнить вход через %{kind}: \"%{reason}\"."
+      success: "Вы успешно вошли через %{kind}."
+    passwords:
+      no_token: "Страница недоступна без перехода по ссылке из письма сброса пароля."
+      send_instructions: "Вы получите письмо с инструкциями по сбросу пароля через несколько минут."
+      send_paranoid_instructions: "Если ваш email есть в нашей базе, вы получите письмо со ссылкой для сброса пароля."
+      updated: "Пароль успешно изменён. Вы вошли в систему."
+      updated_not_active: "Пароль успешно изменён."
+      new:
+        title: Забыли пароль?
+        submit: Отправить инструкции по сбросу пароля
+      edit:
+        title: Изменить пароль
+        new_password: Новый пароль
+        confirm_password: Подтвердите новый пароль
+        min_password: "Минимум %{count} символов"
+        submit: Изменить пароль
+    registrations:
+      destroyed: "До свидания! Аккаунт успешно удалён."
+      signed_up: "Добро пожаловать! Вы успешно зарегистрировались."
+      signed_up_but_inactive: "Вы зарегистрировались, но не можете войти — аккаунт ещё не активирован."
+      signed_up_but_locked: "Вы зарегистрировались, но не можете войти — аккаунт заблокирован."
+      signed_up_but_unconfirmed: "Письмо со ссылкой для подтверждения отправлено на ваш email. Перейдите по ссылке для активации."
+      update_needs_confirmation: "Аккаунт обновлён, но необходимо подтвердить новый email. Проверьте почту."
+      updated: "Аккаунт успешно обновлён."
+      updated_but_not_signed_in: "Аккаунт обновлён, но так как пароль изменён — войдите снова."
+      new:
+        title: Регистрация
+        min_password: "Минимум %{count} символов"
+        submit: Зарегистрироваться
+      edit:
+        title: Редактировать аккаунт
+        pending_reconfirmation: "Ожидается подтверждение для: %{email}"
+        leave_blank: Оставьте пустым, если не хотите менять
+        min_password: "Минимум %{count} символов"
+        submit: Обновить
+        cancel: Назад
+        delete_account: Удалить аккаунт
+        delete_confirmation: Вы уверены, что хотите удалить аккаунт?
+        delete_submit: Удалить мой аккаунт
+        confirm_delete: Вы уверены?
+    sessions:
+      signed_in: "Вы успешно вошли."
+      signed_out: "Вы вышли из системы."
+      already_signed_out: "Вы вышли из системы."
+      new:
+        title: Войти
+        submit: Войти
+    unlocks:
+      send_instructions: "Вы получите письмо с инструкциями по разблокировке через несколько минут."
+      send_paranoid_instructions: "Если аккаунт существует, вы получите письмо с инструкциями."
+      unlocked: "Аккаунт разблокирован. Войдите в систему."
+      new:
+        title: Повторная отправка инструкций разблокировки
+        submit: Повторно отправить
+    shared:
+      links:
+        sign_in: Войти
+        sign_up: Регистрация
+        forgot_password: Забыли пароль?
+        no_confirmation: Не получили инструкции подтверждения?
+        no_unlock: Не получили инструкции разблокировки?
+        sign_in_with: "Войти через %{provider}"

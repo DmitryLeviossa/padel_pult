@@ -74,7 +74,29 @@ GEM
       uri (>= 0.13.1)
     addressable (2.9.0)
       public_suffix (>= 2.0.2, < 8.0)
+    annotaterb (4.22.0)
+      activerecord (>= 6.0.0)
+      activesupport (>= 6.0.0)
     ast (2.4.3)
+    aws-eventstream (1.4.0)
+    aws-partitions (1.1249.0)
+    aws-sdk-core (3.247.0)
+      aws-eventstream (~> 1, >= 1.3.0)
+      aws-partitions (~> 1, >= 1.992.0)
+      aws-sigv4 (~> 1.9)
+      base64
+      bigdecimal
+      jmespath (~> 1, >= 1.6.1)
+      logger
+    aws-sdk-kms (1.125.0)
+      aws-sdk-core (~> 3, >= 3.247.0)
+      aws-sigv4 (~> 1.5)
+    aws-sdk-s3 (1.222.0)
+      aws-sdk-core (~> 3, >= 3.247.0)
+      aws-sdk-kms (~> 1)
+      aws-sigv4 (~> 1.5)
+    aws-sigv4 (1.12.1)
+      aws-eventstream (~> 1, >= 1.0.2)
     base64 (0.3.0)
     bcrypt (3.1.22)
     bcrypt_pbkdf (1.1.2)
@@ -112,6 +134,7 @@ GEM
       railties (>= 7.0)
       responders
       warden (~> 1.2.3)
+    diff-lcs (1.6.2)
     dotenv (3.2.0)
     drb (2.2.3)
     ed25519 (1.4.0)
@@ -119,6 +142,19 @@ GEM
     erubi (1.13.1)
     et-orbi (1.4.0)
       tzinfo
+    factory_bot (6.6.0)
+      activesupport (>= 6.1.0)
+    factory_bot_rails (6.5.1)
+      factory_bot (~> 6.5)
+      railties (>= 6.1.0)
+    ffi (1.17.4-aarch64-linux-gnu)
+    ffi (1.17.4-aarch64-linux-musl)
+    ffi (1.17.4-arm-linux-gnu)
+    ffi (1.17.4-arm-linux-musl)
+    ffi (1.17.4-arm64-darwin)
+    ffi (1.17.4-x86_64-darwin)
+    ffi (1.17.4-x86_64-linux-gnu)
+    ffi (1.17.4-x86_64-linux-musl)
     fugit (1.12.1)
       et-orbi (~> 1.4)
       raabro (~> 1.4)
@@ -126,6 +162,9 @@ GEM
       activesupport (>= 6.1)
     i18n (1.14.8)
       concurrent-ruby (~> 1.0)
+    image_processing (1.14.0)
+      mini_magick (>= 4.9.5, < 6)
+      ruby-vips (>= 2.0.17, < 3)
     importmap-rails (2.2.3)
       actionpack (>= 6.0.0)
       activesupport (>= 6.0.0)
@@ -139,6 +178,7 @@ GEM
     jbuilder (2.14.1)
       actionview (>= 7.0.0)
       activesupport (>= 7.0.0)
+    jmespath (1.6.2)
     json (2.19.5)
     kamal (2.11.0)
       activesupport (>= 7.0)
@@ -165,6 +205,8 @@ GEM
       net-smtp
     marcel (1.1.0)
     matrix (0.4.3)
+    mini_magick (5.3.1)
+      logger
     mini_mime (1.1.5)
     minitest (6.0.6)
       drb (~> 2.0)
@@ -270,6 +312,10 @@ GEM
       zeitwerk (~> 2.6)
     rainbow (3.1.1)
     rake (13.4.2)
+    ransack (4.4.1)
+      activerecord (>= 7.2)
+      activesupport (>= 7.2)
+      i18n
     rdoc (7.2.0)
       erb
       psych (>= 4.0.0)
@@ -281,6 +327,23 @@ GEM
       actionpack (>= 7.0)
       railties (>= 7.0)
     rexml (3.4.4)
+    rspec-core (3.13.6)
+      rspec-support (~> 3.13.0)
+    rspec-expectations (3.13.5)
+      diff-lcs (>= 1.2.0, < 2.0)
+      rspec-support (~> 3.13.0)
+    rspec-mocks (3.13.8)
+      diff-lcs (>= 1.2.0, < 2.0)
+      rspec-support (~> 3.13.0)
+    rspec-rails (8.0.4)
+      actionpack (>= 7.2)
+      activesupport (>= 7.2)
+      railties (>= 7.2)
+      rspec-core (>= 3.13.0, < 5.0.0)
+      rspec-expectations (>= 3.13.0, < 5.0.0)
+      rspec-mocks (>= 3.13.0, < 5.0.0)
+      rspec-support (>= 3.13.0, < 5.0.0)
+    rspec-support (3.13.7)
     rubocop (1.86.1)
       json (~> 2.3)
       language_server-protocol (~> 3.17.0.2)
@@ -310,6 +373,9 @@ GEM
       rubocop-performance (>= 1.24)
       rubocop-rails (>= 2.30)
     ruby-progressbar (1.13.0)
+    ruby-vips (2.3.0)
+      ffi (~> 1.12)
+      logger
     rubyzip (3.3.0)
     securerandom (0.4.1)
     selenium-webdriver (4.43.0)
@@ -318,6 +384,13 @@ GEM
       rexml (~> 3.2, >= 3.2.5)
       rubyzip (>= 1.2.2, < 4.0)
       websocket (~> 1.0)
+    slim (5.2.1)
+      temple (~> 0.10.0)
+      tilt (>= 2.1.0)
+    slim-rails (4.0.0)
+      actionpack (>= 3.1)
+      railties (>= 3.1)
+      slim (>= 3.0, < 6.0, != 5.0.0)
     solid_cable (3.0.12)
       actioncable (>= 7.2)
       activejob (>= 7.2)
@@ -344,12 +417,14 @@ GEM
     stimulus-rails (1.3.4)
       railties (>= 6.0.0)
     stringio (3.2.0)
+    temple (0.10.4)
     thor (1.5.0)
     thruster (0.1.20)
     thruster (0.1.20-aarch64-linux)
     thruster (0.1.20-arm64-darwin)
     thruster (0.1.20-x86_64-darwin)
     thruster (0.1.20-x86_64-linux)
+    tilt (2.7.0)
     timeout (0.6.1)
     tsort (0.2.0)
     turbo-rails (2.0.23)
@@ -390,12 +465,16 @@ PLATFORMS
   x86_64-linux-musl
 
 DEPENDENCIES
+  annotaterb
+  aws-sdk-s3
   bootsnap
   brakeman
   capybara
   cssbundling-rails
   debug
   devise (~> 5.0)
+  factory_bot_rails
+  image_processing (~> 1.2)
   importmap-rails
   jbuilder
   kamal
@@ -403,8 +482,11 @@ DEPENDENCIES
   propshaft
   puma (>= 5.0)
   rails (~> 8.0.5)
+  ransack
+  rspec-rails
   rubocop-rails-omakase
   selenium-webdriver
+  slim-rails
   solid_cable
   solid_cache
   solid_queue

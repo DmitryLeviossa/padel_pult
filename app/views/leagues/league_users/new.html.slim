@@ -1,0 +1,23 @@
+.container.py-4
+  .row.justify-content-center
+    .col-md-6
+      h1.mb-4= t('.title')
+
+      = form_with model: @user, url: league_league_users_path(@league), method: :post do |f|
+        = render "devise/shared/error_messages", resource: @user
+
+        .mb-3
+          = f.label :first_name, t('activerecord.attributes.user.first_name'), class: "form-label"
+          = f.text_field :first_name, class: "form-control", autofocus: true
+
+        .mb-3
+          = f.label :last_name, t('activerecord.attributes.user.last_name'), class: "form-label"
+          = f.text_field :last_name, class: "form-control"
+
+        .mb-3
+          = f.label :gender, t('activerecord.attributes.user.gender'), class: "form-label"
+          = f.select :gender, options_for_select(User.genders.keys.map { |g| [t("activerecord.attributes.user.genders.#{g}"), g] }), { include_blank: "— #{t('activerecord.attributes.user.gender')} —" }, class: "form-select"
+
+        .d-flex.gap-2
+          = f.submit t('.submit'), class: "btn btn-primary"
+          = link_to t('.cancel'), league_path(@league), class: "btn btn-outline-secondary"

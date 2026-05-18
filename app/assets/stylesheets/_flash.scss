@@ -1,0 +1,11 @@
+// _flash.scss
+// Flash message positional overrides.
+// Bootstrap .alert-success/danger/warning/info dark variants are automatic via
+// data-bs-theme="dark" on <html> — no custom dark color overrides needed here.
+
+.alert {
+  margin-bottom: 0;
+  border-radius: 0;
+  border-left: none;
+  border-right: none;
+}

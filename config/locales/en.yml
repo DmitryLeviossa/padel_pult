@@ -29,3 +29,65 @@
 
 en:
   hello: "Hello world"
+  layouts:
+    navbar:
+      no_notifications: No new notifications
+      mark_all_read: Mark all as read
+  leagues:
+    league_invitations:
+      notifications:
+        league_invitation: "%{inviter} invited you to league \"%{league}\""
+  tournaments:
+    notifications:
+      registration_open: "Registration is open for tournament \"%{tournament}\""
+  pairs:
+    notifications:
+      tournament_added: "%{inviter} added you to tournament \"%{tournament}\""
+  users:
+    index:
+      awaiting_registration: Awaiting registration
+    show:
+      back: Players
+      member_since: Member since
+      leagues: Leagues
+      tournament_history: Tournament history
+      tournament_column: Tournament
+      league_column: League
+      date_column: Date
+      status_column: Status
+      placement_column: Place
+      partner_column: Partner
+      score_column: Score
+      no_history: No tournaments yet.
+  leagues:
+    index:
+      title: Leagues
+      new_league: New League
+      owner: Owner
+      created_at: "Created %{date}"
+      no_leagues: No leagues found.
+      search_label: Name
+      search_placeholder: Search by name
+      filter_label: Filter
+      filter_all: All leagues
+      filter_mine: My leagues
+      filter_owned: Created by me
+      reset: Reset
+    edit:
+      title: Edit League
+      submit: Save changes
+      cancel: Cancel
+      owner: Owner
+  tournaments:
+    index:
+      title: Tournaments
+      scope_all: All tournaments
+      scope_my_leagues: My leagues
+      name_label: Name
+      location_label: Location
+      status_label: Status
+      type_label: Type
+      search_placeholder: Search by name
+      location_placeholder: Location
+      reset: Reset
+      no_tournaments: No tournaments found.

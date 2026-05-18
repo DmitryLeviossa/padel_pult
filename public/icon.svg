@@ -1,3 +1,37 @@
-<svg width="512" height="512" xmlns="http://www.w3.org/2000/svg">
-  <circle cx="256" cy="256" r="256" fill="red"/>
+<svg width="512" height="512" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background circle -->
+  <circle cx="256" cy="256" r="252" fill="#0f172a"/>
+
+  <!-- Racket head (rounded rectangle) -->
+  <rect x="158" y="72" width="190" height="240" rx="85" fill="#f1f5f9"/>
+
+  <!-- Holes: 3 columns × 4 rows -->
+  <circle cx="218" cy="132" r="15" fill="#0f172a"/>
+  <circle cx="253" cy="132" r="15" fill="#0f172a"/>
+  <circle cx="288" cy="132" r="15" fill="#0f172a"/>
+
+  <circle cx="218" cy="174" r="15" fill="#0f172a"/>
+  <circle cx="253" cy="174" r="15" fill="#0f172a"/>
+  <circle cx="288" cy="174" r="15" fill="#0f172a"/>
+
+  <circle cx="218" cy="216" r="15" fill="#0f172a"/>
+  <circle cx="253" cy="216" r="15" fill="#0f172a"/>
+  <circle cx="288" cy="216" r="15" fill="#0f172a"/>
+
+  <circle cx="218" cy="258" r="15" fill="#0f172a"/>
+  <circle cx="253" cy="258" r="15" fill="#0f172a"/>
+  <circle cx="288" cy="258" r="15" fill="#0f172a"/>
+
+  <!-- Handle -->
+  <rect x="233" y="305" width="57" height="140" rx="14" fill="#475569"/>
+  <!-- Grip wrap -->
+  <rect x="233" y="355" width="57" height="55" rx="0" fill="#334155"/>
+  <line x1="233" y1="373" x2="290" y2="373" stroke="#1e293b" stroke-width="4"/>
+  <line x1="233" y1="391" x2="290" y2="391" stroke="#1e293b" stroke-width="4"/>
+
+  <!-- Ball (upper-right, slightly overlapping racket edge) -->
+  <circle cx="388" cy="150" r="58" fill="#84cc16"/>
+  <!-- Ball seam curves -->
+  <path d="M 344 133 Q 388 162 432 133" stroke="white" stroke-width="5" fill="none" stroke-linecap="round"/>
+  <path d="M 344 167 Q 388 138 432 167" stroke="white" stroke-width="5" fill="none" stroke-linecap="round"/>
 </svg>

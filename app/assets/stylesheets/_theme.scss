@@ -1,0 +1,47 @@
+// _theme.scss
+// Imported AFTER all Bootstrap partials, before spacing and typography.
+// Block 1: Project semantic color tokens on :root
+// Block 2: Bootstrap dark mode CSS variable overrides (win cascade over Bootstrap's own [data-bs-theme="dark"] block)
+
+:root {
+  // Core palette — locked decisions D-01 through D-07
+  --color-bg-base:          #0d1117;
+  --color-bg-navbar:        #161b22;
+  --color-bg-surface:       #21262d;
+  --color-text-primary:     #e6edf3;
+  --color-text-muted:       #8b949e;
+  --color-border:           #30363d;
+  --color-accent:           #2f81f7;
+
+  // Extended semantic tokens — Bootstrap dark mode mapping + Phase 3+ components
+  --color-text-placeholder: #484f58;
+  --color-accent-hover:     #4d94f8;
+  --color-accent-subtle:    #0d2340;
+  --color-success:          #3fb950;
+  --color-warning:          #d29922;
+  --color-danger:           #f85149;
+}
+
+[data-bs-theme="dark"] {
+  --bs-body-bg:                  var(--color-bg-base);
+  --bs-body-color:               var(--color-text-primary);
+  --bs-secondary-bg:             var(--color-bg-surface);
+  --bs-secondary-color:          var(--color-text-muted);
+  --bs-emphasis-color:           #ffffff;
+  --bs-primary:                  var(--color-accent);
+  --bs-primary-rgb:              47, 129, 247;
+  --bs-link-color:               var(--color-accent);
+  --bs-link-hover-color:         var(--color-accent-hover);
+  --bs-border-color:             var(--color-border);
+  --bs-card-bg:                  var(--color-bg-surface);
+  --bs-card-border-color:        var(--color-border);
+  --bs-dropdown-bg:              var(--color-bg-surface);
+  --bs-modal-bg:                 var(--color-bg-surface);
+  --bs-input-bg:                 var(--color-bg-surface);
+  --bs-input-border-color:       var(--color-border);
+  --bs-input-color:              var(--color-text-primary);
+  --bs-input-placeholder-color:  var(--color-text-placeholder);
+  --bs-tertiary-bg:              var(--color-bg-navbar);    // COMP-03: file-selector-button bg (#161b22 — darker than input, clear visual separation)
+  --bs-box-shadow-sm:            none;                       // COMP-01: suppress invisible light-theme shadows on dark backgrounds
+  --bs-box-shadow:               none;                       // COMP-01: suppress .shadow utility on dark backgrounds
+}

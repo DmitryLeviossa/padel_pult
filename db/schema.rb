@@ -10,9 +10,50 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2026_05_08_133808) do
+ActiveRecord::Schema[8.0].define(version: 2026_05_18_000001) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
+
+  create_table "active_storage_attachments", force: :cascade do |t|
+    t.string "name", null: false
+    t.string "record_type", null: false
+    t.bigint "record_id", null: false
+    t.bigint "blob_id", null: false
+    t.datetime "created_at", null: false
+    t.index ["blob_id"], name: "index_active_storage_attachments_on_blob_id"
+    t.index ["record_type", "record_id", "name", "blob_id"], name: "index_active_storage_attachments_uniqueness", unique: true
+  end
+
+  create_table "active_storage_blobs", force: :cascade do |t|
+    t.string "key", null: false
+    t.string "filename", null: false
+    t.string "content_type"
+    t.text "metadata"
+    t.string "service_name", null: false
+    t.bigint "byte_size", null: false
+    t.string "checksum"
+    t.datetime "created_at", null: false
+    t.index ["key"], name: "index_active_storage_blobs_on_key", unique: true
+  end
+
+  create_table "active_storage_variant_records", force: :cascade do |t|
+    t.bigint "blob_id", null: false
+    t.string "variation_digest", null: false
+    t.index ["blob_id", "variation_digest"], name: "index_active_storage_variant_records_uniqueness", unique: true
+  end
+
+  create_table "league_invitations", force: :cascade do |t|
+    t.bigint "league_id", null: false
+    t.bigint "invited_user_id", null: false
+    t.bigint "invited_by_id", null: false
+    t.integer "status", default: 0, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["invited_by_id"], name: "index_league_invitations_on_invited_by_id"
+    t.index ["invited_user_id"], name: "index_league_invitations_on_invited_user_id"
+    t.index ["league_id", "invited_user_id"], name: "index_league_invitations_on_league_id_and_invited_user_id", unique: true
+    t.index ["league_id"], name: "index_league_invitations_on_league_id"
+  end
 
   create_table "league_users", force: :cascade do |t|
     t.bigint "league_id", null: false
@@ -27,10 +68,22 @@ ActiveRecord::Schema[8.0].define(version: 2026_05_08_133808) do
   create_table "leagues", force: :cascade do |t|
     t.string "name", null: false
     t.text "description"
-    t.bigint "user_id", null: false
+    t.bigint "owner_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.index ["user_id"], name: "index_leagues_on_user_id"
+    t.index ["owner_id"], name: "index_leagues_on_owner_id"
+  end
+
+  create_table "notifications", force: :cascade do |t|
+    t.bigint "user_id", null: false
+    t.string "notification_type", null: false
+    t.string "message", null: false
+    t.string "url"
+    t.datetime "read_at"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["user_id", "read_at"], name: "index_notifications_on_user_id_and_read_at"
+    t.index ["user_id"], name: "index_notifications_on_user_id"
   end
 
   create_table "pairs", force: :cascade do |t|
@@ -39,6 +92,7 @@ ActiveRecord::Schema[8.0].define(version: 2026_05_08_133808) do
     t.bigint "tournament_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.integer "placement"
     t.index ["player1_id"], name: "index_pairs_on_player1_id"
     t.index ["player2_id"], name: "index_pairs_on_player2_id"
     t.index ["tournament_id"], name: "index_pairs_on_tournament_id"
@@ -46,16 +100,17 @@ ActiveRecord::Schema[8.0].define(version: 2026_05_08_133808) do
 
   create_table "tournaments", force: :cascade do |t|
     t.string "name", null: false
-    t.date "start_date", null: false
-    t.date "end_date", null: false
+    t.datetime "start_date", null: false
+    t.datetime "end_date", null: false
     t.integer "max_participants", default: 16, null: false
     t.string "location"
-    t.string "type", default: "olimpic", null: false
+    t.string "type", default: "olympic", null: false
     t.string "status", default: "draft", null: false
     t.text "description"
     t.bigint "league_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.jsonb "placement_points", default: [], null: false
     t.index ["league_id"], name: "index_tournaments_on_league_id"
   end
 
@@ -67,15 +122,26 @@ ActiveRecord::Schema[8.0].define(version: 2026_05_08_133808) do
     t.datetime "remember_created_at"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.string "first_name"
+    t.string "last_name"
+    t.integer "gender"
+    t.string "invitation_token"
     t.index ["email"], name: "index_users_on_email", unique: true
+    t.index ["invitation_token"], name: "index_users_on_invitation_token", unique: true
     t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
   end
 
+  add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
+  add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
+  add_foreign_key "league_invitations", "leagues"
+  add_foreign_key "league_invitations", "users", column: "invited_by_id"
+  add_foreign_key "league_invitations", "users", column: "invited_user_id"
   add_foreign_key "league_users", "leagues"
   add_foreign_key "league_users", "users"
-  add_foreign_key "leagues", "users"
+  add_foreign_key "leagues", "users", column: "owner_id"
+  add_foreign_key "notifications", "users"
+  add_foreign_key "pairs", "league_users", column: "player1_id"
+  add_foreign_key "pairs", "league_users", column: "player2_id"
   add_foreign_key "pairs", "tournaments"
-  add_foreign_key "pairs", "users", column: "player1_id"
-  add_foreign_key "pairs", "users", column: "player2_id"
   add_foreign_key "tournaments", "leagues"
 end

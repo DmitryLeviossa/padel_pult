@@ -1,0 +1,70 @@
+.container.py-4
+  h1.mb-4= t('.welcome', name: current_user.full_name)
+
+  .row.g-3.mb-4
+    .col-sm-6.col-lg-3
+      .card
+        .card-body.d-flex.align-items-center.gap-3
+          i.bi.bi-people.fs-2.text-primary
+          div
+            .text-muted.small= t('.my_leagues')
+            .fs-4.fw-semibold= @my_leagues.count
+    .col-sm-6.col-lg-3
+      .card
+        .card-body.d-flex.align-items-center.gap-3
+          i.bi.bi-trophy.fs-2.text-primary
+          div
+            .text-muted.small= t('.my_tournaments')
+            .fs-4.fw-semibold= @my_tournaments.count
+
+  .row.g-4
+    .col-md-6
+      .card.h-100
+        .card-header.fw-semibold= t('.my_leagues')
+        .card-body
+          - if @my_leagues.any?
+            ul.list-group.list-group-flush
+              - @my_leagues.each do |league|
+                li.list-group-item.d-flex.justify-content-between.align-items-center
+                  .d-flex.align-items-center.gap-2
+                    = link_to league.name, league_path(league)
+                    - if league.owner_id == current_user.id
+                      span.badge.bg-primary= t('.owner')
+                  span.badge.bg-secondary= league.tournaments.count
+          - else
+            p.text-muted.mb-0= t('.no_leagues')
+        .card-footer
+          = link_to t('.all_leagues'), leagues_path, class: "btn btn-sm btn-outline-primary me-2"
+          = link_to t('.create_league'), new_league_path, class: "btn btn-sm btn-primary"
+
+    .col-md-6
+      .card.h-100
+        .card-header.fw-semibold= t('.my_tournaments')
+        .card-body
+          - if @my_tournaments.any?
+            ul.list-group.list-group-flush
+              - @my_tournaments.each do |tournament|
+                li.list-group-item.d-flex.justify-content-between.align-items-center
+                  div
+                    = link_to tournament.name, tournament_path(tournament)
+                    span.text-muted.small.ms-2= tournament.league.name
+                  span.badge.bg-secondary= "#{tournament.pairs.size * 2}/#{tournament.max_participants}"
+          - else
+            p.text-muted.mb-0= t('.no_tournaments')
+        .card-footer
+          = link_to t('.all_tournaments'), tournaments_path, class: "btn btn-sm btn-outline-primary"
+
+  .mt-5
+    h5.mb-3= t('.recent_leagues')
+    - if @recent_leagues.any?
+      .row.row-cols-1.row-cols-md-3.g-3
+        - @recent_leagues.each do |league|
+          .col
+            .card.card-hoverable.h-100
+              .card-body
+                h6.card-title= link_to league.name, league_path(league), class: "text-decoration-none stretched-link"
+                p.card-text.text-muted.small= league.description
+              .card-footer.text-muted.small
+                | #{league.owner.full_name} · #{l(league.created_at.to_date, format: :long)}
+    - else
+      p.text-muted= t('.no_recent_leagues')

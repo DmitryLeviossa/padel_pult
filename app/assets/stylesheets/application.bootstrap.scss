@@ -1,2 +1,61 @@
-@import 'bootstrap/scss/bootstrap';
+// application.bootstrap.scss
+// Pure import manifest — no CSS rules in this file.
+// All rules live in partials.
+
+// 1. Bootstrap infrastructure (must precede all variable and mixin use)
+@import 'bootstrap/scss/functions';
+
+// 2. Project SCSS variable overrides — BEFORE Bootstrap reads its variables.
+//    Bootstrap uses !default on every variable; pre-defined values win.
+@import 'variables';
+
+// 3. Bootstrap configuration chain (order is mandatory — each partial depends on the prior)
+@import 'bootstrap/scss/variables';
+@import 'bootstrap/scss/variables-dark';
+@import 'bootstrap/scss/maps';
+@import 'bootstrap/scss/mixins';
+@import 'bootstrap/scss/utilities';
+
+// 4. Bootstrap layout and component partials (selective — unused partials omitted to reduce output size)
+@import 'bootstrap/scss/root';
+@import 'bootstrap/scss/reboot';
+@import 'bootstrap/scss/type';
+@import 'bootstrap/scss/containers';
+@import 'bootstrap/scss/grid';
+@import 'bootstrap/scss/tables';
+@import 'bootstrap/scss/forms';
+@import 'bootstrap/scss/buttons';
+@import 'bootstrap/scss/close';
+@import 'bootstrap/scss/transitions';
+@import 'bootstrap/scss/dropdown';
+@import 'bootstrap/scss/nav';
+@import 'bootstrap/scss/navbar';
+@import 'bootstrap/scss/card';
+@import 'bootstrap/scss/badge';
+@import 'bootstrap/scss/alert';
+@import 'bootstrap/scss/modal';
+@import 'bootstrap/scss/spinners';
+@import 'bootstrap/scss/helpers';
+@import 'bootstrap/scss/utilities/api';
+
+// 5. Project design tokens — AFTER all Bootstrap partials.
+//    _theme.scss overrides Bootstrap's [data-bs-theme="dark"] block via cascade.
+@import 'theme';
+@import 'spacing';
+@import 'typography';
+@import 'navbar';
+@import 'flash';
+@import 'cards';
+@import 'forms';
+@import 'tables';
+@import 'avatar';
+@import 'interactions';
+
+// 6. Tom Select with Bootstrap 5 theme
+@import 'tom-select/dist/css/tom-select.bootstrap5';
+
+// 7. Flatpickr date range picker
+@import 'flatpickr/dist/flatpickr.min';
+
+// 8. Icon font — always last
 @import 'bootstrap-icons/font/bootstrap-icons';

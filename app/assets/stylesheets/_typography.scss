@@ -1,0 +1,15 @@
+// _typography.scss
+// Handles link behavior and any element overrides not covered by Bootstrap $variables.
+// Font family (Inter stack) and heading weights flow through _variables.scss at compile time.
+// $link-decoration: none in _variables.scss sets Bootstrap's default; this block adds hover restore.
+
+// Link decoration override for dark surfaces.
+// Dark surfaces use color alone as the link affordance — no underline by default.
+// Underline restores on hover for accessibility.
+a:not(.btn):not(.nav-link):not(.navbar-brand) {
+  text-decoration: none;
+
+  &:hover {
+    text-decoration: underline;
+  }
+}

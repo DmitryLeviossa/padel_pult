@@ -1,0 +1,244 @@
+require "rails_helper"
+
+RSpec.describe "Tournaments", type: :request do
+  let(:owner) { create(:user) }
+  let(:other_user) { create(:user) }
+  let(:league) { create(:league, owner: owner) }
+  let(:draft_tournament) { create(:tournament, league: league) }
+  let(:active_tournament) { create(:tournament, :active, league: league) }
+
+  describe "DELETE /tournaments/:id" do
+    context "as owner" do
+      before { sign_in owner }
+
+      it "deletes draft tournament and redirects to league" do
+        delete tournament_path(draft_tournament)
+        expect(response).to redirect_to(league_path(league, anchor: "tournaments"))
+        expect(Tournament.exists?(draft_tournament.id)).to be false
+      end
+
+      it "does not delete non-draft tournament" do
+        delete tournament_path(active_tournament)
+        expect(response).to redirect_to(tournament_path(active_tournament))
+        expect(Tournament.exists?(active_tournament.id)).to be true
+      end
+    end
+
+    context "as non-owner" do
+      before { sign_in other_user }
+
+      it "does not delete tournament and redirects to league" do
+        delete tournament_path(draft_tournament)
+        expect(response).to redirect_to(league_path(draft_tournament.league))
+        expect(Tournament.exists?(draft_tournament.id)).to be true
+      end
+    end
+
+    context "unauthenticated" do
+      it "redirects to sign in" do
+        delete tournament_path(draft_tournament)
+        expect(response).to redirect_to(new_user_session_path)
+        expect(Tournament.exists?(draft_tournament.id)).to be true
+      end
+    end
+  end
+
+  describe "GET /tournaments/:id/fill_results" do
+    context "as owner" do
+      before { sign_in owner }
+
+      it "returns 200 for active tournament" do
+        get fill_results_tournament_path(active_tournament)
+        expect(response).to have_http_status(:ok)
+      end
+
+      it "redirects to tournament for non-active tournament" do
+        get fill_results_tournament_path(draft_tournament)
+        expect(response).to redirect_to(tournament_path(draft_tournament))
+      end
+    end
+
+    context "as non-owner" do
+      before { sign_in other_user }
+
+      it "redirects to league" do
+        get fill_results_tournament_path(active_tournament)
+        expect(response).to redirect_to(league_path(active_tournament.league))
+      end
+    end
+
+    context "unauthenticated" do
+      it "redirects to sign in" do
+        get fill_results_tournament_path(active_tournament)
+        expect(response).to redirect_to(new_user_session_path)
+      end
+    end
+  end
+
+  describe "PATCH /tournaments/:id/complete" do
+    let(:points_rules) { [ { "from" => 1, "to" => 1, "points" => 10 }, { "from" => 2, "to" => 2, "points" => 5 } ] }
+    let(:tournament) { create(:tournament, :active, league: league, placement_points: points_rules) }
+    let(:lu1) { create(:league_user, league: league) }
+    let(:lu2) { create(:league_user, league: league) }
+    let!(:pair) { create(:pair, tournament: tournament, player1: lu1, player2: lu2) }
+
+    context "as owner" do
+      before { sign_in owner }
+
+      it "completes the tournament and updates scores" do
+        patch complete_tournament_path(tournament), params: { placements: { pair.id.to_s => 1 } }
+        expect(response).to redirect_to(tournament_path(tournament))
+        expect(tournament.reload.status).to eq("completed")
+        expect(lu1.reload.score).to eq(10)
+        expect(lu2.reload.score).to eq(10)
+      end
+
+      it "assigns placement to the pair" do
+        patch complete_tournament_path(tournament), params: { placements: { pair.id.to_s => 2 } }
+        expect(pair.reload.placement).to eq(2)
+        expect(lu1.reload.score).to eq(5)
+      end
+
+      it "redirects to tournament when not active" do
+        patch complete_tournament_path(draft_tournament)
+        expect(response).to redirect_to(tournament_path(draft_tournament))
+        expect(draft_tournament.reload.status).to eq("draft")
+      end
+    end
+
+    context "as non-owner" do
+      before { sign_in other_user }
+
+      it "redirects to league without completing" do
+        patch complete_tournament_path(tournament), params: { placements: { pair.id.to_s => 1 } }
+        expect(response).to redirect_to(league_path(tournament.league))
+        expect(tournament.reload.status).to eq("active")
+      end
+    end
+
+    context "unauthenticated" do
+      it "redirects to sign in" do
+        patch complete_tournament_path(tournament)
+        expect(response).to redirect_to(new_user_session_path)
+      end
+    end
+  end
+
+  describe "POST /tournaments/:id/cancel" do
+    let(:registration_tournament) { create(:tournament, :registration, league: league) }
+    let(:lu1) { create(:league_user, league: league) }
+    let(:lu2) { create(:league_user, league: league) }
+    let!(:pair) { create(:pair, tournament: registration_tournament, player1: lu1, player2: lu2) }
+
+    context "as owner" do
+      before { sign_in owner }
+
+      it "cancels the tournament and redirects" do
+        post cancel_tournament_path(registration_tournament)
+        expect(response).to redirect_to(tournament_path(registration_tournament))
+        expect(registration_tournament.reload.status).to eq("cancelled")
+      end
+
+      it "notifies registered players" do
+        expect {
+          post cancel_tournament_path(registration_tournament)
+        }.to change(Notification, :count).by(2)
+
+        notification = Notification.last
+        expect(notification.notification_type).to eq("tournament_cancelled")
+      end
+
+      it "does not cancel a non-registration tournament" do
+        post cancel_tournament_path(draft_tournament)
+        expect(response).to redirect_to(tournament_path(draft_tournament))
+        expect(draft_tournament.reload.status).to eq("draft")
+      end
+    end
+
+    context "as non-owner" do
+      before { sign_in other_user }
+
+      it "does not cancel tournament and redirects to league" do
+        post cancel_tournament_path(registration_tournament)
+        expect(response).to redirect_to(league_path(registration_tournament.league))
+        expect(registration_tournament.reload.status).to eq("registration")
+      end
+    end
+
+    context "unauthenticated" do
+      it "redirects to sign in" do
+        post cancel_tournament_path(registration_tournament)
+        expect(response).to redirect_to(new_user_session_path)
+      end
+    end
+  end
+
+  describe "GET /tournaments/:id/edit" do
+    context "as owner" do
+      before { sign_in owner }
+
+      it "returns 200 for draft tournament" do
+        get edit_tournament_path(draft_tournament)
+        expect(response).to have_http_status(:ok)
+      end
+
+      it "redirects to tournament for non-draft tournament" do
+        get edit_tournament_path(active_tournament)
+        expect(response).to redirect_to(tournament_path(active_tournament))
+      end
+    end
+
+    context "as non-owner" do
+      before { sign_in other_user }
+
+      it "redirects to league" do
+        get edit_tournament_path(draft_tournament)
+        expect(response).to redirect_to(league_path(draft_tournament.league))
+      end
+    end
+
+    context "unauthenticated" do
+      it "redirects to sign in" do
+        get edit_tournament_path(draft_tournament)
+        expect(response).to redirect_to(new_user_session_path)
+      end
+    end
+  end
+
+  describe "PATCH /tournaments/:id" do
+    context "as owner" do
+      before { sign_in owner }
+
+      it "updates draft tournament and redirects" do
+        patch tournament_path(draft_tournament), params: { tournament: { name: "Updated Name" } }
+        expect(response).to redirect_to(tournament_path(draft_tournament))
+        expect(draft_tournament.reload.name).to eq("Updated Name")
+      end
+
+      it "does not update non-draft tournament" do
+        original_name = active_tournament.name
+        patch tournament_path(active_tournament), params: { tournament: { name: "Changed" } }
+        expect(response).to redirect_to(tournament_path(active_tournament))
+        expect(active_tournament.reload.name).to eq(original_name)
+      end
+
+      it "re-renders edit on validation failure" do
+        patch tournament_path(draft_tournament), params: {
+          tournament: { placement_points: [ { from: 0, to: 0, points: 0 } ] }
+        }
+        expect(response).to have_http_status(:unprocessable_entity)
+      end
+    end
+
+    context "as non-owner" do
+      before { sign_in other_user }
+
+      it "does not update tournament and redirects to league" do
+        original_name = draft_tournament.name
+        patch tournament_path(draft_tournament), params: { tournament: { name: "Changed" } }
+        expect(response).to redirect_to(league_path(draft_tournament.league))
+        expect(draft_tournament.reload.name).to eq(original_name)
+      end
+    end
+  end
+end

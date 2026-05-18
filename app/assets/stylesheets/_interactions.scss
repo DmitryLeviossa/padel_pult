@@ -1,0 +1,25 @@
+// _interactions.scss
+// Imported in application.bootstrap.scss after @import 'avatar' (Phase 5, Plan 01).
+// Source-order cascade: this partial comes AFTER all Bootstrap component partials,
+// so its rules win over Bootstrap's default :focus-visible box-shadow at equal specificity.
+// POLL-01: button hover/focus-visible electric blue glow.
+
+.btn-primary {
+  transition: $transition-base;
+
+  &:hover,
+  &:focus-visible {
+    box-shadow: 0 0 12px rgba(47, 129, 247, 0.3);
+  }
+}
+
+// .btn-accent: no template currently uses this class (verified by grep).
+// Included for forward-compatibility — zero current effect, takes effect the moment a template adopts the class.
+.btn-accent {
+  transition: $transition-base;
+
+  &:hover,
+  &:focus-visible {
+    box-shadow: 0 0 12px rgba(47, 129, 247, 0.3);
+  }
+}
