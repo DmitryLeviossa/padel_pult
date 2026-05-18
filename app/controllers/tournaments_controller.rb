@@ -35,8 +35,8 @@ class TournamentsController < ApplicationController
       case @sort
       when "player1"       then pair.player1.full_name
       when "player2"       then pair.player2.full_name
-      when "player1_score" then pair.player1.score
-      when "player2_score" then pair.player2.score
+      when "player1_score" then pair.player1_score
+      when "player2_score" then pair.player2_score
       when "created_at"    then pair.created_at
       when "placement"     then pair.placement || Float::INFINITY
       else                      pair.score

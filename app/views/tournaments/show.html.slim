@@ -92,11 +92,11 @@
             td
               = render "shared/avatar", user: pair.player1.user
             td= pair.player1.full_name
-            td= pair.player1.score
+            td= pair.player1_score
             td
               = render "shared/avatar", user: pair.player2.user
             td= pair.player2.full_name
-            td= pair.player2.score
+            td= pair.player2_score
             td= pair.score
             td= l(pair.created_at.to_date, format: :long)
             - if @tournament.registration? && @tournament.league.owner == current_user

@@ -4,6 +4,8 @@
 #
 #  id            :bigint           not null, primary key
 #  placement     :integer
+#  player1_score :integer          default(0), not null
+#  player2_score :integer          default(0), not null
 #  created_at    :datetime         not null
 #  updated_at    :datetime         not null
 #  player1_id    :bigint           not null
@@ -27,11 +29,13 @@ class Pair < ApplicationRecord
   belongs_to :player2, class_name: "LeagueUser"
   belongs_to :tournament
 
+  before_create :snapshot_player_scores
+
   validate :players_must_be_different
   validate :each_player_once_per_tournament
 
   def score
-    player1.score + player2.score
+    player1_score + player2_score
   end
 
   def partner_for(league_user_ids)
@@ -39,6 +43,11 @@ class Pair < ApplicationRecord
   end
 
   private
+
+  def snapshot_player_scores
+    self.player1_score = player1.score
+    self.player2_score = player2.score
+  end
 
   def players_must_be_different
     errors.add(:player2, :same_as_player1) if player1_id.present? && player1_id == player2_id

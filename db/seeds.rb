@@ -147,6 +147,19 @@ t_registration = Tournament.create!(
   placement_points:  small_points
 )
 
+t_active_rr = Tournament.create!(
+  name:              "Лига Москвы: Круговой турнир 2026",
+  league:            league1,
+  start_date:        Date.new(2026, 5, 15),
+  end_date:          Date.new(2026, 5, 25),
+  max_participants:  6,
+  location:          "Спортивный клуб «Динамо»",
+  type:              "round_robin",
+  status:            "active",
+  description:       "Активный круговой турнир Московской лиги",
+  placement_points:  standard_points
+)
+
 # Pairs for completed_1 (league1): 4 pairs from first 8 members
 league1_members.first(8).each_slice(2) do |p1, p2|
   Pair.create!(tournament: t_completed_1, player1: p1, player2: p2)
@@ -167,6 +180,11 @@ league2_members.each_slice(2) do |p1, p2|
   Pair.create!(tournament: t_registration, player1: p1, player2: p2)
 end
 
+# Pairs for active round-robin (league1): 6 pairs from first 12 members
+league1_members.first(12).each_slice(2) do |p1, p2|
+  Pair.create!(tournament: t_active_rr, player1: p1, player2: p2)
+end
+
 # Matches
 def complete_match!(match, winner_pair, winner_score, loser_score)
   match.update!(
@@ -181,6 +199,7 @@ end
 Tournaments::Matches::OlympicGenerator.new(t_completed_1).call
 Tournaments::Matches::OlympicGenerator.new(t_completed_2).call
 Tournaments::Matches::OlympicGenerator.new(t_active).call
+Tournaments::Matches::RoundRobinGenerator.new(t_active_rr).call
 
 # Complete all rounds for t_completed_1 (4 pairs → 2 rounds)
 t_completed_1.matches.reload.ordered.group_by(&:round_number).each do |_round, matches|
@@ -200,6 +219,13 @@ end
 t_active.matches.reload.where(round_number: 1).ordered.each do |match|
   next if match.bye? || match.pair1.nil? || match.pair2.nil?
   complete_match!(match, match.pair1, 6, rand(2..4))
+end
+
+# Complete rounds 1-3 for t_active_rr (6 pairs → 5 rounds), leave rounds 4-5 pending
+t_active_rr.matches.reload.where(round_number: 1..3).ordered.each do |match|
+  next if match.pair1.nil? || match.pair2.nil?
+  winner = [ match.pair1, match.pair2 ].sample
+  complete_match!(match, winner, 6, rand(2..5))
 end
 
 # Notifications
