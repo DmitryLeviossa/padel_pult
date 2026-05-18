@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2026_05_18_000001) do
+ActiveRecord::Schema[8.0].define(version: 2026_05_18_134048) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -72,6 +72,25 @@ ActiveRecord::Schema[8.0].define(version: 2026_05_18_000001) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["owner_id"], name: "index_leagues_on_owner_id"
+  end
+
+  create_table "matches", force: :cascade do |t|
+    t.bigint "tournament_id", null: false
+    t.bigint "pair1_id"
+    t.bigint "pair2_id"
+    t.bigint "winner_id"
+    t.integer "pair1_score"
+    t.integer "pair2_score"
+    t.integer "round_number", null: false
+    t.integer "position", null: false
+    t.string "status", default: "pending", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["pair1_id"], name: "index_matches_on_pair1_id"
+    t.index ["pair2_id"], name: "index_matches_on_pair2_id"
+    t.index ["tournament_id", "round_number", "position"], name: "index_matches_on_tournament_id_and_round_number_and_position", unique: true
+    t.index ["tournament_id"], name: "index_matches_on_tournament_id"
+    t.index ["winner_id"], name: "index_matches_on_winner_id"
   end
 
   create_table "notifications", force: :cascade do |t|
@@ -139,6 +158,10 @@ ActiveRecord::Schema[8.0].define(version: 2026_05_18_000001) do
   add_foreign_key "league_users", "leagues"
   add_foreign_key "league_users", "users"
   add_foreign_key "leagues", "users", column: "owner_id"
+  add_foreign_key "matches", "pairs", column: "pair1_id"
+  add_foreign_key "matches", "pairs", column: "pair2_id"
+  add_foreign_key "matches", "pairs", column: "winner_id"
+  add_foreign_key "matches", "tournaments"
   add_foreign_key "notifications", "users"
   add_foreign_key "pairs", "league_users", column: "player1_id"
   add_foreign_key "pairs", "league_users", column: "player2_id"

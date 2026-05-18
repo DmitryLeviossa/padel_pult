@@ -1,5 +1,5 @@
 # Clean slate (order matters due to foreign keys)
-[Notification, Pair, Tournament, LeagueInvitation, LeagueUser, League].each(&:destroy_all)
+[ Notification, Match, Pair, Tournament, LeagueInvitation, LeagueUser, League ].each(&:destroy_all)
 
 # Users — idempotent, kept across reruns
 users_data = [
@@ -167,6 +167,41 @@ league2_members.each_slice(2) do |p1, p2|
   Pair.create!(tournament: t_registration, player1: p1, player2: p2)
 end
 
+# Matches
+def complete_match!(match, winner_pair, winner_score, loser_score)
+  match.update!(
+    pair1_score: match.pair1 == winner_pair ? winner_score : loser_score,
+    pair2_score: match.pair2 == winner_pair ? winner_score : loser_score,
+    winner:      winner_pair,
+    status:      :completed
+  )
+  Tournaments::Matches::AdvanceWinnerService.new(match).call
+end
+
+Tournaments::Matches::OlympicGenerator.new(t_completed_1).call
+Tournaments::Matches::OlympicGenerator.new(t_completed_2).call
+Tournaments::Matches::OlympicGenerator.new(t_active).call
+
+# Complete all rounds for t_completed_1 (4 pairs → 2 rounds)
+t_completed_1.matches.reload.ordered.group_by(&:round_number).each do |_round, matches|
+  matches.each do |match|
+    next if match.bye? || match.pair1.nil? || match.pair2.nil?
+    complete_match!(match.reload, match.pair1, 6, rand(2..4))
+  end
+end
+
+# Complete the single final for t_completed_2 (2 pairs → 1 round)
+t_completed_2.matches.reload.ordered.each do |match|
+  next if match.bye? || match.pair1.nil? || match.pair2.nil?
+  complete_match!(match, match.pair1, 7, 5)
+end
+
+# Complete round 1 for t_active (8 pairs → 3 rounds), leave round 2+ pending
+t_active.matches.reload.where(round_number: 1).ordered.each do |match|
+  next if match.bye? || match.pair1.nil? || match.pair2.nil?
+  complete_match!(match, match.pair1, 6, rand(2..4))
+end
+
 # Notifications
 [boris, vadim, darya].each do |user|
   Notification.create!(
@@ -194,4 +229,4 @@ Notification.create!(
   read_at: Time.current
 )
 
-puts "Seeded: #{User.count} users, #{League.count} leagues, #{Tournament.count} tournaments, #{Pair.count} pairs, #{Notification.count} notifications"
+puts "Seeded: #{User.count} users, #{League.count} leagues, #{Tournament.count} tournaments, #{Pair.count} pairs, #{Match.count} matches, #{Notification.count} notifications"

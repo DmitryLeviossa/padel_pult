@@ -324,6 +324,7 @@ ru:
     activate:
       success: Турнир активирован.
       not_registration: Активировать можно только турнир с открытой регистрацией.
+      activate_failed: Не удалось активировать турнир. Попробуйте ещё раз.
     cancel:
       success: Турнир отменён. Участники уведомлены.
       not_registration: Отменить можно только турнир с открытой регистрацией.
@@ -341,6 +342,33 @@ ru:
       completed: Турнир уже завершен.
       failure: Не удалось завершить турнир. Попробуйте ещё раз.
 
+  not_authorized: Нет доступа.
+  matches:
+    schedule_title: Расписание
+    bracket_title: Сетка
+    round: Раунд
+    final: Финал
+    semifinal: Полуфинал
+    third_place: Матч за 3-е место
+    bye: "Свободен"
+    pair1_column: Пара 1
+    pair2_column: Пара 2
+    score_column: Счёт
+    status_column: Статус
+    complete_tournament: Завершить турнир
+    enter_result: Ввести результат
+    enter_result_title: Результат матча
+    winner_label: Победитель
+    winner_prompt: "— выберите победителя —"
+    save_result: Сохранить
+    cancel: Отмена
+    status:
+      pending: Не сыгран
+      completed: Завершён
+  matches_controller:
+    update:
+      success: Результат сохранён.
+      failure: Не удалось сохранить результат.
   users:
     index:
       title: Пользователи

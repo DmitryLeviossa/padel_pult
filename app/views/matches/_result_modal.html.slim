@@ -1,0 +1,21 @@
+- matches.each do |match|
+  - next if match.completed? || match.bye?
+  - next if match.pair1.nil? || match.pair2.nil?
+  .modal.fade id="match-modal-#{match.id}" tabindex="-1"
+    .modal-dialog
+      .modal-content
+        .modal-header
+          h5.modal-title= t("matches.enter_result_title")
+          button.btn-close type="button" data-bs-dismiss="modal"
+        = form_with url: tournament_match_path(match.tournament, match), method: :patch, scope: :match do |f|
+          .modal-body
+            .mb-3
+              label.form-label.fw-semibold= match.pair_display_name(match.pair1)
+              = f.number_field :pair1_score, class: "form-control", min: 0, required: true, placeholder: "0"
+            .mb-3
+              label.form-label.fw-semibold= match.pair_display_name(match.pair2)
+              = f.number_field :pair2_score, class: "form-control", min: 0, required: true, placeholder: "0"
+
+          .modal-footer
+            button.btn.btn-secondary type="button" data-bs-dismiss="modal"= t("matches.cancel")
+            = f.submit t("matches.save_result"), class: "btn btn-primary"

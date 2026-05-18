@@ -91,3 +91,32 @@ en:
       location_placeholder: Location
       reset: Reset
       no_tournaments: No tournaments found.
+    activate:
+      activate_failed: Failed to activate tournament. Please try again.
+  matches:
+    schedule_title: Schedule
+    bracket_title: Bracket
+    round: Round
+    final: Final
+    semifinal: Semifinal
+    third_place: 3rd Place Match
+    bye: BYE
+    pair1_column: Pair 1
+    pair2_column: Pair 2
+    score_column: Score
+    status_column: Status
+    complete_tournament: Complete tournament
+    enter_result: Enter result
+    enter_result_title: Enter match result
+    winner_label: Winner
+    winner_prompt: "— select winner —"
+    save_result: Save
+    cancel: Cancel
+    status:
+      pending: Pending
+      completed: Completed
+  not_authorized: Not authorized.
+  matches_controller:
+    update:
+      success: Result saved.
+      failure: Failed to save result.

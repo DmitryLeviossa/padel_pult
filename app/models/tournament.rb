@@ -29,6 +29,7 @@ class Tournament < ApplicationRecord
 
   belongs_to :league
   has_many :pairs, dependent: :destroy
+  has_many :matches, dependent: :destroy
 
   enum :status, { draft: "draft", registration: "registration", active: "active", completed: "completed", cancelled: "cancelled" }
   enum :type, { olympic: "olympic", round_robin: "round_robin", mixed: "mixed" }
@@ -37,6 +38,10 @@ class Tournament < ApplicationRecord
   validates :end_date, presence: true
   validate :end_date_not_before_start_date
   validate :placement_points_valid
+
+  def all_matches_completed?
+    matches.any? && !matches.pending.exists?
+  end
 
   def points_for_place(position)
     Array(placement_points).each do |rule|

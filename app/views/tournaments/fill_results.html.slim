@@ -3,7 +3,7 @@
     h1.mb-0= t('.title', name: @tournament.name)
     = link_to "← #{@tournament.name}", tournament_path(@tournament), class: "btn btn-outline-secondary btn-sm"
 
-  - if @tournament.pairs.any?
+  - if @pairs.any?
     = form_with url: complete_tournament_path(@tournament), method: :patch do |f|
       table.table.table-hover
         thead
@@ -11,11 +11,12 @@
             th= t('.pair_column')
             th.text-center= t('.placement_column')
         tbody
-          - @tournament.pairs.includes({ player1: :user }, { player2: :user }).each do |pair|
+          - @pairs.each do |pair|
             tr
               td= "#{pair.player1.full_name} / #{pair.player2.full_name}"
               td.text-center
-                = number_field_tag "placements[#{pair.id}]", pair.placement, min: 1, max: @tournament.pairs.size, class: "form-control form-control-sm d-inline-block", style: "width: 80px"
+                - suggested = pair.placement || @suggested_placements&.dig(pair.id)
+                = number_field_tag "placements[#{pair.id}]", suggested, min: 1, max: @tournament.pairs.size, class: "form-control form-control-sm d-inline-block", style: "width: 80px"
 
       .mt-3
         = f.submit t('.submit'), class: "btn btn-success"

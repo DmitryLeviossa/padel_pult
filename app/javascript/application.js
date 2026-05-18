@@ -105,5 +105,23 @@ function fallbackCopy(text, done) {
   try { document.execCommand("copy"); done() } finally { ta.remove() }
 }
 
-document.addEventListener("turbo:load", () => { initTomSelects(); initAutoSubmitFilters(); initDateTimePickers(); initTooltips() })
+document.addEventListener("turbo:submit-start", () => {
+  sessionStorage.setItem("scroll_restore_x", window.scrollX)
+  sessionStorage.setItem("scroll_restore_y", window.scrollY)
+  sessionStorage.setItem("scroll_restore_from", location.pathname)
+})
+
+document.addEventListener("turbo:load", () => {
+  const fromPath = sessionStorage.getItem("scroll_restore_from")
+  if (fromPath && fromPath === location.pathname) {
+    const x = parseInt(sessionStorage.getItem("scroll_restore_x"))
+    const y = parseInt(sessionStorage.getItem("scroll_restore_y"))
+    window.scrollTo(x, y)
+  }
+  sessionStorage.removeItem("scroll_restore_x")
+  sessionStorage.removeItem("scroll_restore_y")
+  sessionStorage.removeItem("scroll_restore_from")
+
+  initTomSelects(); initAutoSubmitFilters(); initDateTimePickers(); initTooltips()
+})
 document.addEventListener("turbo:render", () => { initTomSelects(); initAutoSubmitFilters(); initDateTimePickers(); initTooltips() })

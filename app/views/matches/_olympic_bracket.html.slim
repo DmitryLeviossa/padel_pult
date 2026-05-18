@@ -1,0 +1,146 @@
+- total_rounds = bracket_rounds.length
+- r1_count = bracket_rounds.first&.length || 0
+- bracket_height = [r1_count * 96, 200].max
+
+.d-flex.justify-content-between.align-items-center.mt-4.mb-3
+  h4.mb-0= t("matches.bracket_title")
+  - if is_owner && !tournament.completed?
+    - all_done = tournament.all_matches_completed?
+    = link_to t("matches.complete_tournament"), fill_results_tournament_path(tournament), class: "btn btn-success btn-sm#{' disabled' unless all_done}", aria: { disabled: (true unless all_done) }, tabindex: (all_done ? nil : "-1")
+
+css:
+  .tournament-bracket {
+    display: flex;
+    align-items: stretch;
+    overflow-x: auto;
+    padding-bottom: 8px;
+    justify-content: center;
+  }
+  .bracket-round {
+    display: flex;
+    flex-direction: column;
+    min-width: 240px;
+    padding: 0 16px;
+    position: relative;
+  }
+  .bracket-round:not(:last-child)::after {
+    content: '';
+    position: absolute;
+    right: 0;
+    top: 5%;
+    height: 90%;
+    border-right: 2px dashed var(--bs-border-color);
+  }
+  .bracket-round-header {
+    text-align: center;
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    color: var(--bs-secondary-color);
+    margin-bottom: 8px;
+    flex-shrink: 0;
+  }
+  .bracket-match-wrapper {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    min-height: 80px;
+  }
+  .bracket-match {
+    border: 1px solid var(--bs-border-color);
+    border-radius: 8px;
+    overflow: hidden;
+    background: var(--bs-secondary-bg);
+    box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+  }
+  .bracket-team {
+    padding: 8px 12px;
+    font-size: 13px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid var(--bs-border-color);
+    min-height: 38px;
+    color: var(--bs-body-color);
+    gap: 8px;
+  }
+  .bracket-team:last-child {
+    border-bottom: none;
+  }
+  .bracket-team.winner {
+    font-weight: 700;
+    background-color: rgba(25, 135, 84, 0.2);
+    color: var(--bs-success);
+  }
+  .bracket-team.loser {
+    color: var(--bs-secondary-color);
+  }
+  .bracket-team.bye-slot {
+    color: var(--bs-tertiary-color);
+    font-style: italic;
+  }
+  .bracket-team.empty-slot {
+    color: var(--bs-tertiary-color);
+    font-style: italic;
+  }
+  .bracket-name {
+    flex: 1;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .bracket-score {
+    font-size: 13px;
+    font-weight: 700;
+    min-width: 20px;
+    text-align: right;
+    flex-shrink: 0;
+  }
+  .bracket-team.winner .bracket-score { color: var(--bs-success); }
+  .bracket-team.loser  .bracket-score { color: var(--bs-secondary-color); }
+  .bracket-enter-btn {
+    font-size: 11px;
+    padding: 2px 8px;
+    margin-top: 5px;
+    align-self: flex-end;
+  }
+
+.tournament-bracket style="height: #{bracket_height}px;"
+  - bracket_rounds.each_with_index do |round_matches, idx|
+    - round_num = idx + 1
+    - round_label = round_num == total_rounds ? t("matches.final") : round_num == total_rounds - 1 && total_rounds > 2 ? t("matches.semifinal") : "#{t('matches.round')} #{round_num}"
+    .bracket-round
+      .bracket-round-header= round_label
+      - flex_size = 2 ** idx
+      - round_matches.each do |match|
+        .bracket-match-wrapper style="flex: #{flex_size};"
+          .bracket-match
+            - [[match.pair1, match.pair1_score, match.pair1_id], [match.pair2, match.pair2_score, match.pair2_id]].each do |pair, score, pair_id|
+              - is_winner = match.winner_id.present? && match.winner_id == pair_id
+              - is_loser  = match.winner_id.present? && pair_id.present? && match.winner_id != pair_id
+              - css_class = pair.nil? ? (match.bye? ? "bye-slot" : "empty-slot") : (is_winner ? "winner" : (is_loser ? "loser" : ""))
+              .bracket-team class=css_class
+                span.bracket-name= pair ? match.pair_display_name(pair) : (match.bye? ? t("matches.bye") : "…")
+                - if score.present?
+                  span.bracket-score= score
+          - if is_owner && match.pending? && match.pair1.present? && match.pair2.present?
+            button.btn.btn-outline-primary.btn-sm.bracket-enter-btn(data-bs-toggle="modal" data-bs-target="#match-modal-#{match.id}")
+              = t("matches.enter_result")
+
+- if third_place_match
+  .mt-4.d-flex.flex-column.align-items-center
+    .bracket-round-header.mb-2= t("matches.third_place")
+    .d-flex.flex-column style="min-width: 240px; max-width: 360px;"
+      .bracket-match
+        - [[third_place_match.pair1, third_place_match.pair1_score, third_place_match.pair1_id], [third_place_match.pair2, third_place_match.pair2_score, third_place_match.pair2_id]].each do |pair, score, pair_id|
+          - is_winner = third_place_match.winner_id.present? && third_place_match.winner_id == pair_id
+          - is_loser  = third_place_match.winner_id.present? && pair_id.present? && third_place_match.winner_id != pair_id
+          - css_class = pair.nil? ? "empty-slot" : (is_winner ? "winner" : (is_loser ? "loser" : ""))
+          .bracket-team class=css_class
+            span.bracket-name= pair ? third_place_match.pair_display_name(pair) : "…"
+            - if score.present?
+              span.bracket-score= score
+      - if is_owner && third_place_match.pending? && third_place_match.pair1.present? && third_place_match.pair2.present?
+        button.btn.btn-outline-primary.btn-sm.bracket-enter-btn.mt-1(data-bs-toggle="modal" data-bs-target="#match-modal-#{third_place_match.id}")
+          = t("matches.enter_result")

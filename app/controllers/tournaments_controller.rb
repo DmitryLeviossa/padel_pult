@@ -15,6 +15,17 @@ class TournamentsController < ApplicationController
   end
 
   def show
+    @matches = @tournament.matches.ordered
+                          .includes(pair1: [ { player1: :user }, { player2: :user } ],
+                                    pair2: [ { player1: :user }, { player2: :user } ])
+
+    if @tournament.olympic?
+      grouped = @matches.group_by(&:round_number).sort_by { |r, _| r }.map { |_, m| m }
+      final_round = grouped.last || []
+      @third_place_match = final_round.find { |m| m.position == 2 }
+      @bracket_rounds = grouped[0..-2] + [ final_round.reject { |m| m.position == 2 } ]
+    end
+
     default_sort = @tournament.completed? ? "placement" : "score"
     default_dir  = @tournament.completed? ? "asc" : "desc"
     @sort = params[:sort].presence_in(%w[score player1 player2 player1_score player2_score created_at placement]) || default_sort
@@ -112,8 +123,11 @@ class TournamentsController < ApplicationController
       return
     end
 
-    @tournament.active!
-    redirect_to tournament_path(@tournament), notice: t(".success")
+    if Tournaments::ActivateService.new(@tournament).call
+      redirect_to tournament_path(@tournament), notice: t(".success")
+    else
+      redirect_to tournament_path(@tournament), alert: t(".activate_failed")
+    end
   end
 
   def cancel
@@ -129,6 +143,10 @@ class TournamentsController < ApplicationController
 
   def fill_results
     redirect_to tournament_path(@tournament), alert: t(".completed") if @tournament.completed?
+    @suggested_placements = compute_suggested_placements
+    @pairs = @tournament.pairs
+                        .includes({ player1: :user }, { player2: :user })
+                        .sort_by { |p| @suggested_placements.fetch(p.id, Float::INFINITY) }
   end
 
   def complete
@@ -186,6 +204,64 @@ class TournamentsController < ApplicationController
 
   def authorize_tournament_owner!
     redirect_to league_path(@tournament.league), alert: "Not authorized." unless @tournament.league.owner == current_user
+  end
+
+  def compute_suggested_placements
+    matches = @tournament.matches.ordered
+    return {} unless matches.any?
+
+    placements = {}
+
+    if @tournament.olympic?
+      grouped = matches.group_by(&:round_number).sort_by { |r, _| r }
+      total_rounds = grouped.length
+
+      grouped.each_with_index do |(_, round_matches), idx|
+        rounds_from_end = total_rounds - 1 - idx
+
+        round_matches.each do |match|
+          next unless match.winner_id.present?
+          loser_id = [ match.pair1_id, match.pair2_id ].find { |id| id.present? && id != match.winner_id }
+          next unless loser_id
+
+          if rounds_from_end == 0
+            if match.position == 1
+              placements[match.winner_id] = 1
+              placements[loser_id] = 2
+            elsif match.position == 2
+              placements[match.winner_id] = 3
+              placements[loser_id] = 4
+            end
+          elsif rounds_from_end >= 2
+            placements[loser_id] = 2 ** rounds_from_end + 1
+          end
+        end
+      end
+    elsif @tournament.round_robin?
+      wins_score  = Hash.new(0)
+      losses_score = Hash.new(0)
+
+      matches.where(status: :completed).each do |match|
+        next unless match.winner_id.present?
+        loser_id = match.pair1_id == match.winner_id ? match.pair2_id : match.pair1_id
+
+        winner_score = match.pair1_id == match.winner_id ? match.pair1_score.to_i : match.pair2_score.to_i
+        loser_score  = match.pair1_id == match.winner_id ? match.pair2_score.to_i : match.pair1_score.to_i
+
+        wins_score[match.winner_id] += winner_score
+        losses_score[loser_id] += loser_score
+      end
+
+      sorted = @tournament.pairs
+                          .map { |pair| [ pair.id, wins_score[pair.id] - losses_score[pair.id] ] }
+                          .sort_by { |_, net| -net }
+
+      sorted.each_with_index do |(pair_id, _), idx|
+        placements[pair_id] = idx + 1
+      end
+    end
+
+    placements
   end
 
   def tournament_params

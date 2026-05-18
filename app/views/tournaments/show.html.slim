@@ -103,3 +103,14 @@
               td= button_to t('.delete_pair'), tournament_pair_path(@tournament, pair), method: :delete, class: "btn btn-danger btn-sm", form: { data: { turbo_confirm: t('.delete_pair_confirm') } }
   - else
     p.text-muted= t('.no_pairs')
+
+  - is_owner = @tournament.league.owner == current_user
+
+  - if (@tournament.active? || @tournament.completed?) && @matches.any?
+    - if @tournament.round_robin?
+      = render "matches/round_robin", matches: @matches, tournament: @tournament, is_owner: is_owner
+    - elsif @tournament.olympic?
+      = render "matches/olympic_bracket", bracket_rounds: @bracket_rounds, third_place_match: @third_place_match, tournament: @tournament, is_owner: is_owner
+
+  - if is_owner
+    = render "matches/result_modal", matches: @matches, tournament: @tournament

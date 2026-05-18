@@ -1,0 +1,39 @@
+.d-flex.justify-content-between.align-items-center.mt-4.mb-3
+  h4.mb-0= t("matches.schedule_title")
+  - if is_owner && !tournament.completed?
+    - all_done = tournament.all_matches_completed?
+    = link_to t("matches.complete_tournament"), fill_results_tournament_path(tournament), class: "btn btn-success btn-sm#{' disabled' unless all_done}", aria: { disabled: (true unless all_done) }, tabindex: (all_done ? nil : "-1")
+
+- rounds = matches.group_by(&:round_number).sort_by { |r, _| r }
+- rounds.each do |round_number, round_matches|
+  h6.mt-3.mb-2= "#{t('matches.round')} #{round_number}"
+  table.table.table-hover.table-sm.mb-4
+    thead.table-light
+      tr
+        th= t("matches.pair1_column")
+        th.text-center= t("matches.score_column")
+        th= t("matches.pair2_column")
+        th.text-center= t("matches.status_column")
+        - if is_owner
+          th
+    tbody
+      - round_matches.each do |match|
+        tr
+          td= match.pair_display_name(match.pair1)
+          td.text-center
+            - if match.completed?
+              strong= "#{match.pair1_score} : #{match.pair2_score}"
+            - else
+              span.text-muted —
+          td= match.pair_display_name(match.pair2)
+          td.text-center
+            - if match.completed?
+              span.badge.bg-success= t("matches.status.completed")
+            - else
+              span.badge.bg-secondary= t("matches.status.pending")
+          - if is_owner && !match.completed?
+            td
+              button.btn.btn-outline-primary.btn-sm data-bs-toggle="modal" data-bs-target="#match-modal-#{match.id}"
+                = t("matches.enter_result")
+          - elsif is_owner
+            td
