@@ -39,11 +39,11 @@ en:
         league_invitation: "%{inviter} invited you to league \"%{league}\""
   tournaments:
     notifications:
-      registration_open: "Registration is open for tournament \"%{tournament}\""
+      registration_open: "Registration is open for tournament \"%{tournament}\" in league \"%{league}\""
   pairs:
     not_authorized: You are not authorized to perform this action.
     notifications:
-      tournament_added: "%{inviter} added you to tournament \"%{tournament}\""
+      tournament_added: "%{inviter} added you to tournament \"%{tournament}\" in league \"%{league}\""
   users:
     index:
       awaiting_registration: Awaiting registration

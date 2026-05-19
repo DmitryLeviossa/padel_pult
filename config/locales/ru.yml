@@ -246,7 +246,7 @@ ru:
       success: Пара успешно удалена.
     delete_not_allowed: Удаление пар недоступно.
     notifications:
-      tournament_added: "%{inviter} добавил(а) вас в турнир «%{tournament}»"
+      tournament_added: "%{inviter} добавил(а) вас в турнир «%{tournament}» в лиге «%{league}»"
 
   tournaments:
     index:
@@ -333,7 +333,7 @@ ru:
       success: Турнир отменён. Участники уведомлены.
       not_registration: Отменить можно только турнир с открытой регистрацией.
     notifications:
-      registration_open: "Открыта регистрация на турнир «%{tournament}»"
+      registration_open: "Открыта регистрация на турнир «%{tournament}» в лиге «%{league}»"
       cancelled: "Турнир «%{tournament}» был отменён"
     fill_results:
       title: "Результаты: %{name}"

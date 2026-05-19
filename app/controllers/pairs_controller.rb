@@ -18,9 +18,9 @@ class PairsController < ApplicationController
 
     if @pair.save
       notify_partner unless owner_adding_pair?
-      redirect_to tournament_path(@tournament), notice: t(".success")
+      redirect_to tournament_path(@tournament)
     else
-      redirect_to tournament_path(@tournament), alert: t(".failure")
+      redirect_to tournament_path(@tournament)
     end
   end
 
@@ -77,6 +77,7 @@ class PairsController < ApplicationController
       notification_type: :tournament_added,
       message: t("pairs.notifications.tournament_added",
                  tournament: @tournament.name,
+                 league: @tournament.league.name,
                  inviter: current_user.full_name),
       url: tournament_path(@tournament)
     )

@@ -184,7 +184,7 @@ class TournamentsController < ApplicationController
       Notification.create!(
         user: league_user.user,
         notification_type: :tournament_registration_open,
-        message: t("tournaments.notifications.registration_open", tournament: @tournament.name),
+        message: t("tournaments.notifications.registration_open", tournament: @tournament.name, league: @tournament.league.name),
         url: tournament_path(@tournament)
       )
     end
