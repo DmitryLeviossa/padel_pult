@@ -28,6 +28,9 @@
 #       enabled: "ON"
 
 en:
+  time:
+    formats:
+      long: "%-d %B %Y, %H:%M"
   hello: "Hello world"
   layouts:
     navbar:
@@ -37,30 +40,6 @@ en:
     league_invitations:
       notifications:
         league_invitation: "%{inviter} invited you to league \"%{league}\""
-  tournaments:
-    notifications:
-      registration_open: "Registration is open for tournament \"%{tournament}\" in league \"%{league}\""
-  pairs:
-    not_authorized: You are not authorized to perform this action.
-    notifications:
-      tournament_added: "%{inviter} added you to tournament \"%{tournament}\" in league \"%{league}\""
-  users:
-    index:
-      awaiting_registration: Awaiting registration
-    show:
-      back: Players
-      member_since: Member since
-      leagues: Leagues
-      tournament_history: Tournament history
-      tournament_column: Tournament
-      league_column: League
-      date_column: Date
-      status_column: Status
-      placement_column: Place
-      partner_column: Partner
-      score_column: Score
-      no_history: No tournaments yet.
-  leagues:
     index:
       title: Leagues
       new_league: New League
@@ -79,7 +58,16 @@ en:
       submit: Save changes
       cancel: Cancel
       owner: Owner
+    league_users:
+      new:
+        title: Add new member
+        submit: Create
+        cancel: Cancel
+      create:
+        success: Member added. Copy the invitation link from the members list.
   tournaments:
+    notifications:
+      registration_open: "Registration is open for tournament \"%{tournament}\" in league \"%{league}\""
     index:
       title: Tournaments
       scope_all: All tournaments
@@ -133,9 +121,29 @@ en:
   activerecord:
     attributes:
       tournament:
+        name: Name
+        location: Location
+        start_date: Start date
+        end_date: End date
+        max_participants: Max participants
+        type: Type
+        description: Description
+        status: Status
         groups_count: Number of groups
         pairs_to_bracket: Pairs advancing to bracket
         loser_bracket: Loser bracket
+      user:
+        first_name: First name
+        last_name: Last name
+        email: Email
+        password: Password
+        password_confirmation: Password confirmation
+        remember_me: Remember me
+        photo: Profile photo
+        gender: Gender
+        genders:
+          male: Male
+          female: Female
   not_authorized: Not authorized.
   matches_controller:
     update:

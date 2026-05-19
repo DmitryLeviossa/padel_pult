@@ -101,6 +101,9 @@ ru:
         type: Тип
         description: Описание
         status: Статус
+        groups_count: Количество групп
+        pairs_to_bracket: Пар в основную сетку
+        loser_bracket: Сетка проигравших
       user:
         first_name: Имя
         last_name: Фамилия
@@ -202,10 +205,6 @@ ru:
     new:
       title: Новая лига
       submit: Создать лигу
-      cancel: Отмена
-    edit:
-      title: Редактировать лигу
-      submit: Сохранить
       cancel: Отмена
     league_users:
       new:
@@ -352,12 +351,6 @@ ru:
       mixed_config_title: Настройки группового этапа
 
   not_authorized: Нет доступа.
-  activerecord:
-    attributes:
-      tournament:
-        groups_count: Количество групп
-        pairs_to_bracket: Пар в основную сетку
-        loser_bracket: Сетка проигравших
   matches:
     schedule_title: Расписание
     bracket_title: Сетка
