@@ -14,9 +14,9 @@ RSpec.describe Tournaments::Matches::OlympicGenerator do
     context "with 4 pairs (exact power of 2)" do
       before { 4.times { make_pair } }
 
-      it "creates 3 total matches (4/2 + 4/4)" do
+      it "creates 4 total matches (2 round-1 + 1 final + 1 third-place)" do
         described_class.new(tournament).call
-        expect(tournament.matches.count).to eq(3)
+        expect(tournament.matches.count).to eq(4)
       end
 
       it "creates 2 rounds" do
@@ -42,9 +42,9 @@ RSpec.describe Tournaments::Matches::OlympicGenerator do
     context "with 6 pairs (padded to 8)" do
       before { 6.times { make_pair } }
 
-      it "creates 7 total matches" do
+      it "creates 8 total matches (4+2+1 bracket + 1 third-place)" do
         described_class.new(tournament).call
-        expect(tournament.matches.count).to eq(7)
+        expect(tournament.matches.count).to eq(8)
       end
 
       it "creates 2 bye matches for top seeds" do

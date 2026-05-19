@@ -6,9 +6,12 @@ class MatchesController < ApplicationController
     scores = match_params
     winner_id = scores[:pair1_score].to_i >= scores[:pair2_score].to_i ? @match.pair1_id : @match.pair2_id
     if @match.update(scores.merge(status: :completed, winner_id: winner_id))
-      if @match.tournament.olympic?
+      case @match.tournament.type
+      when "olympic"
         Tournaments::Matches::AdvanceWinnerService.new(@match).call
         Tournaments::Matches::AdvanceLoserService.new(@match).call
+      when "mixed"
+        handle_mixed_match_completion
       end
       redirect_to tournament_path(@match.tournament), notice: t(".success")
     else
@@ -17,6 +20,15 @@ class MatchesController < ApplicationController
   end
 
   private
+
+  def handle_mixed_match_completion
+    if @match.group_stage?
+      Tournaments::Matches::StartBracketService.new(@match.tournament).call
+    else
+      Tournaments::Matches::AdvanceWinnerService.new(@match).call
+      Tournaments::Matches::AdvanceLoserService.new(@match).call
+    end
+  end
 
   def set_match
     @match = Match.includes(:tournament).find(params[:id])

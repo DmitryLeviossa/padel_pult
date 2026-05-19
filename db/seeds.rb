@@ -160,6 +160,70 @@ t_active_rr = Tournament.create!(
   placement_points:  standard_points
 )
 
+t_active_mixed = Tournament.create!(
+  name:              "Микст-кубок Москвы 2026",
+  league:            league1,
+  start_date:        Date.new(2026, 5, 18),
+  end_date:          Date.new(2026, 5, 24),
+  max_participants:  8,
+  location:          "Спортивный клуб «Чемпион»",
+  type:              "mixed",
+  status:            "active",
+  groups_count:      2,
+  pairs_to_bracket:  4,
+  loser_bracket:     false,
+  description:       "Групповой этап завершён, идёт плей-офф",
+  placement_points:  standard_points
+)
+
+t_mixed_registration = Tournament.create!(
+  name:              "Открытый микст Питера 2026",
+  league:            league2,
+  start_date:        Date.new(2026, 6, 15),
+  end_date:          Date.new(2026, 6, 20),
+  max_participants:  4,
+  location:          "СКК «Петербургский»",
+  type:              "mixed",
+  status:            "registration",
+  groups_count:      2,
+  pairs_to_bracket:  2,
+  loser_bracket:     true,
+  description:       "Регистрация открыта. Два группы, утешительная сетка для непрошедших.",
+  placement_points:  small_points
+)
+
+t_mixed_loser_bracket = Tournament.create!(
+  name:              "Кубок чемпионов с утешительной сеткой 2026",
+  league:            league1,
+  start_date:        Date.new(2026, 5, 17),
+  end_date:          Date.new(2026, 5, 21),
+  max_participants:  8,
+  location:          "Спортивный комплекс «Арена»",
+  type:              "mixed",
+  status:            "active",
+  groups_count:      2,
+  pairs_to_bracket:  4,
+  loser_bracket:     true,
+  description:       "Групповой этап завершён, идут основная и утешительная сетки",
+  placement_points:  standard_points
+)
+
+t_mixed_group_stage = Tournament.create!(
+  name:              "Летний микст-турнир 2026",
+  league:            league1,
+  start_date:        Date.new(2026, 5, 19),
+  end_date:          Date.new(2026, 5, 23),
+  max_participants:  8,
+  location:          "Теннисный клуб «Олимп»",
+  type:              "mixed",
+  status:            "active",
+  groups_count:      2,
+  pairs_to_bracket:  4,
+  loser_bracket:     false,
+  description:       "Идёт групповой этап, первый тур сыгран",
+  placement_points:  standard_points
+)
+
 # Pairs for completed_1 (league1): 4 pairs from first 8 members
 league1_members.first(8).each_slice(2) do |p1, p2|
   Pair.create!(tournament: t_completed_1, player1: p1, player2: p2)
@@ -185,6 +249,26 @@ league1_members.first(12).each_slice(2) do |p1, p2|
   Pair.create!(tournament: t_active_rr, player1: p1, player2: p2)
 end
 
+# Pairs for active mixed (league1): 8 pairs from all 16 members
+league1_members.each_slice(2) do |p1, p2|
+  Pair.create!(tournament: t_active_mixed, player1: p1, player2: p2)
+end
+
+# Pairs for mixed registration (league2): 4 pairs from all 8 members
+league2_members.each_slice(2) do |p1, p2|
+  Pair.create!(tournament: t_mixed_registration, player1: p1, player2: p2)
+end
+
+# Pairs for loser bracket mixed (league1): 8 pairs from all 16 members
+league1_members.each_slice(2) do |p1, p2|
+  Pair.create!(tournament: t_mixed_loser_bracket, player1: p1, player2: p2)
+end
+
+# Pairs for mixed group stage (league1): 8 pairs from all 16 members
+league1_members.each_slice(2) do |p1, p2|
+  Pair.create!(tournament: t_mixed_group_stage, player1: p1, player2: p2)
+end
+
 # Matches
 def complete_match!(match, winner_pair, winner_score, loser_score)
   match.update!(
@@ -200,6 +284,9 @@ Tournaments::Matches::OlympicGenerator.new(t_completed_1).call
 Tournaments::Matches::OlympicGenerator.new(t_completed_2).call
 Tournaments::Matches::OlympicGenerator.new(t_active).call
 Tournaments::Matches::RoundRobinGenerator.new(t_active_rr).call
+Tournaments::Matches::MixedGenerator.new(t_active_mixed).call
+Tournaments::Matches::MixedGenerator.new(t_mixed_loser_bracket).call
+Tournaments::Matches::MixedGenerator.new(t_mixed_group_stage).call
 
 # Complete all rounds for t_completed_1 (4 pairs → 2 rounds)
 t_completed_1.matches.reload.ordered.group_by(&:round_number).each do |_round, matches|
@@ -226,6 +313,41 @@ t_active_rr.matches.reload.where(round_number: 1..3).ordered.each do |match|
   next if match.pair1.nil? || match.pair2.nil?
   winner = [ match.pair1, match.pair2 ].sample
   complete_match!(match, winner, 6, rand(2..5))
+end
+
+# Complete all group-stage matches for t_mixed_loser_bracket, then seed and play round 1 of both brackets
+t_mixed_loser_bracket.matches.reload.group_stage.ordered.each do |match|
+  next if match.pair1.nil? || match.pair2.nil?
+  winner = [ match.pair1, match.pair2 ].sample
+  complete_match!(match.reload, winner, 6, rand(2..4))
+end
+Tournaments::Matches::StartBracketService.new(t_mixed_loser_bracket.reload).call
+t_mixed_loser_bracket.matches.reload.bracket.where(round_number: 1).ordered.each do |match|
+  next if match.bye? || match.pair1.nil? || match.pair2.nil?
+  complete_match!(match.reload, match.pair1, 6, rand(2..4))
+end
+t_mixed_loser_bracket.matches.reload.loser_bracket.where(round_number: 1).ordered.each do |match|
+  next if match.bye? || match.pair1.nil? || match.pair2.nil?
+  complete_match!(match.reload, match.pair1, 6, rand(2..4))
+end
+
+# Complete round 1 group-stage matches for t_mixed_group_stage, leave rounds 2+ pending
+t_mixed_group_stage.matches.reload.group_stage.where(round_number: 1).ordered.each do |match|
+  next if match.pair1.nil? || match.pair2.nil?
+  winner = [ match.pair1, match.pair2 ].sample
+  complete_match!(match.reload, winner, 6, rand(2..4))
+end
+
+# Complete all group-stage matches for t_active_mixed, then seed and play bracket round 1
+t_active_mixed.matches.reload.group_stage.ordered.each do |match|
+  next if match.pair1.nil? || match.pair2.nil?
+  winner = [ match.pair1, match.pair2 ].sample
+  complete_match!(match.reload, winner, 6, rand(2..4))
+end
+Tournaments::Matches::StartBracketService.new(t_active_mixed.reload).call
+t_active_mixed.matches.reload.bracket.where(round_number: 1).ordered.each do |match|
+  next if match.bye? || match.pair1.nil? || match.pair2.nil?
+  complete_match!(match.reload, match.pair1, 6, rand(2..4))
 end
 
 # Notifications

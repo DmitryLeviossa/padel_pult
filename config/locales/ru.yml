@@ -341,11 +341,22 @@ ru:
       success: Турнир завершён, очки начислены.
       completed: Турнир уже завершен.
       failure: Не удалось завершить турнир. Попробуйте ещё раз.
+    form:
+      mixed_config_title: Настройки группового этапа
 
   not_authorized: Нет доступа.
+  activerecord:
+    attributes:
+      tournament:
+        groups_count: Количество групп
+        pairs_to_bracket: Пар в основную сетку
+        loser_bracket: Сетка проигравших
   matches:
     schedule_title: Расписание
     bracket_title: Сетка
+    group_stage_title: Групповой этап
+    loser_bracket_title: Утешительная сетка
+    group: Группа
     round: Раунд
     final: Финал
     semifinal: Полуфинал
@@ -353,7 +364,12 @@ ru:
     bye: "Свободен"
     pair1_column: Пара 1
     pair2_column: Пара 2
+    pair_column: Пара
     score_column: Счёт
+    wins_column: В
+    games_column: И
+    games_diff_column: Разница
+    place_column: Место
     status_column: Статус
     complete_tournament: Завершить турнир
     enter_result: Ввести результат

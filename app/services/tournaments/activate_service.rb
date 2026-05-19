@@ -23,6 +23,8 @@ module Tournaments
         Tournaments::Matches::RoundRobinGenerator.new(@tournament).call
       when "olympic"
         Tournaments::Matches::OlympicGenerator.new(@tournament).call
+      when "mixed"
+        Tournaments::Matches::MixedGenerator.new(@tournament).call
       end
     end
   end

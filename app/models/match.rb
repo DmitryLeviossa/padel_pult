@@ -3,10 +3,12 @@
 # Table name: matches
 #
 #  id            :bigint           not null, primary key
+#  group_number  :integer          default(0), not null
 #  pair1_score   :integer
 #  pair2_score   :integer
 #  position      :integer          not null
 #  round_number  :integer          not null
+#  stage         :string           default("bracket"), not null
 #  status        :string           default("pending"), not null
 #  created_at    :datetime         not null
 #  updated_at    :datetime         not null
@@ -17,11 +19,11 @@
 #
 # Indexes
 #
-#  index_matches_on_pair1_id                                     (pair1_id)
-#  index_matches_on_pair2_id                                     (pair2_id)
-#  index_matches_on_tournament_id                                (tournament_id)
-#  index_matches_on_tournament_id_and_round_number_and_position  (tournament_id,round_number,position) UNIQUE
-#  index_matches_on_winner_id                                    (winner_id)
+#  index_matches_on_pair1_id       (pair1_id)
+#  index_matches_on_pair2_id       (pair2_id)
+#  index_matches_on_tournament_id  (tournament_id)
+#  index_matches_on_winner_id      (winner_id)
+#  index_matches_uniqueness        (tournament_id,stage,group_number,round_number,position) UNIQUE
 #
 # Foreign Keys
 #
@@ -37,8 +39,9 @@ class Match < ApplicationRecord
   belongs_to :winner, class_name: "Pair", optional: true
 
   enum :status, { pending: "pending", completed: "completed", bye: "bye" }
+  enum :stage, { group_stage: "group", bracket: "bracket", loser_bracket: "loser_bracket" }
 
-  scope :ordered, -> { order(:round_number, :position) }
+  scope :ordered, -> { order(:stage, :group_number, :round_number, :position) }
 
   def pair_display_name(pair)
     return I18n.t("matches.bye") if pair.nil?

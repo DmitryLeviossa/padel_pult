@@ -93,9 +93,14 @@ en:
       no_tournaments: No tournaments found.
     activate:
       activate_failed: Failed to activate tournament. Please try again.
+    form:
+      mixed_config_title: Group Stage Settings
   matches:
     schedule_title: Schedule
     bracket_title: Bracket
+    group_stage_title: Group Stage
+    loser_bracket_title: Consolation Bracket
+    group: Group
     round: Round
     final: Final
     semifinal: Semifinal
@@ -103,7 +108,12 @@ en:
     bye: BYE
     pair1_column: Pair 1
     pair2_column: Pair 2
+    pair_column: Pair
     score_column: Score
+    wins_column: W
+    games_column: G
+    games_diff_column: Diff
+    place_column: Place
     status_column: Status
     complete_tournament: Complete tournament
     enter_result: Enter result
@@ -115,6 +125,12 @@ en:
     status:
       pending: Pending
       completed: Completed
+  activerecord:
+    attributes:
+      tournament:
+        groups_count: Number of groups
+        pairs_to_bracket: Pairs advancing to bracket
+        loser_bracket: Loser bracket
   not_authorized: Not authorized.
   matches_controller:
     update:

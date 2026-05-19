@@ -5,9 +5,12 @@
 #  id               :bigint           not null, primary key
 #  description      :text
 #  end_date         :datetime         not null
+#  groups_count     :integer
 #  location         :string
+#  loser_bracket    :boolean          default(FALSE), not null
 #  max_participants :integer          default(16), not null
 #  name             :string           not null
+#  pairs_to_bracket :integer
 #  placement_points :jsonb            not null
 #  start_date       :datetime         not null
 #  status           :string           default("draft"), not null

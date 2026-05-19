@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2026_05_18_205600) do
+ActiveRecord::Schema[8.0].define(version: 2026_05_19_112719) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -86,9 +86,11 @@ ActiveRecord::Schema[8.0].define(version: 2026_05_18_205600) do
     t.string "status", default: "pending", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.string "stage", default: "bracket", null: false
+    t.integer "group_number", default: 0, null: false
     t.index ["pair1_id"], name: "index_matches_on_pair1_id"
     t.index ["pair2_id"], name: "index_matches_on_pair2_id"
-    t.index ["tournament_id", "round_number", "position"], name: "index_matches_on_tournament_id_and_round_number_and_position", unique: true
+    t.index ["tournament_id", "stage", "group_number", "round_number", "position"], name: "index_matches_uniqueness", unique: true
     t.index ["tournament_id"], name: "index_matches_on_tournament_id"
     t.index ["winner_id"], name: "index_matches_on_winner_id"
   end
@@ -132,6 +134,9 @@ ActiveRecord::Schema[8.0].define(version: 2026_05_18_205600) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.jsonb "placement_points", default: [], null: false
+    t.integer "groups_count"
+    t.integer "pairs_to_bracket"
+    t.boolean "loser_bracket", default: false, null: false
     t.index ["league_id"], name: "index_tournaments_on_league_id"
   end
 

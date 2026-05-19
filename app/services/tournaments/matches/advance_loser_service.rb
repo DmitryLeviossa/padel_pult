@@ -8,13 +8,11 @@ module Tournaments
       def call
         return unless @match.winner_id.present?
 
-        total_rounds = @match.tournament.matches.maximum(:round_number)
+        bracket_matches = @match.tournament.matches.where(stage: @match.stage, group_number: 0)
+        total_rounds = bracket_matches.maximum(:round_number)
         return unless @match.round_number == total_rounds - 1
 
-        third_place = @match.tournament.matches.find_by(
-          round_number: total_rounds,
-          position: 2
-        )
+        third_place = bracket_matches.find_by(round_number: total_rounds, position: 2)
         return unless third_place
 
         loser_id = @match.pair1_id == @match.winner_id ? @match.pair2_id : @match.pair1_id

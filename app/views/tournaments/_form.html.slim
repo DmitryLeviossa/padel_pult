@@ -1,4 +1,4 @@
-= form_with model: form_model, class: "row g-3" do |f|
+= form_with model: form_model, class: "row g-3", data: { controller: "tournament-type" } do |f|
   .col-md-6
     = f.label :name, class: "form-label"
     = f.text_field :name, class: "form-control #{"is-invalid" if tournament.errors[:name].any?}"
@@ -29,7 +29,26 @@
 
   .col-md-3
     = f.label :type, class: "form-label"
-    = f.select :type, Tournament.types.keys.map { |tp| [t("tournament.type.#{tp}"), tp] }, {}, class: "form-select"
+    = f.select :type, Tournament.types.keys.map { |tp| [t("tournament.type.#{tp}"), tp] }, {}, class: "form-select", data: { tournament_type_select: true, action: "change->tournament-type#toggle" }
+
+  .col-12(data-tournament-type-target="mixedConfig" class=("d-none" unless tournament.mixed?))
+    hr
+    h5.mb-3= t("tournaments.form.mixed_config_title")
+    .row.g-3
+      .col-md-4
+        = f.label :groups_count, class: "form-label"
+        = f.number_field :groups_count, class: "form-control #{"is-invalid" if tournament.errors[:groups_count].any?}", min: 1
+        - if tournament.errors[:groups_count].any?
+          .invalid-feedback= tournament.errors[:groups_count].first
+      .col-md-4
+        = f.label :pairs_to_bracket, class: "form-label"
+        = f.number_field :pairs_to_bracket, class: "form-control #{"is-invalid" if tournament.errors[:pairs_to_bracket].any?}", min: 1
+        - if tournament.errors[:pairs_to_bracket].any?
+          .invalid-feedback= tournament.errors[:pairs_to_bracket].first
+      .col-md-4.d-flex.align-items-end
+        .form-check.mb-2
+          = f.check_box :loser_bracket, class: "form-check-input"
+          = f.label :loser_bracket, class: "form-check-label"
 
   .col-12
     = f.label :description, class: "form-label"

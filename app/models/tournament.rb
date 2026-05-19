@@ -5,9 +5,12 @@
 #  id               :bigint           not null, primary key
 #  description      :text
 #  end_date         :datetime         not null
+#  groups_count     :integer
 #  location         :string
+#  loser_bracket    :boolean          default(FALSE), not null
 #  max_participants :integer          default(16), not null
 #  name             :string           not null
+#  pairs_to_bracket :integer
 #  placement_points :jsonb            not null
 #  start_date       :datetime         not null
 #  status           :string           default("draft"), not null
@@ -36,8 +39,11 @@ class Tournament < ApplicationRecord
 
   validates :start_date, presence: true
   validates :end_date, presence: true
+  validates :groups_count, numericality: { only_integer: true, greater_than: 0 }, allow_nil: true
+  validates :pairs_to_bracket, numericality: { only_integer: true, greater_than: 0 }, allow_nil: true
   validate :end_date_not_before_start_date
   validate :placement_points_valid
+  validate :mixed_config_present, if: :mixed?
 
   def all_matches_completed?
     matches.any? && !matches.pending.exists?
@@ -57,6 +63,11 @@ class Tournament < ApplicationRecord
   end
 
   private
+
+  def mixed_config_present
+    errors.add(:groups_count, :blank) if groups_count.blank?
+    errors.add(:pairs_to_bracket, :blank) if pairs_to_bracket.blank?
+  end
 
   def end_date_not_before_start_date
     return unless start_date && end_date

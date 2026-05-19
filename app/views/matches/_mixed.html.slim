@@ -1,0 +1,159 @@
+css:
+  .bracket-round { display: flex; flex-direction: column; min-width: 240px; padding: 0 16px; position: relative; }
+  .bracket-round:not(:last-child)::after { content: ''; position: absolute; right: 0; top: 5%; height: 90%; border-right: 2px dashed var(--bs-border-color); }
+  .bracket-round-header { text-align: center; font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.8px; color: var(--bs-secondary-color); margin-bottom: 8px; flex-shrink: 0; }
+  .bracket-match-wrapper { display: flex; flex-direction: column; justify-content: center; min-height: 80px; }
+  .bracket-match { border: 1px solid var(--bs-border-color); border-radius: 8px; overflow: hidden; background: var(--bs-secondary-bg); box-shadow: 0 2px 6px rgba(0,0,0,0.2); }
+  .bracket-team { padding: 8px 12px; font-size: 13px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--bs-border-color); min-height: 38px; color: var(--bs-body-color); gap: 8px; }
+  .bracket-team:last-child { border-bottom: none; }
+  .bracket-team.winner { font-weight: 700; background-color: rgba(25,135,84,0.2); color: var(--bs-success); }
+  .bracket-team.loser { color: var(--bs-secondary-color); }
+  .bracket-team.empty-slot { color: var(--bs-tertiary-color); font-style: italic; }
+  .bracket-name { flex: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .bracket-score { font-size: 13px; font-weight: 700; min-width: 20px; text-align: right; flex-shrink: 0; }
+  .bracket-team.winner .bracket-score { color: var(--bs-success); }
+  .bracket-team.loser  .bracket-score { color: var(--bs-secondary-color); }
+  .bracket-enter-btn { font-size: 11px; padding: 2px 8px; margin-top: 5px; align-self: flex-end; }
+  .tournament-bracket { display: flex; align-items: stretch; overflow-x: auto; padding-bottom: 8px; justify-content: center; }
+  .group-cross-table td.diagonal { background-color: var(--bs-secondary-bg); }
+  .group-cross-table td.score-cell { font-size: 13px; font-weight: 600; white-space: nowrap; }
+  .group-cross-table td.score-win { color: var(--bs-success); }
+  .group-cross-table td.score-loss { color: var(--bs-danger); }
+  .group-cross-table .enter-score-btn { font-size: 11px; padding: 1px 6px; }
+
+/ ── Group stage ────────────────────────────────────────────────────────────
+.d-flex.justify-content-between.align-items-center.mt-4.mb-3
+  h4.mb-0= t("matches.group_stage_title")
+
+- group_data.each do |gd|
+  h5.mt-3.mb-2= "#{t('matches.group')} #{gd[:group_number]}"
+  .table-responsive
+    table.table.table-bordered.table-sm.group-cross-table
+      thead.table-light
+        tr
+          th.text-center №
+          th= t("matches.pair_column")
+          - gd[:pairs_ordered].each_with_index do |_, i|
+            th.text-center= "#{i + 1})"
+          th.text-center= t("matches.wins_column")
+          th.text-center= t("matches.games_diff_column")
+          th.text-center= t("matches.place_column")
+      tbody
+        - gd[:pairs_ordered].each_with_index do |pair, row_idx|
+          - stat = gd[:stats_by_id][pair.id]
+          tr
+            td.text-center= row_idx + 1
+            td= pair.player1.full_name + " / " + pair.player2.full_name
+            - gd[:pairs_ordered].each_with_index do |opp, col_idx|
+              - if row_idx == col_idx
+                td.diagonal.text-center
+              - else
+                - score = gd[:scores][pair.id][opp.id]
+                - match = gd[:match_for][pair.id][opp.id]
+                - if score
+                  - win = score[0] > score[1]
+                  td.score-cell.text-center class=(win ? "score-win" : "score-loss")
+                    = "#{score[0]}/#{score[1]}"
+                - elsif match && is_owner && !match.completed?
+                  td.text-center
+                    button.btn.btn-outline-secondary.btn-sm.enter-score-btn data-bs-toggle="modal" data-bs-target="#match-modal-#{match.id}"
+                      | —
+                - else
+                  td.text-center.text-muted —
+            td.text-center= stat[:wins]
+            td.text-center
+              - diff = stat[:games_diff]
+              = diff > 0 ? "+#{diff}" : diff.to_s
+            td.text-center.fw-semibold= stat[:place]
+
+/ ── Main bracket ───────────────────────────────────────────────────────────
+- if bracket_rounds.any?
+  .d-flex.justify-content-between.align-items-center.mt-5.mb-3
+    h4.mb-0= t("matches.bracket_title")
+    - if is_owner && !tournament.completed?
+      - all_done = tournament.all_matches_completed?
+      = link_to t("matches.complete_tournament"), fill_results_tournament_path(tournament), class: "btn btn-success btn-sm#{' disabled' unless all_done}", aria: { disabled: (true unless all_done) }, tabindex: (all_done ? nil : "-1")
+
+  - total_rounds = bracket_rounds.length
+  .tournament-bracket
+    - bracket_rounds.each_with_index do |round_matches, idx|
+      - round_num = idx + 1
+      - round_label = round_num == total_rounds ? t("matches.final") : round_num == total_rounds - 1 && total_rounds > 2 ? t("matches.semifinal") : "#{t('matches.round')} #{round_num}"
+      .bracket-round
+        .bracket-round-header= round_label
+        - slot_height = 116 * (2 ** idx)
+        - round_matches.each do |match|
+          .bracket-match-wrapper style="min-height: #{slot_height}px;"
+            .bracket-match
+              - [[match.pair1, match.pair1_score, match.pair1_id], [match.pair2, match.pair2_score, match.pair2_id]].each do |pair, score, pair_id|
+                - is_winner = match.winner_id.present? && match.winner_id == pair_id
+                - is_loser  = match.winner_id.present? && pair_id.present? && match.winner_id != pair_id
+                - css_class = pair.nil? ? "empty-slot" : (is_winner ? "winner" : (is_loser ? "loser" : ""))
+                .bracket-team class=css_class
+                  span.bracket-name= pair ? match.pair_display_name(pair) : "…"
+                  - if score.present?
+                    span.bracket-score= score
+            - if is_owner && match.pending? && match.pair1.present? && match.pair2.present?
+              button.btn.btn-outline-primary.btn-sm.bracket-enter-btn data-bs-toggle="modal" data-bs-target="#match-modal-#{match.id}"
+                = t("matches.enter_result")
+
+  - if third_place_match
+    .mt-4.d-flex.flex-column.align-items-center
+      .bracket-round-header.mb-2= t("matches.third_place")
+      .d-flex.flex-column style="min-width: 240px; max-width: 360px;"
+        .bracket-match
+          - [[third_place_match.pair1, third_place_match.pair1_score, third_place_match.pair1_id], [third_place_match.pair2, third_place_match.pair2_score, third_place_match.pair2_id]].each do |pair, score, pair_id|
+            - is_winner = third_place_match.winner_id.present? && third_place_match.winner_id == pair_id
+            - is_loser  = third_place_match.winner_id.present? && pair_id.present? && third_place_match.winner_id != pair_id
+            - css_class = pair.nil? ? "empty-slot" : (is_winner ? "winner" : (is_loser ? "loser" : ""))
+            .bracket-team class=css_class
+              span.bracket-name= pair ? third_place_match.pair_display_name(pair) : "…"
+              - if score.present?
+                span.bracket-score= score
+        - if is_owner && third_place_match.pending? && third_place_match.pair1.present? && third_place_match.pair2.present?
+          button.btn.btn-outline-primary.btn-sm.bracket-enter-btn.mt-1 data-bs-toggle="modal" data-bs-target="#match-modal-#{third_place_match.id}"
+            = t("matches.enter_result")
+
+/ ── Consolation bracket ─────────────────────────────────────────────────────
+- if loser_bracket_rounds&.any?
+  h4.mt-5.mb-3= t("matches.loser_bracket_title")
+
+  - total_rounds = loser_bracket_rounds.length
+  .tournament-bracket
+    - loser_bracket_rounds.each_with_index do |round_matches, idx|
+      - round_num = idx + 1
+      - round_label = round_num == total_rounds ? t("matches.final") : "#{t('matches.round')} #{round_num}"
+      .bracket-round
+        .bracket-round-header= round_label
+        - slot_height = 116 * (2 ** idx)
+        - round_matches.each do |match|
+          .bracket-match-wrapper style="min-height: #{slot_height}px;"
+            .bracket-match
+              - [[match.pair1, match.pair1_score, match.pair1_id], [match.pair2, match.pair2_score, match.pair2_id]].each do |pair, score, pair_id|
+                - is_winner = match.winner_id.present? && match.winner_id == pair_id
+                - is_loser  = match.winner_id.present? && pair_id.present? && match.winner_id != pair_id
+                - css_class = pair.nil? ? "empty-slot" : (is_winner ? "winner" : (is_loser ? "loser" : ""))
+                .bracket-team class=css_class
+                  span.bracket-name= pair ? match.pair_display_name(pair) : "…"
+                  - if score.present?
+                    span.bracket-score= score
+            - if is_owner && match.pending? && match.pair1.present? && match.pair2.present?
+              button.btn.btn-outline-primary.btn-sm.bracket-enter-btn data-bs-toggle="modal" data-bs-target="#match-modal-#{match.id}"
+                = t("matches.enter_result")
+
+  - if loser_third_place_match
+    .mt-4.d-flex.flex-column.align-items-center
+      .bracket-round-header.mb-2= t("matches.third_place")
+      .d-flex.flex-column style="min-width: 240px; max-width: 360px;"
+        .bracket-match
+          - [[loser_third_place_match.pair1, loser_third_place_match.pair1_score, loser_third_place_match.pair1_id], [loser_third_place_match.pair2, loser_third_place_match.pair2_score, loser_third_place_match.pair2_id]].each do |pair, score, pair_id|
+            - is_winner = loser_third_place_match.winner_id.present? && loser_third_place_match.winner_id == pair_id
+            - is_loser  = loser_third_place_match.winner_id.present? && pair_id.present? && loser_third_place_match.winner_id != pair_id
+            - css_class = pair.nil? ? "empty-slot" : (is_winner ? "winner" : (is_loser ? "loser" : ""))
+            .bracket-team class=css_class
+              span.bracket-name= pair ? loser_third_place_match.pair_display_name(pair) : "…"
+              - if score.present?
+                span.bracket-score= score
+        - if is_owner && loser_third_place_match.pending? && loser_third_place_match.pair1.present? && loser_third_place_match.pair2.present?
+          button.btn.btn-outline-primary.btn-sm.bracket-enter-btn.mt-1 data-bs-toggle="modal" data-bs-target="#match-modal-#{loser_third_place_match.id}"
+            = t("matches.enter_result")
