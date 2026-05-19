@@ -238,6 +238,7 @@ ru:
     not_league_member: Вы не являетесь участником этой лиги.
     registration_closed: Регистрация на этот турнир закрыта.
     already_registered: Вы уже зарегистрированы на этот турнир.
+    not_authorized: У вас нет прав для выполнения этого действия.
     create:
       success: Вы успешно зарегистрировались на турнир!
       failure: Не удалось подать заявку. Попробуйте ещё раз.
@@ -302,6 +303,9 @@ ru:
       apply: Подать заявку
       partner_prompt: "— выберите партнёра —"
       already_registered: Вы уже зарегистрированы на этот турнир.
+      player1_prompt: "— Игрок 1 —"
+      player2_prompt: "— Игрок 2 —"
+      add_pair: Добавить пару
       photo_column: Фото
       player1_column: Игрок 1
       score_column: Очки

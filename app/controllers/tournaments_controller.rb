@@ -58,6 +58,11 @@ class TournamentsController < ApplicationController
                                            .where.not(id: [ @current_league_user.id ] + occupied_ids)
         end
       end
+
+      if @tournament.league.owner == current_user
+        occupied_ids = @tournament.pairs.flat_map { |p| [ p.player1_id, p.player2_id ] }
+        @owner_available_players = @tournament.league.league_users.includes(:user).where.not(id: occupied_ids)
+      end
     end
   end
 

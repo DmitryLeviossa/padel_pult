@@ -64,6 +64,19 @@
       = f.submit t('.apply'), class: "btn btn-success btn-sm"
   - elsif @current_league_user
     .alert.alert-info.mb-3= t('.already_registered')
+
+  - if @owner_available_players&.size.to_i >= 2
+    .d-flex.align-items-center.gap-2.mb-3
+      = form_with url: tournament_pairs_path(@tournament), method: :post, scope: :pair, class: "d-flex align-items-center gap-2" do |f|
+        = f.select :player1_id,
+            @owner_available_players.map { |lu| [ lu.full_name, lu.id ] },
+            { prompt: t('.player1_prompt') },
+            class: "form-select form-select-sm w-auto"
+        = f.select :player2_id,
+            @owner_available_players.map { |lu| [ lu.full_name, lu.id ] },
+            { prompt: t('.player2_prompt') },
+            class: "form-select form-select-sm w-auto"
+        = f.submit t('.add_pair'), class: "btn btn-primary btn-sm"
   - if @tournament.pairs.any?
     table.table.table-hover
       thead

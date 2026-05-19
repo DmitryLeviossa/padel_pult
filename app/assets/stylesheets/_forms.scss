@@ -3,6 +3,23 @@
 // Supplemental form dark styles — $input-bg override in _variables.scss handles input backgrounds.
 // This file covers browser-native chrome (date/time pickers) not controlled by Bootstrap vars.
 
+// Tom Select — prevent wrapper from resizing on value change or focus
+.ts-wrapper {
+  width: 100%;
+  display: block !important;
+}
+
+.ts-wrapper .ts-control {
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.ts-wrapper .ts-control input {
+  min-width: 0 !important;
+  max-width: 100% !important;
+  width: 0 !important;
+}
+
 // Tom Select multi — align items and allow wrapping when many tags are selected
 .ts-wrapper.multi .ts-control {
   flex-wrap: wrap;

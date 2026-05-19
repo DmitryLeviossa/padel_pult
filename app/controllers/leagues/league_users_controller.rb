@@ -2,6 +2,12 @@ class Leagues::LeagueUsersController < ApplicationController
   before_action :set_league
   before_action :authorize_owner!
 
+  def update
+    @league_user = @league.league_users.find(params[:id])
+    @league_user.update!(score: params[:league_user][:score].to_i)
+    head :ok
+  end
+
   def new
     @user = User.new
   end

@@ -41,6 +41,7 @@ en:
     notifications:
       registration_open: "Registration is open for tournament \"%{tournament}\""
   pairs:
+    not_authorized: You are not authorized to perform this action.
     notifications:
       tournament_added: "%{inviter} added you to tournament \"%{tournament}\""
   users:
@@ -91,6 +92,10 @@ en:
       location_placeholder: Location
       reset: Reset
       no_tournaments: No tournaments found.
+    show:
+      player1_prompt: "— Player 1 —"
+      player2_prompt: "— Player 2 —"
+      add_pair: Add pair
     activate:
       activate_failed: Failed to activate tournament. Please try again.
     form:

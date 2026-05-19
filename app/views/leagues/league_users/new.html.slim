@@ -20,4 +20,4 @@
 
         .d-flex.gap-2
           = f.submit t('.submit'), class: "btn btn-primary"
-          = link_to t('.cancel'), league_path(@league), class: "btn btn-outline-secondary"
+          = link_to t('.cancel'), league_path(@league, anchor: "league-users"), class: "btn btn-outline-secondary"

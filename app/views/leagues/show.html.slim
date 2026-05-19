@@ -88,7 +88,12 @@
                   = league_user.full_name
                   - if league_user.user.pending_invitation?
                     span.badge.bg-warning.text-dark.ms-2= t('.pending_badge')
-                td= league_user.score
+                td
+                  - if @league.owner == current_user
+                    = form_with url: league_league_user_path(@league, league_user), method: :patch, data: { controller: "score-input", turbo: false } do |f|
+                      = f.number_field :score, value: league_user.score, class: "form-control form-control-sm", style: "width: 80px;", min: 0, data: { action: "change->score-input#submit" }, name: "league_user[score]"
+                  - else
+                    = league_user.score
                 - if @league.owner == current_user
                   td
                     - if league_user.user.pending_invitation?

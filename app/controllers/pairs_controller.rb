@@ -1,15 +1,23 @@
 class PairsController < ApplicationController
   before_action :set_tournament
-  before_action :authorize_league_member!, only: :create
+  before_action :authorize_league_member!, only: :create, unless: :owner_adding_pair?
   before_action :authorize_registration_open!, only: :create
-  before_action :authorize_not_already_registered!, only: :create
+  before_action :authorize_not_already_registered!, only: :create, unless: :owner_adding_pair?
+  before_action :authorize_owner_for_pair_add!, only: :create, if: :owner_adding_pair?
   before_action :set_pair, only: :destroy
   before_action :authorize_league_owner!, only: :destroy
 
   def create
-    @pair = @tournament.pairs.build(player1: current_league_user, player2: partner)
+    if owner_adding_pair?
+      player1 = @tournament.league.league_users.find(params.dig(:pair, :player1_id))
+      player2 = @tournament.league.league_users.find(params.dig(:pair, :player2_id))
+      @pair = @tournament.pairs.build(player1: player1, player2: player2)
+    else
+      @pair = @tournament.pairs.build(player1: current_league_user, player2: partner)
+    end
+
     if @pair.save
-      notify_partner
+      notify_partner unless owner_adding_pair?
       redirect_to tournament_path(@tournament), notice: t(".success")
     else
       redirect_to tournament_path(@tournament), alert: t(".failure")
@@ -77,6 +85,16 @@ class PairsController < ApplicationController
   def authorize_league_owner!
     unless @tournament.league.owner == current_user && @tournament.registration?
       redirect_to tournament_path(@tournament), alert: t("pairs.delete_not_allowed")
+    end
+  end
+
+  def owner_adding_pair?
+    params.dig(:pair, :player1_id).present?
+  end
+
+  def authorize_owner_for_pair_add!
+    unless @tournament.league.owner == current_user
+      redirect_to tournament_path(@tournament), alert: t("pairs.not_authorized")
     end
   end
 end
