@@ -35,13 +35,13 @@ class TournamentsController < ApplicationController
 
     sorted = @tournament.pairs.sort_by do |pair|
       case @sort
-      when "player1"       then pair.player1.full_name
-      when "player2"       then pair.player2.full_name
-      when "player1_score" then pair.player1_score
-      when "player2_score" then pair.player2_score
-      when "created_at"    then pair.created_at
-      when "placement"     then pair.placement || Float::INFINITY
-      else                      pair.score
+      when "player1"       then [ pair.player1.full_name, pair.created_at ]
+      when "player2"       then [ pair.player2.full_name, pair.created_at ]
+      when "player1_score" then [ pair.player1_score, pair.created_at ]
+      when "player2_score" then [ pair.player2_score, pair.created_at ]
+      when "created_at"    then [ pair.created_at ]
+      when "placement"     then [ pair.placement || Float::INFINITY, pair.created_at ]
+      else                      [ pair.score, pair.created_at ]
       end
     end
 

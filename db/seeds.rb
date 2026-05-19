@@ -3,7 +3,7 @@
 
 # Users — idempotent, kept across reruns
 users_data = [
-  { email: "admin@padel.com",      password: "111111",      first_name: "Админ",      last_name: "Пользователь", gender: :male   },
+  { email: "admin@padel.com",      password: "111111",      first_name: "Дмитрий",    last_name: "Гусев",        gender: :male   },
   { email: "alexei@padel.com",     password: "password123", first_name: "Алексей",    last_name: "Иванов",       gender: :male   },
   { email: "boris@padel.com",      password: "password123", first_name: "Борис",      last_name: "Смирнов",      gender: :male   },
   { email: "vadim@padel.com",      password: "password123", first_name: "Вадим",      last_name: "Козлов",       gender: :male   },
@@ -60,7 +60,7 @@ league1_members = league1_users.map do |user|
 end
 
 # league2: 8 users → 4 pairs max (alexei auto-added as owner)
-league2_users = [alexei, boris, vadim, darya, elena, igor, julia, konstantin]
+league2_users = [ alexei, boris, vadim, darya, elena, igor, julia, konstantin ]
 league2_members = league2_users.map do |user|
   LeagueUser.find_or_create_by!(league_id: league2.id, user_id: user.id) do |lu|
     lu.score = rand(10..80)
@@ -225,48 +225,48 @@ t_mixed_group_stage = Tournament.create!(
 )
 
 # Pairs for completed_1 (league1): 4 pairs from first 8 members
-league1_members.first(8).each_slice(2) do |p1, p2|
-  Pair.create!(tournament: t_completed_1, player1: p1, player2: p2)
+league1_members.first(8).each_slice(2).with_index do |(p1, p2), i|
+  Pair.create!(tournament: t_completed_1, player1: p1, player2: p2, created_at: 80.days.ago + (i * 3).hours)
 end
 
 # Pairs for completed_2 (league2): 2 pairs from first 4 members
-league2_members.first(4).each_slice(2) do |p1, p2|
-  Pair.create!(tournament: t_completed_2, player1: p1, player2: p2)
+league2_members.first(4).each_slice(2).with_index do |(p1, p2), i|
+  Pair.create!(tournament: t_completed_2, player1: p1, player2: p2, created_at: 100.days.ago + (i * 4).hours)
 end
 
 # Pairs for active (league1): max = 8 pairs using all 16 members
-league1_members.each_slice(2) do |p1, p2|
-  Pair.create!(tournament: t_active, player1: p1, player2: p2)
+league1_members.each_slice(2).with_index do |(p1, p2), i|
+  Pair.create!(tournament: t_active, player1: p1, player2: p2, created_at: 20.days.ago + (i * 6).hours)
 end
 
 # Pairs for registration (league2): max = 4 pairs using all 8 members
-league2_members.each_slice(2) do |p1, p2|
-  Pair.create!(tournament: t_registration, player1: p1, player2: p2)
+league2_members.each_slice(2).with_index do |(p1, p2), i|
+  Pair.create!(tournament: t_registration, player1: p1, player2: p2, created_at: 5.days.ago + (i * 8).hours)
 end
 
 # Pairs for active round-robin (league1): 6 pairs from first 12 members
-league1_members.first(12).each_slice(2) do |p1, p2|
-  Pair.create!(tournament: t_active_rr, player1: p1, player2: p2)
+league1_members.first(12).each_slice(2).with_index do |(p1, p2), i|
+  Pair.create!(tournament: t_active_rr, player1: p1, player2: p2, created_at: 25.days.ago + (i * 5).hours)
 end
 
 # Pairs for active mixed (league1): 8 pairs from all 16 members
-league1_members.each_slice(2) do |p1, p2|
-  Pair.create!(tournament: t_active_mixed, player1: p1, player2: p2)
+league1_members.each_slice(2).with_index do |(p1, p2), i|
+  Pair.create!(tournament: t_active_mixed, player1: p1, player2: p2, created_at: 22.days.ago + (i * 4).hours)
 end
 
 # Pairs for mixed registration (league2): 4 pairs from all 8 members
-league2_members.each_slice(2) do |p1, p2|
-  Pair.create!(tournament: t_mixed_registration, player1: p1, player2: p2)
+league2_members.each_slice(2).with_index do |(p1, p2), i|
+  Pair.create!(tournament: t_mixed_registration, player1: p1, player2: p2, created_at: 3.days.ago + (i * 10).hours)
 end
 
 # Pairs for loser bracket mixed (league1): 8 pairs from all 16 members
-league1_members.each_slice(2) do |p1, p2|
-  Pair.create!(tournament: t_mixed_loser_bracket, player1: p1, player2: p2)
+league1_members.each_slice(2).with_index do |(p1, p2), i|
+  Pair.create!(tournament: t_mixed_loser_bracket, player1: p1, player2: p2, created_at: 23.days.ago + (i * 4).hours)
 end
 
 # Pairs for mixed group stage (league1): 8 pairs from all 16 members
-league1_members.each_slice(2) do |p1, p2|
-  Pair.create!(tournament: t_mixed_group_stage, player1: p1, player2: p2)
+league1_members.each_slice(2).with_index do |(p1, p2), i|
+  Pair.create!(tournament: t_mixed_group_stage, player1: p1, player2: p2, created_at: 21.days.ago + (i * 3).hours)
 end
 
 # Matches
@@ -351,7 +351,7 @@ t_active_mixed.matches.reload.bracket.where(round_number: 1).ordered.each do |ma
 end
 
 # Notifications
-[boris, vadim, darya].each do |user|
+[ boris, vadim, darya ].each do |user|
   Notification.create!(
     user: user,
     notification_type: :league_invitation,
