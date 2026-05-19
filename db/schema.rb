@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2026_05_19_112719) do
+ActiveRecord::Schema[8.0].define(version: 2026_05_19_165129) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -62,6 +62,7 @@ ActiveRecord::Schema[8.0].define(version: 2026_05_19_112719) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["league_id"], name: "index_league_users_on_league_id"
+    t.index ["user_id", "league_id"], name: "index_league_users_on_user_id_and_league_id", unique: true
     t.index ["user_id"], name: "index_league_users_on_user_id"
   end
 
@@ -71,6 +72,7 @@ ActiveRecord::Schema[8.0].define(version: 2026_05_19_112719) do
     t.bigint "owner_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.integer "tournaments_quota", default: 5, null: false
     t.index ["owner_id"], name: "index_leagues_on_owner_id"
   end
 

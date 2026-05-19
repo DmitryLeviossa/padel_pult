@@ -67,6 +67,11 @@ class TournamentsController < ApplicationController
   end
 
   def new
+    if @league.tournaments_quota&.zero?
+      redirect_to league_path(@league), alert: t("tournaments.create.quota_exceeded")
+      return
+    end
+
     @tournament = @league.tournaments.build
     @tournament.placement_points = [
       { "from" => 1, "to" => 1, "points" => nil },

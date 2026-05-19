@@ -30,4 +30,57 @@
 require "rails_helper"
 
 RSpec.describe Tournament, type: :model do
+  describe "tournaments_quota enforcement" do
+    context "when league has no quota set (nil)" do
+      let(:league) { create(:league, tournaments_quota: nil) }
+
+      it "allows tournament creation" do
+        tournament = build(:tournament, league: league)
+        expect(tournament).to be_valid
+      end
+
+      it "does not change tournaments_quota after creation" do
+        create(:tournament, league: league)
+        expect(league.reload.tournaments_quota).to be_nil
+      end
+    end
+
+    context "when league has quota remaining" do
+      let(:league) { create(:league, tournaments_quota: 3) }
+
+      it "allows tournament creation" do
+        tournament = build(:tournament, league: league)
+        expect(tournament).to be_valid
+      end
+
+      it "decrements tournaments_quota by 1 after creation" do
+        create(:tournament, league: league)
+        expect(league.reload.tournaments_quota).to eq(2)
+      end
+    end
+
+    context "when league quota is exactly 1" do
+      let(:league) { create(:league, tournaments_quota: 1) }
+
+      it "allows creation and decrements quota to 0" do
+        create(:tournament, league: league)
+        expect(league.reload.tournaments_quota).to eq(0)
+      end
+    end
+
+    context "when league quota is 0" do
+      let(:league) { create(:league, tournaments_quota: 0) }
+
+      it "is invalid" do
+        tournament = build(:tournament, league: league)
+        expect(tournament).not_to be_valid
+        expect(tournament.errors[:base]).to include(I18n.t("activerecord.errors.models.tournament.attributes.base.quota_exceeded"))
+      end
+
+      it "does not create a tournament" do
+        expect { create(:tournament, league: league) }.to raise_error(ActiveRecord::RecordInvalid)
+        expect(league.reload.tournaments_quota).to eq(0)
+      end
+    end
+  end
 end

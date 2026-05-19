@@ -44,6 +44,9 @@ class Tournament < ApplicationRecord
   validate :end_date_not_before_start_date
   validate :placement_points_valid
   validate :mixed_config_present, if: :mixed?
+  validate :league_quota_available, on: :create
+
+  after_create :decrement_league_quota
 
   def all_matches_completed?
     matches.any? && !matches.pending.exists?
@@ -71,6 +74,15 @@ class Tournament < ApplicationRecord
   end
 
   private
+
+  def league_quota_available
+    return unless league&.tournaments_quota
+    errors.add(:base, :quota_exceeded) if league.tournaments_quota <= 0
+  end
+
+  def decrement_league_quota
+    league.decrement!(:tournaments_quota) if league.tournaments_quota&.positive?
+  end
 
   def mixed_config_present
     errors.add(:groups_count, :blank) if groups_count.blank?

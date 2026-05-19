@@ -71,6 +71,9 @@ ru:
               before_start_date: не может быть раньше даты начала
             start_date:
               in_the_past: не может быть в прошлом
+          attributes:
+            base:
+              quota_exceeded: квота на создание турниров в этой лиге исчерпана
         pair:
           attributes:
             player2:
@@ -202,6 +205,9 @@ ru:
       already_member: Вы уже являетесь участником этой лиги.
       not_member: Вы не являетесь участником этой лиги.
       owner_cannot_leave: Владелец не может покинуть лигу.
+      settings_tab: Настройки
+      tournaments_quota_label: Квота турниров
+      tournaments_quota_unlimited: Без ограничений
     new:
       title: Новая лига
       submit: Создать лигу
@@ -327,6 +333,8 @@ ru:
     open_registration:
       success: Регистрация на турнир открыта.
       not_draft: Регистрацию можно открыть только для турнира в статусе черновика.
+    create:
+      quota_exceeded: Квота на создание турниров исчерпана. Вы не можете создать больше турниров в этой лиге.
     activate:
       success: Турнир активирован.
       not_registration: Активировать можно только турнир с открытой регистрацией.

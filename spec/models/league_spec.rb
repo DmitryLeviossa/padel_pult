@@ -2,12 +2,13 @@
 #
 # Table name: leagues
 #
-#  id          :bigint           not null, primary key
-#  description :text
-#  name        :string           not null
-#  created_at  :datetime         not null
-#  updated_at  :datetime         not null
-#  owner_id    :bigint           not null
+#  id                :bigint           not null, primary key
+#  description       :text
+#  name              :string           not null
+#  tournaments_quota :integer          default(5), not null
+#  created_at        :datetime         not null
+#  updated_at        :datetime         not null
+#  owner_id          :bigint           not null
 #
 # Indexes
 #

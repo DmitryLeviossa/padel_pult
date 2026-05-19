@@ -25,6 +25,10 @@
     li.nav-item role="presentation"
       button.nav-link type="button" role="tab" data-bs-toggle="tab" data-bs-target="#league-users" aria-controls="league-users" aria-selected="false"
         = t('.members_tab')
+    - if @league.owner == current_user
+      li.nav-item role="presentation"
+        button.nav-link type="button" role="tab" data-bs-toggle="tab" data-bs-target="#settings" aria-controls="settings" aria-selected="false"
+          = t('.settings_tab')
 
   .tab-content.mt-3
     #tournaments.tab-pane.fade.show.active role="tabpanel"
@@ -101,6 +105,15 @@
                         i.bi.bi-link-45deg
       - else
         p.text-muted= t('.no_members')
+
+    - if @league.owner == current_user
+      #settings.tab-pane.fade role="tabpanel"
+        h5.mb-3= t('.settings_tab')
+        table.table.table-bordered.w-auto
+          tbody
+            tr
+              td.fw-semibold= t('.tournaments_quota_label')
+              td= @league.tournaments_quota.presence || t('.tournaments_quota_unlimited')
 
 - if @league.owner == current_user
   #inviteUsersModal.modal.fade aria-hidden="true" aria-labelledby="inviteUsersModalLabel" tabindex="-1"

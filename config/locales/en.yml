@@ -53,6 +53,10 @@ en:
       filter_mine: My leagues
       filter_owned: Created by me
       reset: Reset
+    show:
+      settings_tab: Settings
+      tournaments_quota_label: Tournament quota
+      tournaments_quota_unlimited: Unlimited
     edit:
       title: Edit League
       submit: Save changes
@@ -84,6 +88,8 @@ en:
       player1_prompt: "— Player 1 —"
       player2_prompt: "— Player 2 —"
       add_pair: Add pair
+    create:
+      quota_exceeded: Tournament quota exhausted. You cannot create more tournaments in this league.
     activate:
       activate_failed: Failed to activate tournament. Please try again.
     form:
@@ -119,6 +125,12 @@ en:
       pending: Pending
       completed: Completed
   activerecord:
+    errors:
+      models:
+        tournament:
+          attributes:
+            base:
+              quota_exceeded: Tournament quota exhausted for this league
     attributes:
       tournament:
         name: Name
