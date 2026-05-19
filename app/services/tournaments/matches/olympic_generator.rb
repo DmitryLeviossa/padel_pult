@@ -6,7 +6,7 @@ module Tournaments
       end
 
       def call
-        pairs = @tournament.pairs.sort_by(&:score).reverse
+        pairs = @tournament.eligible_pairs
         n = next_power_of_two(pairs.length)
         seeded = pairs + ([ nil ] * (n - pairs.length))
 

@@ -3,7 +3,7 @@ module Tournaments
     class RoundRobinGenerator
       def initialize(tournament)
         @tournament = tournament
-        @pairs = tournament.pairs.to_a
+        @pairs = tournament.eligible_pairs
       end
 
       def call

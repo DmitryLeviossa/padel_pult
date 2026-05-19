@@ -83,8 +83,13 @@
           - if @tournament.registration? && @tournament.league.owner == current_user
             th
       tbody
+        - eligible_pairs = @tournament.eligible_pairs
+        - eligible_pair_ids = eligible_pairs.map(&:id).to_set
+        - last_eligible_id = eligible_pairs.last&.id
         - @pairs.each_with_index do |pair, index|
-          tr
+          - row_style = eligible_pair_ids.include?(pair.id) ? "" : "opacity: 0.45"
+          - row_style += "; border-bottom: 2px solid #dc3545 !important" if pair.id == last_eligible_id
+          tr style=row_style
             - if @tournament.completed?
               td= pair.placement
             - else
