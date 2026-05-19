@@ -214,6 +214,8 @@ class TournamentsController < ApplicationController
   end
 
   def prepare_mixed_data
+    return unless @tournament.groups_count.present?
+
     group_matches = @matches.select(&:group_stage?)
 
     @group_data = (1..@tournament.groups_count).map do |g|
