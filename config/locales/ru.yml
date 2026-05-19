@@ -113,6 +113,9 @@ ru:
         genders:
           male: Мужской
           female: Женский
+        genders_abbr:
+          male: М
+          female: Ж
 
   tournament:
     status:
@@ -528,3 +531,7 @@ ru:
         no_confirmation: Не получили инструкции подтверждения?
         no_unlock: Не получили инструкции разблокировки?
         sign_in_with: "Войти через %{provider}"
+
+  helpers:
+    select:
+      prompt: "— Выберите —"

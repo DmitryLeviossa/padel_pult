@@ -14,9 +14,9 @@
             = initials
         .card-body
           - if @user.gender_male?
-            span.badge.badge-gender-male.mb-2 М
+            span.badge.badge-gender-male.mb-2= t('activerecord.attributes.user.genders_abbr.male')
           - elsif @user.gender_female?
-            span.badge.badge-gender-female.mb-2 Ж
+            span.badge.badge-gender-female.mb-2= t('activerecord.attributes.user.genders_abbr.female')
 
           dl.mb-0
             dt.small.text-muted= t('.member_since')
