@@ -11,8 +11,9 @@
 #
 # Indexes
 #
-#  index_league_users_on_league_id  (league_id)
-#  index_league_users_on_user_id    (user_id)
+#  index_league_users_on_league_id              (league_id)
+#  index_league_users_on_user_id                (user_id)
+#  index_league_users_on_user_id_and_league_id  (user_id,league_id) UNIQUE
 #
 # Foreign Keys
 #
@@ -22,6 +23,8 @@
 class LeagueUser < ApplicationRecord
   belongs_to :league
   belongs_to :user
+
+  validates :user_id, uniqueness: { scope: :league_id }
 
   delegate :full_name, to: :user
 end

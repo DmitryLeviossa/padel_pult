@@ -11,8 +11,9 @@
 #
 # Indexes
 #
-#  index_league_users_on_league_id  (league_id)
-#  index_league_users_on_user_id    (user_id)
+#  index_league_users_on_league_id              (league_id)
+#  index_league_users_on_user_id                (user_id)
+#  index_league_users_on_user_id_and_league_id  (user_id,league_id) UNIQUE
 #
 # Foreign Keys
 #
