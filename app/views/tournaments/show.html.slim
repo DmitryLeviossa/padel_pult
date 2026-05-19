@@ -98,7 +98,7 @@
       tbody
         - eligible_pairs = @tournament.eligible_pairs
         - eligible_pair_ids = eligible_pairs.map(&:id).to_set
-        - last_eligible_id = eligible_pairs.last&.id
+        - last_eligible_id = @tournament.pairs.size > @tournament.max_pairs ? eligible_pairs.last&.id : nil
         - @pairs.each_with_index do |pair, index|
           - row_style = eligible_pair_ids.include?(pair.id) ? "" : "opacity: 0.45"
           - row_style += "; border-bottom: 2px solid #dc3545 !important" if pair.id == last_eligible_id
