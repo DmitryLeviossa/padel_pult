@@ -27,4 +27,12 @@ class LeagueUser < ApplicationRecord
   validates :user_id, uniqueness: { scope: :league_id }
 
   delegate :full_name, to: :user
+
+  def self.ransackable_attributes(_auth_object = nil)
+    %w[score]
+  end
+
+  def self.ransackable_associations(_auth_object = nil)
+    %w[user]
+  end
 end

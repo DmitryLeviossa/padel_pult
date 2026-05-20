@@ -12,9 +12,9 @@ class MatchesController < ApplicationController
       when "mixed"
         handle_mixed_match_completion
       end
-      redirect_to tournament_path(@match.tournament), notice: t(".success")
+      redirect_to tournament_path(@match.tournament), notice: "Результат сохранён."
     else
-      redirect_to tournament_path(@match.tournament), alert: t(".failure")
+      redirect_to tournament_path(@match.tournament), alert: "Не удалось сохранить результат."
     end
   end
 
@@ -35,7 +35,7 @@ class MatchesController < ApplicationController
 
   def authorize_tournament_owner!
     unless @match.tournament.league.owner == current_user
-      redirect_to tournament_path(@match.tournament), alert: t("not_authorized")
+      redirect_to tournament_path(@match.tournament), alert: "Нет доступа."
     end
   end
 

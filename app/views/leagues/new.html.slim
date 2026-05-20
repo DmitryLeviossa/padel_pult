@@ -1,5 +1,5 @@
 .container.py-4
-  h1.mb-4= t('.title')
+  h1.mb-4 Новая лига
 
   = form_with model: @league, class: "mt-4" do |f|
     .mb-3
@@ -16,5 +16,5 @@
       = f.label :logo, class: "form-label"
       = f.file_field :logo, class: "form-control", accept: "image/*"
 
-    = f.submit t('.submit'), class: "btn btn-primary"
-    = link_to t('.cancel'), leagues_path, class: "btn btn-secondary ms-2"
+    = f.submit "Создать лигу", class: "btn btn-primary"
+    = link_to "Отмена", leagues_path, class: "btn btn-secondary ms-2"

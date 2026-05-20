@@ -15,7 +15,7 @@ RSpec.describe "Leagues", type: :request do
         delete leave_league_path(league)
         expect(response).to redirect_to(league)
         follow_redirect!
-        expect(response.body).to include(I18n.t("leagues.show.owner_cannot_leave"))
+        expect(response.body).to include("Владелец не может покинуть лигу.")
         expect(league.users.reload).to include(owner)
       end
     end

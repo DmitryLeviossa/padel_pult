@@ -3,7 +3,7 @@
     .col-md-5
       .card
         .card-body.p-4
-          h2.card-title.mb-4= t('.title')
+          h2.card-title.mb-4 Войти
 
           = form_for(resource, as: resource_name, url: session_path(resource_name)) do |f|
             .mb-3
@@ -19,7 +19,7 @@
                 = f.check_box :remember_me, class: "form-check-input"
                 = f.label :remember_me, class: "form-check-label"
 
-            = f.submit t('.submit'), class: "btn btn-primary w-100"
+            = f.submit "Войти", class: "btn btn-primary w-100"
 
           hr.my-3
           .text-center.small

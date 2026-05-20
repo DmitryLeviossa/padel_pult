@@ -87,7 +87,7 @@ RSpec.describe Tournament, type: :model do
       it "is invalid" do
         tournament = build(:tournament, league: league)
         expect(tournament).not_to be_valid
-        expect(tournament.errors[:base]).to include(I18n.t("activerecord.errors.models.tournament.attributes.base.quota_exceeded"))
+        expect(tournament.errors[:base]).to include("квота на создание турниров в этой лиге исчерпана")
       end
 
       it "does not create a tournament" do

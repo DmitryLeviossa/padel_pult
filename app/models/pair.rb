@@ -50,7 +50,7 @@ class Pair < ApplicationRecord
   end
 
   def players_must_be_different
-    errors.add(:player2, :same_as_player1) if player1_id.present? && player1_id == player2_id
+    errors.add(:player2, "не может совпадать с игроком 1") if player1_id.present? && player1_id == player2_id
   end
 
   def each_player_once_per_tournament
@@ -59,6 +59,6 @@ class Pair < ApplicationRecord
     occupied = Pair.where(tournament_id: tournament_id)
                    .where.not(id: id)
                    .where("player1_id IN (?) OR player2_id IN (?)", [ player1_id, player2_id ], [ player1_id, player2_id ])
-    errors.add(:base, :player_already_registered) if occupied.exists?
+    errors.add(:base, "один из игроков уже зарегистрирован на этот турнир") if occupied.exists?
   end
 end

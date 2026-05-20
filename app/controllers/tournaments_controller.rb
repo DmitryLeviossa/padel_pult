@@ -69,7 +69,7 @@ class TournamentsController < ApplicationController
 
   def new
     if @league.tournaments_quota&.zero?
-      redirect_to league_path(@league), alert: t("tournaments.create.quota_exceeded")
+      redirect_to league_path(@league), alert: "Квота на создание турниров исчерпана. Вы не можете создать больше турниров в этой лиге."
       return
     end
 
@@ -86,7 +86,7 @@ class TournamentsController < ApplicationController
     @tournament = @league.tournaments.build(tournament_params)
 
     if @tournament.save
-      redirect_to tournament_path(@tournament), notice: t(".success")
+      redirect_to tournament_path(@tournament), notice: "Турнир успешно создан."
     else
       render :new, status: :unprocessable_entity
     end
@@ -94,26 +94,26 @@ class TournamentsController < ApplicationController
 
   def destroy
     unless @tournament.draft?
-      redirect_to tournament_path(@tournament), alert: t(".not_draft")
+      redirect_to tournament_path(@tournament), alert: "Удалить можно только черновик."
       return
     end
 
     @tournament.destroy
-    redirect_to league_path(@tournament.league, anchor: "tournaments"), notice: t(".success")
+    redirect_to league_path(@tournament.league, anchor: "tournaments"), notice: "Турнир удалён."
   end
 
   def edit
-    redirect_to tournament_path(@tournament), alert: t(".not_draft") unless @tournament.draft?
+    redirect_to tournament_path(@tournament), alert: "Редактировать можно только черновик." unless @tournament.draft?
   end
 
   def update
     unless @tournament.draft?
-      redirect_to tournament_path(@tournament), alert: t(".not_draft")
+      redirect_to tournament_path(@tournament), alert: "Редактировать можно только черновик."
       return
     end
 
     if @tournament.update(tournament_params)
-      redirect_to tournament_path(@tournament), notice: t(".success")
+      redirect_to tournament_path(@tournament), notice: "Турнир успешно обновлён."
     else
       render :edit, status: :unprocessable_entity
     end
@@ -121,41 +121,41 @@ class TournamentsController < ApplicationController
 
   def open_registration
     unless @tournament.draft?
-      redirect_to tournament_path(@tournament), alert: t(".not_draft")
+      redirect_to tournament_path(@tournament), alert: "Регистрацию можно открыть только для турнира в статусе черновика."
       return
     end
 
     @tournament.registration!
     notify_league_users_about_registration
-    redirect_to tournament_path(@tournament), notice: t(".success")
+    redirect_to tournament_path(@tournament), notice: "Регистрация на турнир открыта."
   end
 
   def activate
     unless @tournament.registration?
-      redirect_to tournament_path(@tournament), alert: t(".not_registration")
+      redirect_to tournament_path(@tournament), alert: "Активировать можно только турнир с открытой регистрацией."
       return
     end
 
     if Tournaments::ActivateService.new(@tournament).call
-      redirect_to tournament_path(@tournament), notice: t(".success")
+      redirect_to tournament_path(@tournament), notice: "Турнир активирован."
     else
-      redirect_to tournament_path(@tournament), alert: t(".activate_failed")
+      redirect_to tournament_path(@tournament), alert: "Не удалось активировать турнир. Попробуйте ещё раз."
     end
   end
 
   def cancel
     unless @tournament.registration?
-      redirect_to tournament_path(@tournament), alert: t(".not_registration")
+      redirect_to tournament_path(@tournament), alert: "Отменить можно только турнир с открытой регистрацией."
       return
     end
 
     @tournament.cancelled!
     notify_registered_players_about_cancellation
-    redirect_to tournament_path(@tournament), notice: t(".success")
+    redirect_to tournament_path(@tournament), notice: "Турнир отменён. Участники уведомлены."
   end
 
   def fill_results
-    redirect_to(tournament_path(@tournament), alert: t(".not_active")) and return unless @tournament.active?
+    redirect_to(tournament_path(@tournament), alert: "Заполнить результаты можно только для активного турнира.") and return unless @tournament.active?
     @suggested_placements = compute_suggested_placements
     @pairs = @tournament.pairs
                         .includes({ player1: :user }, { player2: :user })
@@ -164,14 +164,14 @@ class TournamentsController < ApplicationController
 
   def complete
     unless @tournament.active?
-      redirect_to tournament_path(@tournament), alert: t(".not_active")
+      redirect_to tournament_path(@tournament), alert: "Завершить можно только активный турнир."
       return
     end
 
     if Tournaments::CompleteService.new(@tournament, params[:placements] || {}).call
-      redirect_to tournament_path(@tournament), notice: t(".success")
+      redirect_to tournament_path(@tournament), notice: "Турнир завершён, очки начислены."
     else
-      redirect_to tournament_path(@tournament), alert: t(".failure")
+      redirect_to tournament_path(@tournament), alert: "Не удалось завершить турнир. Попробуйте ещё раз."
     end
   end
 
@@ -190,7 +190,7 @@ class TournamentsController < ApplicationController
       Notification.create!(
         user: league_user.user,
         notification_type: :tournament_registration_open,
-        message: t("tournaments.notifications.registration_open", tournament: @tournament.name, league: @tournament.league.name),
+        message: "Открыта регистрация на турнир «#{@tournament.name}» в лиге «#{@tournament.league.name}»",
         url: tournament_path(@tournament)
       )
     end
@@ -205,18 +205,18 @@ class TournamentsController < ApplicationController
       Notification.create!(
         user: user,
         notification_type: :tournament_cancelled,
-        message: t("tournaments.notifications.cancelled", tournament: @tournament.name),
+        message: "Турнир «#{@tournament.name}» был отменён",
         url: tournament_path(@tournament)
       )
     end
   end
 
   def authorize_owner!
-    redirect_to league_path(@league), alert: "Not authorized." unless @league.owner == current_user
+    redirect_to league_path(@league), alert: "Нет доступа." unless @league.owner == current_user
   end
 
   def authorize_tournament_owner!
-    redirect_to league_path(@tournament.league), alert: "Not authorized." unless @tournament.league.owner == current_user
+    redirect_to league_path(@tournament.league), alert: "Нет доступа." unless @tournament.league.owner == current_user
   end
 
   def prepare_mixed_data

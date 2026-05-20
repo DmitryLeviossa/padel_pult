@@ -3,7 +3,7 @@
     .col-md-5
       .card
         .card-body.p-4
-          h2.card-title.mb-4= t('.title')
+          h2.card-title.mb-4 Повторная отправка инструкций подтверждения
 
           = form_for(resource, as: resource_name, url: confirmation_path(resource_name), html: { method: :post }) do |f|
             = render "devise/shared/error_messages", resource: resource
@@ -12,7 +12,7 @@
               = f.label :email, class: "form-label"
               = f.email_field :email, autofocus: true, autocomplete: "email", class: "form-control"
 
-            = f.submit t('.submit'), class: "btn btn-primary w-100"
+            = f.submit "Повторно отправить", class: "btn btn-primary w-100"
 
           hr.my-3
           .text-center.small

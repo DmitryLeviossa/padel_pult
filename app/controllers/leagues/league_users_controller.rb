@@ -12,10 +12,10 @@ class Leagues::LeagueUsersController < ApplicationController
 
     if params[:user]
       unless @league_user.user.pending_invitation?
-        return redirect_to league_path(@league, anchor: "league-users"), alert: t(".not_pending")
+        return redirect_to league_path(@league, anchor: "league-users"), alert: "Этот участник уже зарегистрировался и не может быть изменён."
       end
       @league_user.user.update!(user_params)
-      redirect_to league_path(@league, anchor: "league-users"), notice: t(".user_updated")
+      redirect_to league_path(@league, anchor: "league-users"), notice: "Имя участника обновлено."
     else
       @league_user.update!(score: params[:league_user][:score].to_i)
       head :ok
@@ -37,7 +37,7 @@ class Leagues::LeagueUsersController < ApplicationController
       @league.league_users.create!(user: @user)
     end
 
-    redirect_to league_path(@league, anchor: "league-users"), notice: t(".success")
+    redirect_to league_path(@league, anchor: "league-users"), notice: "Участник добавлен. Скопируйте ссылку для приглашения из списка участников."
   rescue ActiveRecord::RecordInvalid
     render :new, status: :unprocessable_entity
   end
@@ -49,7 +49,7 @@ class Leagues::LeagueUsersController < ApplicationController
   end
 
   def authorize_owner!
-    redirect_to leagues_path, alert: t("leagues.show.not_authorized") unless @league.owner == current_user
+    redirect_to leagues_path, alert: "Нет доступа." unless @league.owner == current_user
   end
 
   def user_params

@@ -39,7 +39,7 @@ RSpec.describe "Users", type: :request do
     context "when user has no tournament history" do
       it "shows no history message" do
         get user_path(other_user)
-        expect(response.body).to include(I18n.t("users.show.no_history"))
+        expect(response.body).to include("Турниров пока нет.")
       end
     end
   end

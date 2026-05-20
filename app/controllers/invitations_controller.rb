@@ -7,7 +7,7 @@ class InvitationsController < ApplicationController
   def update
     if @user.update(invitation_params.merge(invitation_token: nil))
       sign_in @user
-      redirect_to root_path, notice: t(".success")
+      redirect_to root_path, notice: "Добро пожаловать! Вы успешно зарегистрировались."
     else
       render :show, status: :unprocessable_entity
     end
@@ -17,7 +17,7 @@ class InvitationsController < ApplicationController
 
   def find_pending_user!
     @user = User.find_by(invitation_token: params[:token])
-    redirect_to root_path, alert: t("invitations.invalid_token") unless @user
+    redirect_to root_path, alert: "Ссылка недействительна или уже использована." unless @user
   end
 
   def invitation_params

@@ -1,6 +1,6 @@
 .container.py-4
   .d-flex.justify-content-between.align-items-center.mb-4
-    h1.mb-0= t('.title', name: @tournament.name)
+    h1.mb-0= "Результаты: #{@tournament.name}"
     = link_to "← #{@tournament.name}", tournament_path(@tournament), class: "btn btn-outline-secondary btn-sm"
 
   - if @pairs.any?
@@ -8,8 +8,8 @@
       table.table.table-hover
         thead
           tr
-            th= t('.pair_column')
-            th.text-center= t('.placement_column')
+            th Пара
+            th.text-center Место
         tbody
           - @pairs.each do |pair|
             tr
@@ -19,6 +19,6 @@
                 = number_field_tag "placements[#{pair.id}]", suggested, min: 1, max: @tournament.pairs.size, class: "form-control form-control-sm d-inline-block", style: "width: 80px"
 
       .mt-3
-        = f.submit t('.submit'), class: "btn btn-success"
+        = f.submit "Завершить турнир", class: "btn btn-success"
   - else
-    p.text-muted= t('tournaments.show.no_pairs')
+    p.text-muted Пар пока нет.

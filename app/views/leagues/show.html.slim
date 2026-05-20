@@ -6,84 +6,103 @@
       h1.mb-0= @league.name
     .d-flex.gap-2
       - if @league.owner == current_user
-        = link_to t('.edit'), edit_league_path(@league), class: "btn btn-outline-primary btn-sm"
+        = link_to "Редактировать", edit_league_path(@league), class: "btn btn-outline-primary btn-sm"
       - elsif @league.users.include?(current_user)
-        = button_to t('.leave'), leave_league_path(@league), method: :delete, class: "btn btn-outline-danger btn-sm", data: { turbo_confirm: t('.leave_confirm') }
+        = button_to "Покинуть лигу", leave_league_path(@league), method: :delete, class: "btn btn-outline-danger btn-sm", data: { turbo_confirm: "Вы уверены, что хотите покинуть лигу?" }
       - else
-        = button_to t('.join'), join_league_path(@league), method: :post, class: "btn btn-primary btn-sm"
-      = link_to t('.back'), leagues_path, class: "btn btn-outline-secondary btn-sm"
+        = button_to "Вступить в лигу", join_league_path(@league), method: :post, class: "btn btn-primary btn-sm"
+      = link_to "← Лиги", leagues_path, class: "btn btn-outline-secondary btn-sm"
 
   - if @league.description.present?
     p.text-muted= @league.description
 
-  p.text-muted.small= t('.created_by', date: l(@league.created_at.to_date, format: :long), owner: @league.owner.email)
+  p.text-muted.small= "Создано #{ru_date(@league.created_at.to_date)} пользователем #{@league.owner.email}"
+
+  - members_tab_active = params[:q_members].present? || params[:members_status].present?
 
   ul.nav.nav-tabs.mt-4 role="tablist" data-controller="tabs"
     li.nav-item role="presentation"
-      button.nav-link.active type="button" role="tab" data-bs-toggle="tab" data-bs-target="#tournaments" aria-controls="tournaments" aria-selected="true"
-        = t('.tournaments_tab')
+      button.nav-link class=("active" unless members_tab_active) type="button" role="tab" data-bs-toggle="tab" data-bs-target="#tournaments" aria-controls="tournaments" aria-selected="#{!members_tab_active}"
+        | Турниры
     li.nav-item role="presentation"
-      button.nav-link type="button" role="tab" data-bs-toggle="tab" data-bs-target="#league-users" aria-controls="league-users" aria-selected="false"
-        = t('.members_tab')
+      button.nav-link class=("active" if members_tab_active) type="button" role="tab" data-bs-toggle="tab" data-bs-target="#league-users" aria-controls="league-users" aria-selected="#{members_tab_active}"
+        | Участники
     - if @league.owner == current_user
       li.nav-item role="presentation"
         button.nav-link type="button" role="tab" data-bs-toggle="tab" data-bs-target="#settings" aria-controls="settings" aria-selected="false"
-          = t('.settings_tab')
+          | Настройки
 
   .tab-content.mt-3
-    #tournaments.tab-pane.fade.show.active role="tabpanel"
+    #tournaments.tab-pane.fade class=("show active" unless members_tab_active) role="tabpanel"
       .d-flex.justify-content-between.align-items-center.mb-2
-        h5.mb-0= t('.tournaments_tab')
+        h5.mb-0 Турниры
         - if @league.owner == current_user
-          = link_to t('.new_tournament'), new_league_tournament_path(@league), class: "btn btn-primary btn-sm"
+          = link_to "Новый турнир", new_league_tournament_path(@league), class: "btn btn-primary btn-sm"
 
       - visible_tournaments = @league.owner == current_user ? @league.tournaments : @league.tournaments.where.not(status: :draft)
       - if visible_tournaments.any?
         table.table.table-hover
           thead
             tr
-              th= t('.name_column')
-              th= t('.dates_column')
-              th= t('.location_column')
-              th= t('.type_column')
-              th= t('.status_column')
-              th= t('.participants_column')
+              th Название
+              th Даты
+              th Место
+              th Тип
+              th Статус
+              th Участники
           tbody
             - visible_tournaments.order(start_date: :asc).each do |tournament|
               tr
                 td= link_to tournament.name, tournament_path(tournament)
                 td= tournament_date_range(tournament)
                 td= tournament.location.presence || "—"
-                td= t("tournament.type.#{tournament.type}")
+                td= { "olympic" => "Олимпийский", "round_robin" => "Круговой", "mixed" => "Смешанный" }.fetch(tournament.type, tournament.type)
                 td
                   - badge_class = { "draft" => "secondary", "registration" => "info", "active" => "success", "completed" => "primary", "cancelled" => "danger" }.fetch(tournament.status, "secondary")
                   span.badge class="bg-#{badge_class}"
-                    = t("tournament.status.#{tournament.status}")
+                    = { "draft" => "Черновик", "registration" => "Регистрация", "active" => "Активный", "completed" => "Завершён", "cancelled" => "Отменён" }.fetch(tournament.status, tournament.status)
                 td= "#{tournament.pairs.count * 2} / #{tournament.max_participants}"
       - else
-        p.text-muted= t('.no_tournaments')
+        p.text-muted Турниров пока нет.
 
-    #league-users.tab-pane.fade role="tabpanel"
+    #league-users.tab-pane.fade class=("show active" if members_tab_active) role="tabpanel"
       .d-flex.justify-content-between.align-items-center.mb-3
-        h5.mb-0= t('.members_section')
+        h5.mb-0 Участники
         - if @league.owner == current_user
           .d-flex.gap-2
-            = link_to t('.add_member'), new_league_league_user_path(@league), class: "btn btn-outline-secondary btn-sm"
+            = link_to "Добавить нового участника", new_league_league_user_path(@league), class: "btn btn-outline-secondary btn-sm"
             button.btn.btn-primary.btn-sm type="button" data-bs-toggle="modal" data-bs-target="#inviteUsersModal"
-              = t('.invite_users')
+              | Пригласить игроков
 
-      - if @league.league_users.any?
+      = search_form_for @q_members, url: league_path(@league), as: :q_members, method: :get, html: { data: { turbo: false } } do |f|
+        .row.g-2.align-items-end.mb-3
+          .col-sm-4
+            = f.label :user_first_name_or_user_last_name_cont, "Имя", class: "form-label small mb-1"
+            = f.search_field :user_first_name_or_user_last_name_cont, class: "form-control form-control-sm", placeholder: "Поиск по имени"
+          .col-sm-3
+            = f.label :user_gender_eq, "Пол", class: "form-label small mb-1"
+            = f.select :user_gender_eq, [["Все", ""], ["Мужской", 0], ["Женский", 1]], {}, class: "form-select form-select-sm"
+          .col-sm-3
+            = label_tag :members_status, "Статус", class: "form-label small mb-1"
+            = select_tag :members_status, options_for_select([["Все", ""], ["Активные", "active"], ["Ожидающие", "pending"]], params[:members_status]), class: "form-select form-select-sm"
+          .col-sm-2.d-flex.align-items-end.gap-1
+            = f.submit "Применить", class: "btn btn-primary btn-sm"
+            - if members_tab_active
+              = link_to "Сбросить", league_path(@league), class: "btn btn-outline-secondary btn-sm"
+
+      - if @league_users.any?
         table.table.table-hover
           thead
             tr
               th #
-              th= t('.photo_column')
-              th= t('.member_name_column')
-              th= t('.score_column')
+              th Фото
+              th Имя
+              th Пол
+              th Очки
               - if @league.owner == current_user
                 th
           tbody
-            - @league.league_users.order(score: :desc).each_with_index do |league_user, index|
+            - @league_users.each_with_index do |league_user, index|
               tr
                 td= index + 1
                 td
@@ -91,7 +110,12 @@
                 td
                   = league_user.full_name
                   - if league_user.user.pending_invitation?
-                    span.badge.bg-warning.text-dark.ms-2= t('.pending_badge')
+                    span.badge.bg-warning.text-dark.ms-2 Ожидает регистрации
+                td
+                  - if league_user.user.gender_male?
+                    span.badge.badge-gender-male М
+                  - elsif league_user.user.gender_female?
+                    span.badge.badge-gender-female Ж
                 td
                   - if @league.owner == current_user
                     = form_with url: league_league_user_path(@league, league_user), method: :patch, data: { controller: "score-input", turbo: false } do |f|
@@ -102,37 +126,39 @@
                   td
                     - if league_user.user.pending_invitation?
                       .d-flex.gap-1
-                        = button_tag type: "button", class: "btn btn-outline-secondary btn-sm", data: { copy_url: invitation_url(league_user.user.invitation_token), bs_toggle: "tooltip", bs_placement: "top", bs_title: t('.copy_invite_link_tooltip') } do
+                        = button_tag type: "button", class: "btn btn-outline-secondary btn-sm", data: { copy_url: invitation_url(league_user.user.invitation_token), bs_toggle: "tooltip", bs_placement: "top", bs_title: "Скопировать ссылку для приглашения" } do
                           i.bi.bi-link-45deg
-                        = link_to edit_league_league_user_path(@league, league_user), class: "btn btn-outline-primary btn-sm", title: t('.edit_member_tooltip') do
+                        = link_to edit_league_league_user_path(@league, league_user), class: "btn btn-outline-primary btn-sm", title: "Редактировать имя участника" do
                           i.bi.bi-pencil
+      - elsif members_tab_active
+        p.text-muted Участники не найдены.
       - else
-        p.text-muted= t('.no_members')
+        p.text-muted Участников пока нет.
 
     - if @league.owner == current_user
       #settings.tab-pane.fade role="tabpanel"
-        h5.mb-3= t('.settings_tab')
+        h5.mb-3 Настройки
         table.table.table-bordered.w-auto
           tbody
             tr
-              td.fw-semibold= t('.tournaments_quota_label')
-              td= @league.tournaments_quota.presence || t('.tournaments_quota_unlimited')
+              td.fw-semibold Квота турниров
+              td= @league.tournaments_quota.presence || "Без ограничений"
 
 - if @league.owner == current_user
   #inviteUsersModal.modal.fade aria-hidden="true" aria-labelledby="inviteUsersModalLabel" tabindex="-1"
     .modal-dialog
       .modal-content
         .modal-header
-          h5.modal-title#inviteUsersModalLabel= t('.invite_modal_title')
+          h5.modal-title#inviteUsersModalLabel Пригласить игроков в лигу
           button.btn-close type="button" data-bs-dismiss="modal" aria-label="Close"
         = form_with url: league_league_invitations_path(@league), scope: :league_invitation do |f|
           .modal-body
             .mb-3
-              = f.label :invited_user_ids, t('.invite_users_label'), class: "form-label"
+              = f.label :invited_user_ids, "Выберите игроков", class: "form-label"
               = f.select :invited_user_ids,
                 @invitable_users.map { |u| [u.full_name, u.id] },
                 { include_hidden: false },
                 { class: "form-select", multiple: true }
           .modal-footer
-            button.btn.btn-secondary type="button" data-bs-dismiss="modal"= t('.cancel')
-            = f.submit t('.invite_submit'), class: "btn btn-primary"
+            button.btn.btn-secondary type="button" data-bs-dismiss="modal" Отмена
+            = f.submit "Отправить приглашения", class: "btn btn-primary"

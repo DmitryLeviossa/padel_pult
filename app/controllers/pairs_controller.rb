@@ -26,7 +26,7 @@ class PairsController < ApplicationController
 
   def destroy
     @pair.destroy
-    redirect_to tournament_path(@tournament), notice: t(".success")
+    redirect_to tournament_path(@tournament), notice: "Пара успешно удалена."
   end
 
   private
@@ -50,12 +50,12 @@ class PairsController < ApplicationController
   def authorize_league_member!
     @tournament.league.league_users.find_by!(user: current_user)
   rescue ActiveRecord::RecordNotFound
-    redirect_to tournament_path(@tournament), alert: t("pairs.not_league_member")
+    redirect_to tournament_path(@tournament), alert: "Вы не являетесь участником этой лиги."
   end
 
   def authorize_registration_open!
     unless @tournament.registration?
-      redirect_to tournament_path(@tournament), alert: t("pairs.registration_closed")
+      redirect_to tournament_path(@tournament), alert: "Регистрация на этот турнир закрыта."
     end
   end
 
@@ -64,7 +64,7 @@ class PairsController < ApplicationController
     already_in = @tournament.pairs.exists?(player1_id: league_user.id) ||
                  @tournament.pairs.exists?(player2_id: league_user.id)
     if already_in
-      redirect_to tournament_path(@tournament), alert: t("pairs.already_registered")
+      redirect_to tournament_path(@tournament), alert: "Вы уже зарегистрированы на этот турнир."
     end
   end
 
@@ -75,17 +75,14 @@ class PairsController < ApplicationController
     Notification.create!(
       user: partner_user,
       notification_type: :tournament_added,
-      message: t("pairs.notifications.tournament_added",
-                 tournament: @tournament.name,
-                 league: @tournament.league.name,
-                 inviter: current_user.full_name),
+      message: "#{current_user.full_name} добавил(а) вас в турнир «#{@tournament.name}» в лиге «#{@tournament.league.name}»",
       url: tournament_path(@tournament)
     )
   end
 
   def authorize_league_owner!
     unless @tournament.league.owner == current_user && @tournament.registration?
-      redirect_to tournament_path(@tournament), alert: t("pairs.delete_not_allowed")
+      redirect_to tournament_path(@tournament), alert: "Удаление пар недоступно."
     end
   end
 
@@ -95,7 +92,7 @@ class PairsController < ApplicationController
 
   def authorize_owner_for_pair_add!
     unless @tournament.league.owner == current_user
-      redirect_to tournament_path(@tournament), alert: t("pairs.not_authorized")
+      redirect_to tournament_path(@tournament), alert: "У вас нет прав для выполнения этого действия."
     end
   end
 end

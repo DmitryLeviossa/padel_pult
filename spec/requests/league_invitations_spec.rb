@@ -55,7 +55,7 @@ RSpec.describe "LeagueInvitations", type: :request do
         }
         expect(response).to redirect_to(league_path(league, anchor: "league-users"))
         follow_redirect!
-        expect(response.body).to include(I18n.t("leagues.league_invitations.create.no_users_selected"))
+        expect(response.body).to include("Выберите хотя бы одного игрока.")
       end
     end
 

@@ -23,21 +23,21 @@ css:
 
 / ── Group stage ────────────────────────────────────────────────────────────
 .d-flex.justify-content-between.align-items-center.mt-4.mb-3
-  h4.mb-0= t("matches.group_stage_title")
+  h4.mb-0 Групповой этап
 
 - group_data.each do |gd|
-  h5.mt-3.mb-2= "#{t('matches.group')} #{gd[:group_number]}"
+  h5.mt-3.mb-2= "Группа #{gd[:group_number]}"
   .table-responsive
     table.table.table-bordered.table-sm.group-cross-table
       thead.table-light
         tr
           th.text-center №
-          th= t("matches.pair_column")
+          th Пара
           - gd[:pairs_ordered].each_with_index do |_, i|
             th.text-center= "#{i + 1})"
-          th.text-center= t("matches.wins_column")
-          th.text-center= t("matches.games_diff_column")
-          th.text-center= t("matches.place_column")
+          th.text-center В
+          th.text-center Разница
+          th.text-center Место
       tbody
         - gd[:pairs_ordered].each_with_index do |pair, row_idx|
           - stat = gd[:stats_by_id][pair.id]
@@ -69,16 +69,16 @@ css:
 / ── Main bracket ───────────────────────────────────────────────────────────
 - if bracket_rounds.any?
   .d-flex.justify-content-between.align-items-center.mt-5.mb-3
-    h4.mb-0= t("matches.bracket_title")
+    h4.mb-0 Сетка
     - if is_owner && !tournament.completed?
       - all_done = tournament.all_matches_completed?
-      = link_to t("matches.complete_tournament"), fill_results_tournament_path(tournament), class: "btn btn-success btn-sm#{' disabled' unless all_done}", aria: { disabled: (true unless all_done) }, tabindex: (all_done ? nil : "-1")
+      = link_to "Завершить турнир", fill_results_tournament_path(tournament), class: "btn btn-success btn-sm#{' disabled' unless all_done}", aria: { disabled: (true unless all_done) }, tabindex: (all_done ? nil : "-1")
 
   - total_rounds = bracket_rounds.length
   .tournament-bracket
     - bracket_rounds.each_with_index do |round_matches, idx|
       - round_num = idx + 1
-      - round_label = round_num == total_rounds ? t("matches.final") : round_num == total_rounds - 1 && total_rounds > 2 ? t("matches.semifinal") : "#{t('matches.round')} #{round_num}"
+      - round_label = round_num == total_rounds ? "Финал" : round_num == total_rounds - 1 && total_rounds > 2 ? "Полуфинал" : "Раунд #{round_num}"
       .bracket-round
         .bracket-round-header= round_label
         - slot_height = 116 * (2 ** idx)
@@ -95,11 +95,11 @@ css:
                     span.bracket-score= score
             - if is_owner && match.pending? && match.pair1.present? && match.pair2.present?
               button.btn.btn-outline-primary.btn-sm.bracket-enter-btn data-bs-toggle="modal" data-bs-target="#match-modal-#{match.id}"
-                = t("matches.enter_result")
+                | Ввести результат
 
   - if third_place_match
     .mt-4.d-flex.flex-column.align-items-center
-      .bracket-round-header.mb-2= t("matches.third_place")
+      .bracket-round-header.mb-2 Матч за 3-е место
       .d-flex.flex-column style="min-width: 240px; max-width: 360px;"
         .bracket-match
           - [[third_place_match.pair1, third_place_match.pair1_score, third_place_match.pair1_id], [third_place_match.pair2, third_place_match.pair2_score, third_place_match.pair2_id]].each do |pair, score, pair_id|
@@ -112,17 +112,17 @@ css:
                 span.bracket-score= score
         - if is_owner && third_place_match.pending? && third_place_match.pair1.present? && third_place_match.pair2.present?
           button.btn.btn-outline-primary.btn-sm.bracket-enter-btn.mt-1 data-bs-toggle="modal" data-bs-target="#match-modal-#{third_place_match.id}"
-            = t("matches.enter_result")
+            | Ввести результат
 
 / ── Consolation bracket ─────────────────────────────────────────────────────
 - if loser_bracket_rounds&.any?
-  h4.mt-5.mb-3= t("matches.loser_bracket_title")
+  h4.mt-5.mb-3 Утешительная сетка
 
   - total_rounds = loser_bracket_rounds.length
   .tournament-bracket
     - loser_bracket_rounds.each_with_index do |round_matches, idx|
       - round_num = idx + 1
-      - round_label = round_num == total_rounds ? t("matches.final") : "#{t('matches.round')} #{round_num}"
+      - round_label = round_num == total_rounds ? "Финал" : "Раунд #{round_num}"
       .bracket-round
         .bracket-round-header= round_label
         - slot_height = 116 * (2 ** idx)
@@ -139,11 +139,11 @@ css:
                     span.bracket-score= score
             - if is_owner && match.pending? && match.pair1.present? && match.pair2.present?
               button.btn.btn-outline-primary.btn-sm.bracket-enter-btn data-bs-toggle="modal" data-bs-target="#match-modal-#{match.id}"
-                = t("matches.enter_result")
+                | Ввести результат
 
   - if loser_third_place_match
     .mt-4.d-flex.flex-column.align-items-center
-      .bracket-round-header.mb-2= t("matches.third_place")
+      .bracket-round-header.mb-2 Матч за 3-е место
       .d-flex.flex-column style="min-width: 240px; max-width: 360px;"
         .bracket-match
           - [[loser_third_place_match.pair1, loser_third_place_match.pair1_score, loser_third_place_match.pair1_id], [loser_third_place_match.pair2, loser_third_place_match.pair2_score, loser_third_place_match.pair2_id]].each do |pair, score, pair_id|
@@ -156,4 +156,4 @@ css:
                 span.bracket-score= score
         - if is_owner && loser_third_place_match.pending? && loser_third_place_match.pair1.present? && loser_third_place_match.pair2.present?
           button.btn.btn-outline-primary.btn-sm.bracket-enter-btn.mt-1 data-bs-toggle="modal" data-bs-target="#match-modal-#{loser_third_place_match.id}"
-            = t("matches.enter_result")
+            | Ввести результат

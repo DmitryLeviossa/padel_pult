@@ -1,23 +1,23 @@
 .container.py-4
   .d-flex.justify-content-between.align-items-center.mb-4
-    h1.mb-0= t('.title')
-    = link_to t('.new_league'), new_league_path, class: "btn btn-primary"
+    h1.mb-0 Лиги
+    = link_to "Новая лига", new_league_path, class: "btn btn-primary"
 
   ul.nav.nav-pills.mb-3
     li.nav-item
-      = link_to t('.filter_mine'), leagues_path(q: params[:q]), class: "nav-link #{'active' if params[:filter] != 'all'}"
+      = link_to "Мои лиги", leagues_path(q: params[:q]), class: "nav-link #{'active' if params[:filter] != 'all'}"
     li.nav-item
-      = link_to t('.filter_all'), leagues_path(filter: 'all', q: params[:q]), class: "nav-link #{'active' if params[:filter] == 'all'}"
+      = link_to "Все лиги", leagues_path(filter: 'all', q: params[:q]), class: "nav-link #{'active' if params[:filter] == 'all'}"
 
   = search_form_for @q, url: leagues_path, method: :get, html: { class: "mb-4", data: { auto_submit: "" } } do |f|
     - if params[:filter] == 'all'
       = hidden_field_tag :filter, params[:filter]
     .row.g-2.align-items-end
       .col-md-10
-        label.form-label= t('.search_label')
-        = f.search_field :name_cont, class: "form-control", placeholder: t('.search_placeholder')
+        label.form-label Название
+        = f.search_field :name_cont, class: "form-control", placeholder: "Поиск по названию"
       .col-md-2
-        = link_to t('.reset'), leagues_path(filter: params[:filter] == 'all' ? 'all' : nil), class: "btn btn-outline-secondary w-100"
+        = link_to "Сбросить", leagues_path(filter: params[:filter] == 'all' ? 'all' : nil), class: "btn btn-outline-secondary w-100"
 
   - if @leagues.any?
     .row.row-cols-1.row-cols-md-2.row-cols-lg-3.g-4
@@ -32,10 +32,10 @@
               .d-flex.align-items-start.gap-2.mb-1
                 h5.card-title.mb-0= link_to league.name, league_path(league), class: "text-decoration-none stretched-link"
                 - if user_signed_in? && league.owner_id == current_user.id
-                  span.badge.bg-primary.flex-shrink-0= t('.owner')
+                  span.badge.bg-primary.flex-shrink-0 Владелец
               - if league.description.present?
                 p.card-text.text-muted= league.description
             .card-footer.text-muted.small
-              = t('.created_at', date: l(league.created_at.to_date, format: :long))
+              = "Создано #{ru_date(league.created_at.to_date)}"
   - else
-    p.text-muted= t('.no_leagues')
+    p.text-muted Лиг пока нет.

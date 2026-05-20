@@ -3,7 +3,7 @@
     .col-md-6
       .card
         .card-body.p-4
-          h2.card-title.mb-4= t('.title')
+          h2.card-title.mb-4 Редактировать аккаунт
 
           = form_for(resource, as: resource_name, url: registration_path(resource_name), html: { method: :put, multipart: true }) do |f|
             = render "devise/shared/error_messages", resource: resource
@@ -23,30 +23,30 @@
 
             .mb-3
               = f.label :gender, class: "form-label"
-              = f.select :gender, User.genders.keys.map { |g| [t("activerecord.attributes.user.genders.#{g}"), g] }, { include_blank: t('helpers.select.prompt') }, class: "form-select"
+              = f.select :gender, User.genders.keys.map { |g| [{ "male" => "Мужской", "female" => "Женский" }.fetch(g, g), g] }, { include_blank: "— Выберите —" }, class: "form-select"
 
             .mb-3
               = f.label :email, class: "form-label"
               = f.email_field :email, autofocus: true, autocomplete: "email", class: "form-control"
               - if devise_mapping.confirmable? && resource.pending_reconfirmation?
-                small.text-muted= t('.pending_reconfirmation', email: resource.unconfirmed_email)
+                small.text-muted= "Ожидается подтверждение для: #{resource.unconfirmed_email}"
 
             .mb-3
               = f.label :password, class: "form-label"
-              small.text-muted.d-block.mb-1= t('.leave_blank')
+              small.text-muted.d-block.mb-1 Оставьте пустым, если не хотите менять
               = f.password_field :password, autocomplete: "new-password", class: "form-control"
               - if @minimum_password_length
-                small.text-muted= t('.min_password', count: @minimum_password_length)
+                small.text-muted= "Минимум #{@minimum_password_length} символов"
 
             .mb-3
               = f.label :password_confirmation, class: "form-label"
               = f.password_field :password_confirmation, autocomplete: "new-password", class: "form-control"
 
-            = f.submit t('.submit'), class: "btn btn-primary"
-            = link_to t('.cancel'), :back, class: "btn btn-secondary ms-2"
+            = f.submit "Обновить", class: "btn btn-primary"
+            = link_to "Назад", :back, class: "btn btn-secondary ms-2"
 
   .card.mt-3
     .card-body.p-4
-      h5.card-title.text-danger= t('.delete_account')
-      p.text-muted= t('.delete_confirmation')
-      = button_to t('.delete_submit'), registration_path(resource_name), data: { confirm: t('.confirm_delete'), turbo_confirm: t('.confirm_delete') }, method: :delete, class: "btn btn-danger btn-sm"
+      h5.card-title.text-danger Удалить аккаунт
+      p.text-muted Вы уверены, что хотите удалить аккаунт?
+      = button_to "Удалить мой аккаунт", registration_path(resource_name), data: { confirm: "Вы уверены?", turbo_confirm: "Вы уверены?" }, method: :delete, class: "btn btn-danger btn-sm"

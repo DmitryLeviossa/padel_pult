@@ -11,11 +11,11 @@ nav.navbar.navbar-expand-lg
       ul.navbar-nav.me-auto.mb-2.mb-lg-0
         - if user_signed_in?
           li.nav-item
-            = link_to t('layouts.navbar.leagues'), leagues_path, class: "nav-link #{request.path.start_with?('/leagues') ? 'active' : ''}", aria: { current: (request.path.start_with?('/leagues') ? 'page' : nil) }
+            = link_to "Лиги", leagues_path, class: "nav-link #{request.path.start_with?('/leagues') ? 'active' : ''}", aria: { current: (request.path.start_with?('/leagues') ? 'page' : nil) }
           li.nav-item
-            = link_to t('layouts.navbar.tournaments'), tournaments_path, class: "nav-link #{request.path.start_with?('/tournaments') ? 'active' : ''}", aria: { current: (request.path.start_with?('/tournaments') ? 'page' : nil) }
+            = link_to "Турниры", tournaments_path, class: "nav-link #{request.path.start_with?('/tournaments') ? 'active' : ''}", aria: { current: (request.path.start_with?('/tournaments') ? 'page' : nil) }
           li.nav-item
-            = link_to t('layouts.navbar.players'), users_path, class: "nav-link #{request.path.start_with?('/users') ? 'active' : ''}", aria: { current: (request.path.start_with?('/users') ? 'page' : nil) }
+            = link_to "Игроки", users_path, class: "nav-link #{request.path.start_with?('/users') ? 'active' : ''}", aria: { current: (request.path.start_with?('/users') ? 'page' : nil) }
 
       - if user_signed_in?
         ul.navbar-nav.ms-auto.align-items-center.gap-2
@@ -34,23 +34,23 @@ nav.navbar.navbar-expand-lg
                     = link_to visit_notification_path(notification), class: "dropdown-item py-2 text-wrap"
                       .small= notification.message
                 li.px-3.py-2.border-top.text-end
-                  = button_to t('layouts.navbar.mark_all_read'), mark_all_read_notifications_path, method: :patch, class: "btn btn-link btn-sm p-0 text-muted border-0 bg-transparent", form: { data: { turbo: false } }
+                  = button_to "Отметить всё прочитанным", mark_all_read_notifications_path, method: :patch, class: "btn btn-link btn-sm p-0 text-muted border-0 bg-transparent", form: { data: { turbo: false } }
               - else
-                li.px-3.py-2.text-muted.small= t('layouts.navbar.no_notifications')
+                li.px-3.py-2.text-muted.small Нет новых уведомлений
           li.nav-item.dropdown
             a.nav-link.dropdown-toggle href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false"
               .d-inline-flex.align-items-center.justify-content-center.rounded-circle style="width:32px;height:32px;background:var(--color-bg-surface);border:1px solid var(--color-border);font-size:0.75rem;font-weight:600;color:var(--color-text-muted);"
                 = current_user.full_name.split.map(&:first).first(2).join.upcase
             ul.dropdown-menu.dropdown-menu-end
               li
-                = link_to t('layouts.navbar.edit_account'), edit_user_registration_path, class: "dropdown-item"
+                = link_to "Редактировать аккаунт", edit_user_registration_path, class: "dropdown-item"
               li
                 hr.dropdown-divider
               li
-                = button_to t('layouts.navbar.sign_out'), destroy_user_session_path, method: :delete, class: "dropdown-item text-danger border-0 bg-transparent w-100 text-start"
+                = button_to "Выйти", destroy_user_session_path, method: :delete, class: "dropdown-item text-danger border-0 bg-transparent w-100 text-start"
       - else
         ul.navbar-nav.ms-auto
           li.nav-item
-            = link_to t('layouts.navbar.sign_in'), new_user_session_path, class: "nav-link"
+            = link_to "Войти", new_user_session_path, class: "nav-link"
           li.nav-item
-            = link_to t('layouts.navbar.sign_up'), new_user_registration_path, class: "btn btn-primary btn-sm ms-2"
+            = link_to "Регистрация", new_user_registration_path, class: "btn btn-primary btn-sm ms-2"

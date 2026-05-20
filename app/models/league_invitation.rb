@@ -37,6 +37,6 @@ class LeagueInvitation < ApplicationRecord
 
   def invited_user_not_already_member
     return unless league && invited_user
-    errors.add(:invited_user, :already_member) if league.users.include?(invited_user)
+    errors.add(:invited_user, "уже является участником этой лиги") if league.users.include?(invited_user)
   end
 end

@@ -47,7 +47,7 @@ class Match < ApplicationRecord
   scope :ordered, -> { order(:stage, :group_number, :round_number, :position) }
 
   def pair_display_name(pair)
-    return I18n.t("matches.bye") if pair.nil?
+    return "Свободен" if pair.nil?
     "#{pair.player1.full_name} / #{pair.player2.full_name}"
   end
 

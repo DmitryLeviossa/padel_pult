@@ -1,18 +1,18 @@
 .container.py-4
-  h1.mb-4= t('.title')
+  h1.mb-4 Пользователи
 
   = search_form_for @q, url: users_path, method: :get, html: { class: "mb-4" } do |f|
     .row.g-2.align-items-end
       .col-md-4
-        label.form-label= t('.name_label')
-        = f.search_field :full_name_cont, class: "form-control", placeholder: t('.search_placeholder')
+        label.form-label Имя
+        = f.search_field :full_name_cont, class: "form-control", placeholder: "Поиск по имени"
       .col-md-2
-        label.form-label= t('.gender_label')
-        = f.select :gender_eq, options_for_select([[t('.gender_all'), nil]] + User.genders.keys.map { |g| [t("activerecord.attributes.user.genders.#{g}"), g] }, params.dig(:q, :gender_eq)), {}, class: "form-select"
+        label.form-label Пол
+        = f.select :gender_eq, options_for_select([["Все", nil]] + User.genders.keys.map { |g| [{ "male" => "Мужской", "female" => "Женский" }.fetch(g, g), g] }, params.dig(:q, :gender_eq)), {}, class: "form-select"
       .col-md-2
         .d-flex.gap-2
-          = f.submit t('.submit'), class: "btn btn-primary"
-          = link_to t('.reset'), users_path, class: "btn btn-outline-secondary"
+          = f.submit "Применить", class: "btn btn-primary"
+          = link_to "Сбросить", users_path, class: "btn btn-outline-secondary"
 
   - if @users.any?
     .d-flex.flex-column.gap-2
@@ -31,11 +31,11 @@
                 .d-flex.align-items-center.gap-2
                   = link_to user.full_name, user_path(user), class: "fw-semibold fs-5 text-reset text-decoration-none stretched-link"
                   - if user.gender_male?
-                    span.badge.badge-gender-male= t('activerecord.attributes.user.genders_abbr.male')
+                    span.badge.badge-gender-male М
                   - elsif user.gender_female?
-                    span.badge.badge-gender-female= t('activerecord.attributes.user.genders_abbr.female')
+                    span.badge.badge-gender-female Ж
                   - if user.pending_invitation?
-                    span.badge.bg-warning.text-dark= t('.awaiting_registration')
+                    span.badge.bg-warning.text-dark Ожидает регистрации
                 .d-flex.flex-wrap.gap-2.mt-2
                   - user.leagues.each do |league|
                     = link_to league_path(league), class: "position-relative d-inline-block text-decoration-none", title: league.name do
@@ -46,4 +46,4 @@
                         span.d-inline-flex.align-items-center.justify-content-center style="width: 90px; height: 90px; background: var(--color-bg-surface); border: 1px solid var(--color-border); border-radius: 8px; font-size: 20px; font-weight: 700; color: var(--color-text-muted);"
                           = league_initials
   - else
-    p.text-muted= t('.no_users')
+    p.text-muted Пользователей пока нет.

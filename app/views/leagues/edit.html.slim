@@ -1,5 +1,5 @@
 .container.py-4
-  h1.mb-4= t('.title')
+  h1.mb-4 Редактировать лигу
 
   = form_with model: @league, class: "mt-4" do |f|
     .mb-3
@@ -20,8 +20,8 @@
       = f.file_field :logo, class: "form-control", accept: "image/*"
 
     .mb-3
-      = f.label :owner_id, t('.owner'), class: "form-label"
+      = f.label :owner_id, "Владелец", class: "form-label"
       = f.select :owner_id, @league_members.map { |u| [u.full_name, u.id] }, {}, class: "form-select"
 
-    = f.submit t('.submit'), class: "btn btn-primary"
-    = link_to t('.cancel'), @league, class: "btn btn-secondary ms-2"
+    = f.submit "Сохранить", class: "btn btn-primary"
+    = link_to "Отмена", @league, class: "btn btn-secondary ms-2"

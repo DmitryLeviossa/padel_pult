@@ -80,7 +80,7 @@ class Tournament < ApplicationRecord
 
   def league_quota_available
     return unless league&.tournaments_quota
-    errors.add(:base, :quota_exceeded) if league.tournaments_quota <= 0
+    errors.add(:base, "квота на создание турниров в этой лиге исчерпана") if league.tournaments_quota <= 0
   end
 
   def decrement_league_quota
@@ -98,7 +98,7 @@ class Tournament < ApplicationRecord
 
   def end_date_not_before_start_date
     return unless start_date && end_date
-    errors.add(:end_date, :before_start_date) if end_date < start_date
+    errors.add(:end_date, "не может быть раньше даты начала") if end_date < start_date
   end
 
   def placement_points_valid

@@ -8,15 +8,15 @@ class LeagueInvitationsController < ApplicationController
         @invitation.accepted!
         @invitation.league.league_users.create!(user: current_user)
       end
-      redirect_to league_path(@invitation.league), notice: t(".accepted")
+      redirect_to league_path(@invitation.league), notice: "Вы вступили в лигу!"
     when "dismissed"
       @invitation.dismissed!
-      redirect_back fallback_location: root_path, notice: t(".dismissed")
+      redirect_back fallback_location: root_path, notice: "Приглашение отклонено."
     else
       redirect_back fallback_location: root_path
     end
   rescue ActiveRecord::RecordInvalid
-    redirect_back fallback_location: root_path, alert: t(".failed")
+    redirect_back fallback_location: root_path, alert: "Не удалось обработать приглашение."
   end
 
   private
@@ -24,6 +24,6 @@ class LeagueInvitationsController < ApplicationController
   def set_invitation
     @invitation = current_user.received_league_invitations.pending.find(params[:id])
   rescue ActiveRecord::RecordNotFound
-    redirect_to root_path, alert: t(".not_found")
+    redirect_to root_path, alert: "Приглашение не найдено."
   end
 end

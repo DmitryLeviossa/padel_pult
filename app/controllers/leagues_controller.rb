@@ -6,6 +6,16 @@ class LeaguesController < ApplicationController
 
   def show
     @league = League.find(params[:id])
+
+    @q_members = @league.league_users.joins(:user).ransack(params[:q_members])
+    @league_users = @q_members.result.includes(:user)
+    if params[:members_status] == "pending"
+      @league_users = @league_users.where.not(users: { invitation_token: nil })
+    elsif params[:members_status] == "active"
+      @league_users = @league_users.where(users: { invitation_token: nil })
+    end
+    @league_users = @league_users.order(score: :desc)
+
     if @league.owner == current_user
       excluded_ids = @league.user_ids + @league.league_invitations.pending.pluck(:invited_user_id)
       @invitable_users = User.where.not(id: excluded_ids).order(:first_name, :last_name)
@@ -21,7 +31,7 @@ class LeaguesController < ApplicationController
     @league.owner = current_user
 
     if @league.save
-      redirect_to leagues_path, notice: "League created successfully."
+      redirect_to leagues_path, notice: "Лига успешно создана."
     else
       render :new, status: :unprocessable_entity
     end
@@ -30,25 +40,25 @@ class LeaguesController < ApplicationController
   def join
     @league = League.find(params[:id])
     if @league.users.include?(current_user)
-      redirect_to @league, alert: t("leagues.show.already_member")
+      redirect_to @league, alert: "Вы уже являетесь участником этой лиги."
     else
       @league.league_users.create!(user: current_user)
-      redirect_to @league, notice: t("leagues.show.joined")
+      redirect_to @league, notice: "Вы вступили в лигу."
     end
   end
 
   def leave
     @league = League.find(params[:id])
     if @league.owner == current_user
-      return redirect_to @league, alert: t("leagues.show.owner_cannot_leave")
+      return redirect_to @league, alert: "Владелец не может покинуть лигу."
     end
 
     league_user = @league.league_users.find_by(user: current_user)
     if league_user
       league_user.destroy
-      redirect_to @league, notice: t("leagues.show.left")
+      redirect_to @league, notice: "Вы покинули лигу."
     else
-      redirect_to @league, alert: t("leagues.show.not_member")
+      redirect_to @league, alert: "Вы не являетесь участником этой лиги."
     end
   end
 
