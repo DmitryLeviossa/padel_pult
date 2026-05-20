@@ -12,7 +12,7 @@
       - if !@tournament.completed? && @tournament.league.owner == current_user
         = link_to "Заполнить результаты", fill_results_tournament_path(@tournament), class: "btn btn-primary btn-sm"
       - if @tournament.active? || @tournament.completed?
-        = link_to "📺 ТВ", tv_tournament_path(@tournament), class: "btn btn-outline-info btn-sm", target: "_blank"
+        = link_to "📺 Онлайн", online_tournament_path(@tournament), class: "btn btn-outline-info btn-sm", target: "_blank"
       = link_to "← #{@tournament.league.name}", league_path(@tournament.league), class: "btn btn-outline-secondary btn-sm"
 
   .row.mb-4

@@ -1,0 +1,5 @@
+= turbo_stream_from "tournament_#{@tournament.id}_online"
+
+.container-fluid.px-4
+  div id="tournament_matches"
+    = render partial: "tournaments/online_matches", locals: @match_data.to_locals

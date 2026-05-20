@@ -1,9 +1,9 @@
 class TournamentsController < ApplicationController
   before_action :set_league, only: [ :new, :create ]
-  before_action :set_tournament, only: [ :show, :edit, :update, :destroy, :open_registration, :activate, :cancel, :fill_results, :complete, :tv ]
+  before_action :set_tournament, only: [ :show, :edit, :update, :destroy, :open_registration, :activate, :cancel, :fill_results, :complete, :online ]
   before_action :authorize_owner!, only: [ :new, :create ]
   before_action :authorize_tournament_owner!, only: [ :edit, :update, :destroy, :open_registration, :activate, :cancel, :fill_results, :complete ]
-  skip_before_action :authenticate_user!, only: [ :tv ]
+  skip_before_action :authenticate_user!, only: [ :online ]
 
   def index
     filter_params = params[:q]&.to_unsafe_h || {}
@@ -73,9 +73,9 @@ class TournamentsController < ApplicationController
     end
   end
 
-  def tv
+  def online
     @match_data = Tournaments::MatchData.new(@tournament)
-    render layout: "tv"
+    render layout: "online"
   end
 
   def new
