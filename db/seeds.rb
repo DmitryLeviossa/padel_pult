@@ -18,7 +18,15 @@ users_data = [
   { email: "mikhail@padel.com",    password: "password123", first_name: "Михаил",     last_name: "Лебедев",      gender: :male   },
   { email: "natasha@padel.com",    password: "password123", first_name: "Наталья",    last_name: "Зайцева",      gender: :female },
   { email: "oleg@padel.com",       password: "password123", first_name: "Олег",       last_name: "Семёнов",      gender: :male   },
-  { email: "polina@padel.com",     password: "password123", first_name: "Полина",     last_name: "Степанова",    gender: :female }
+  { email: "polina@padel.com",     password: "password123", first_name: "Полина",     last_name: "Степанова",    gender: :female },
+  { email: "roman@padel.com",      password: "password123", first_name: "Роман",      last_name: "Тихонов",      gender: :male   },
+  { email: "svetlana@padel.com",   password: "password123", first_name: "Светлана",   last_name: "Филиппова",    gender: :female },
+  { email: "timur@padel.com",      password: "password123", first_name: "Тимур",      last_name: "Хасанов",      gender: :male   },
+  { email: "ulyana@padel.com",     password: "password123", first_name: "Ульяна",     last_name: "Цветкова",     gender: :female },
+  { email: "viktor@padel.com",     password: "password123", first_name: "Виктор",     last_name: "Чернов",       gender: :male   },
+  { email: "xenia@padel.com",      password: "password123", first_name: "Ксения",     last_name: "Шарова",       gender: :female },
+  { email: "yuri@padel.com",       password: "password123", first_name: "Юрий",       last_name: "Щербаков",     gender: :male   },
+  { email: "zoya@padel.com",       password: "password123", first_name: "Зоя",        last_name: "Якимова",      gender: :female }
 ]
 
 users = users_data.map do |attrs|
@@ -32,26 +40,30 @@ users = users_data.map do |attrs|
 end
 
 admin, alexei, boris, vadim, darya, elena, fyodor, galina,
-  igor, julia, konstantin, larisa, mikhail, natasha, oleg, polina = users
+  igor, julia, konstantin, larisa, mikhail, natasha, oleg, polina,
+  roman, svetlana, timur, ulyana, viktor, xenia, yuri, zoya = users
 
 # Leagues
 league1 = League.create!(
-  name: "Московская открытая лига",
-  description: "Соревновательная лига по падел-теннису в Москве",
-  owner: admin
+  name:               "Московская открытая лига",
+  description:        "Соревновательная лига по падел-теннису в Москве",
+  owner:              admin,
+  tournaments_quota:  10
 )
 
 league2 = League.create!(
-  name: "Питерская летняя лига",
-  description: "Сезонная лига по падел-теннису для игроков Санкт-Петербурга",
-  owner: alexei
+  name:               "Питерская летняя лига",
+  description:        "Сезонная лига по падел-теннису для игроков Санкт-Петербурга",
+  owner:              alexei,
+  tournaments_quota:  10
 )
 
 # League members
-# league1: all 16 users → 8 pairs max
+# league1: all 24 users
 league1_users = [
   admin, alexei, boris, vadim, darya, elena, fyodor, galina,
-  igor, julia, konstantin, larisa, mikhail, natasha, oleg, polina
+  igor, julia, konstantin, larisa, mikhail, natasha, oleg, polina,
+  roman, svetlana, timur, ulyana, viktor, xenia, yuri, zoya
 ]
 league1_members = league1_users.map do |user|
   LeagueUser.find_or_create_by!(league_id: league1.id, user_id: user.id) do |lu|
@@ -59,8 +71,12 @@ league1_members = league1_users.map do |user|
   end
 end
 
-# league2: 8 users → 4 pairs max (alexei auto-added as owner)
-league2_users = [ alexei, boris, vadim, darya, elena, igor, julia, konstantin ]
+# league2: 20 users (alexei auto-added as owner)
+league2_users = [
+  alexei, boris, vadim, darya, elena, igor, julia, konstantin,
+  larisa, mikhail, natasha, oleg, polina, roman, svetlana, timur,
+  ulyana, viktor, xenia, yuri
+]
 league2_members = league2_users.map do |user|
   LeagueUser.find_or_create_by!(league_id: league2.id, user_id: user.id) do |lu|
     lu.score = rand(10..80)
@@ -75,19 +91,13 @@ standard_points = [
   { "from" => 8,  "to" => 12, "points" => 2  }
 ]
 
-small_points = [
-  { "from" => 1, "to" => 1, "points" => 15 },
-  { "from" => 2, "to" => 2, "points" => 10 },
-  { "from" => 3, "to" => 4, "points" => 5  }
-]
-
 # Tournaments
 t_completed_1 = Tournament.create!(
   name:              "Весенний кубок 2026",
   league:            league1,
   start_date:        Date.new(2026, 3, 1),
   end_date:          Date.new(2026, 3, 3),
-  max_participants:  8,
+  max_participants:  16,
   location:          "Московский спортивный центр",
   type:              "olympic",
   status:            "completed",
@@ -100,12 +110,12 @@ t_completed_2 = Tournament.create!(
   league:            league2,
   start_date:        Date.new(2026, 2, 10),
   end_date:          Date.new(2026, 2, 12),
-  max_participants:  4,
+  max_participants:  16,
   location:          "СКК «Петербургский»",
   type:              "olympic",
   status:            "completed",
   description:       "Завершённый зимний кубок Питерской лиги",
-  placement_points:  small_points
+  placement_points:  standard_points
 )
 
 t_active = Tournament.create!(
@@ -113,7 +123,7 @@ t_active = Tournament.create!(
   league:            league1,
   start_date:        Date.new(2026, 5, 20),
   end_date:          Date.new(2026, 5, 22),
-  max_participants:  8,
+  max_participants:  16,
   location:          "Олимпийский комплекс «Лужники»",
   type:              "olympic",
   status:            "active",
@@ -126,7 +136,7 @@ t_draft = Tournament.create!(
   league:            league1,
   start_date:        Date.new(2026, 7, 1),
   end_date:          Date.new(2026, 7, 3),
-  max_participants:  8,
+  max_participants:  16,
   location:          "Спортивный клуб «Динамо»",
   type:              "olympic",
   status:            "draft",
@@ -139,12 +149,27 @@ t_registration = Tournament.create!(
   league:            league2,
   start_date:        Date.new(2026, 6, 10),
   end_date:          Date.new(2026, 6, 12),
-  max_participants:  4,
+  max_participants:  16,
   location:          "СКК «Петербургский»",
   type:              "olympic",
   status:            "registration",
   description:       "Открыта регистрация на главный летний турнир Питерской лиги",
-  placement_points:  small_points
+  placement_points:  standard_points
+)
+
+t_active_olympic_loser = Tournament.create!(
+  name:              "Кубок Москвы: Олимпик с утешительной 2026",
+  league:            league1,
+  start_date:        Date.new(2026, 5, 21),
+  end_date:          Date.new(2026, 5, 23),
+  max_participants:  16,
+  location:          "Спортивный комплекс «Олимпийский»",
+  type:              "olympic",
+  status:            "active",
+  sets_per_match:    3,
+  loser_bracket:     true,
+  description:       "Олимпийский турнир с утешительной сеткой, идёт первый раунд",
+  placement_points:  standard_points
 )
 
 t_active_rr = Tournament.create!(
@@ -152,7 +177,7 @@ t_active_rr = Tournament.create!(
   league:            league1,
   start_date:        Date.new(2026, 5, 15),
   end_date:          Date.new(2026, 5, 25),
-  max_participants:  6,
+  max_participants:  16,
   location:          "Спортивный клуб «Динамо»",
   type:              "round_robin",
   status:            "active",
@@ -165,7 +190,7 @@ t_active_mixed = Tournament.create!(
   league:            league1,
   start_date:        Date.new(2026, 5, 18),
   end_date:          Date.new(2026, 5, 24),
-  max_participants:  8,
+  max_participants:  16,
   location:          "Спортивный клуб «Чемпион»",
   type:              "mixed",
   status:            "active",
@@ -181,15 +206,15 @@ t_mixed_registration = Tournament.create!(
   league:            league2,
   start_date:        Date.new(2026, 6, 15),
   end_date:          Date.new(2026, 6, 20),
-  max_participants:  4,
+  max_participants:  16,
   location:          "СКК «Петербургский»",
   type:              "mixed",
   status:            "registration",
   groups_count:      2,
-  pairs_to_bracket:  2,
+  pairs_to_bracket:  4,
   loser_bracket:     true,
   description:       "Регистрация открыта. Два группы, утешительная сетка для непрошедших.",
-  placement_points:  small_points
+  placement_points:  standard_points
 )
 
 t_mixed_loser_bracket = Tournament.create!(
@@ -197,7 +222,7 @@ t_mixed_loser_bracket = Tournament.create!(
   league:            league1,
   start_date:        Date.new(2026, 5, 17),
   end_date:          Date.new(2026, 5, 21),
-  max_participants:  8,
+  max_participants:  16,
   location:          "Спортивный комплекс «Арена»",
   type:              "mixed",
   status:            "active",
@@ -213,7 +238,7 @@ t_mixed_group_stage = Tournament.create!(
   league:            league1,
   start_date:        Date.new(2026, 5, 19),
   end_date:          Date.new(2026, 5, 23),
-  max_participants:  8,
+  max_participants:  16,
   location:          "Теннисный клуб «Олимп»",
   type:              "mixed",
   status:            "active",
@@ -224,48 +249,61 @@ t_mixed_group_stage = Tournament.create!(
   placement_points:  standard_points
 )
 
-# Pairs for completed_1 (league1): 4 pairs from first 8 members
-league1_members.first(8).each_slice(2).with_index do |(p1, p2), i|
+# All tournaments have max_participants: 16 (8 eligible pairs).
+# Applied players range from 16 to 24 (8–12 pairs registered).
+
+# completed_1 (league1): 20 players applied = 10 pairs
+league1_members.first(20).each_slice(2).with_index do |(p1, p2), i|
   Pair.create!(tournament: t_completed_1, player1: p1, player2: p2, created_at: 80.days.ago + (i * 3).hours)
 end
 
-# Pairs for completed_2 (league2): 2 pairs from first 4 members
-league2_members.first(4).each_slice(2).with_index do |(p1, p2), i|
+# completed_2 (league2): 18 players applied = 9 pairs
+league2_members.first(18).each_slice(2).with_index do |(p1, p2), i|
   Pair.create!(tournament: t_completed_2, player1: p1, player2: p2, created_at: 100.days.ago + (i * 4).hours)
 end
 
-# Pairs for active (league1): max = 8 pairs using all 16 members
+# active olympic (league1): 24 players applied = 12 pairs
 league1_members.each_slice(2).with_index do |(p1, p2), i|
   Pair.create!(tournament: t_active, player1: p1, player2: p2, created_at: 20.days.ago + (i * 6).hours)
 end
 
-# Pairs for registration (league2): max = 4 pairs using all 8 members
-league2_members.each_slice(2).with_index do |(p1, p2), i|
+# draft (league1): 16 players applied = 8 pairs
+league1_members.first(16).each_slice(2).with_index do |(p1, p2), i|
+  Pair.create!(tournament: t_draft, player1: p1, player2: p2, created_at: 10.days.ago + (i * 5).hours)
+end
+
+# registration (league2): 22 players applied = 11 pairs
+league2_members.first(22).each_slice(2).with_index do |(p1, p2), i|
   Pair.create!(tournament: t_registration, player1: p1, player2: p2, created_at: 5.days.ago + (i * 8).hours)
 end
 
-# Pairs for active round-robin (league1): 6 pairs from first 12 members
-league1_members.first(12).each_slice(2).with_index do |(p1, p2), i|
+# active olympic with loser bracket (league1): 22 players applied = 11 pairs
+league1_members.first(22).each_slice(2).with_index do |(p1, p2), i|
+  Pair.create!(tournament: t_active_olympic_loser, player1: p1, player2: p2, created_at: 18.days.ago + (i * 5).hours)
+end
+
+# active round-robin (league1): 20 players applied = 10 pairs
+league1_members.first(20).each_slice(2).with_index do |(p1, p2), i|
   Pair.create!(tournament: t_active_rr, player1: p1, player2: p2, created_at: 25.days.ago + (i * 5).hours)
 end
 
-# Pairs for active mixed (league1): 8 pairs from all 16 members
-league1_members.each_slice(2).with_index do |(p1, p2), i|
+# active mixed (league1): 22 players applied = 11 pairs
+league1_members.first(22).each_slice(2).with_index do |(p1, p2), i|
   Pair.create!(tournament: t_active_mixed, player1: p1, player2: p2, created_at: 22.days.ago + (i * 4).hours)
 end
 
-# Pairs for mixed registration (league2): 4 pairs from all 8 members
-league2_members.each_slice(2).with_index do |(p1, p2), i|
+# mixed registration (league2): 18 players applied = 9 pairs
+league2_members.first(18).each_slice(2).with_index do |(p1, p2), i|
   Pair.create!(tournament: t_mixed_registration, player1: p1, player2: p2, created_at: 3.days.ago + (i * 10).hours)
 end
 
-# Pairs for loser bracket mixed (league1): 8 pairs from all 16 members
+# loser bracket mixed (league1): 24 players applied = 12 pairs
 league1_members.each_slice(2).with_index do |(p1, p2), i|
   Pair.create!(tournament: t_mixed_loser_bracket, player1: p1, player2: p2, created_at: 23.days.ago + (i * 4).hours)
 end
 
-# Pairs for mixed group stage (league1): 8 pairs from all 16 members
-league1_members.each_slice(2).with_index do |(p1, p2), i|
+# mixed group stage (league1): 20 players applied = 10 pairs
+league1_members.first(20).each_slice(2).with_index do |(p1, p2), i|
   Pair.create!(tournament: t_mixed_group_stage, player1: p1, player2: p2, created_at: 21.days.ago + (i * 3).hours)
 end
 
@@ -283,6 +321,7 @@ end
 Tournaments::Matches::OlympicGenerator.new(t_completed_1).call
 Tournaments::Matches::OlympicGenerator.new(t_completed_2).call
 Tournaments::Matches::OlympicGenerator.new(t_active).call
+Tournaments::Matches::OlympicGenerator.new(t_active_olympic_loser).call
 Tournaments::Matches::RoundRobinGenerator.new(t_active_rr).call
 Tournaments::Matches::MixedGenerator.new(t_active_mixed).call
 Tournaments::Matches::MixedGenerator.new(t_mixed_loser_bracket).call
@@ -306,6 +345,13 @@ end
 t_active.matches.reload.where(round_number: 1).ordered.each do |match|
   next if match.bye? || match.pair1.nil? || match.pair2.nil?
   complete_match!(match, match.pair1, 6, rand(2..4))
+end
+
+# Complete round 1 for t_active_olympic_loser (main + loser brackets), leave round 2+ pending
+t_active_olympic_loser.matches.reload.where(round_number: 1).ordered.each do |match|
+  next if match.bye? || match.pair1.nil? || match.pair2.nil?
+  winner = [ match.pair1, match.pair2 ].sample
+  complete_match!(match.reload, winner, 6, rand(2..4))
 end
 
 # Complete rounds 1-3 for t_active_rr (6 pairs → 5 rounds), leave rounds 4-5 pending

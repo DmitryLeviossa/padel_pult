@@ -8,11 +8,13 @@ module Tournaments
       def call
         pairs = @tournament.eligible_pairs
         n = next_power_of_two(pairs.length)
-        seeded = pairs + ([ nil ] * (n - pairs.length))
+        seeded_pairs = pairs.select(&:seeded)
+        non_seeded_pairs = pairs.reject(&:seeded)
+        ordered = seeded_pairs + non_seeded_pairs
+        seeded = ordered + ([ nil ] * (n - ordered.length))
 
         total_rounds = Math.log2(n).to_i
 
-        # Round 1: seed by score (top seed vs last slot, etc.)
         (n / 2).times do |i|
           pair1 = seeded[i]
           pair2 = seeded[n - 1 - i]

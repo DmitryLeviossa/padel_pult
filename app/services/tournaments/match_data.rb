@@ -29,10 +29,11 @@ module Tournaments
 
     def prepare
       if @tournament.olympic?
-        grouped = @matches.group_by(&:round_number).sort_by { |r, _| r }.map { |_, m| m }
-        final_round = grouped.last || []
-        @third_place_match = final_round.find { |m| m.position == 2 }
-        @bracket_rounds = grouped[0..-2] + [ final_round.reject { |m| m.position == 2 } ]
+        @bracket_rounds, @third_place_match = extract_bracket_rounds(@matches.reject(&:loser_bracket?))
+
+        if @tournament.loser_bracket?
+          @loser_bracket_rounds, @loser_third_place_match = extract_bracket_rounds(@matches.select(&:loser_bracket?))
+        end
       elsif @tournament.mixed?
         prepare_mixed
       end

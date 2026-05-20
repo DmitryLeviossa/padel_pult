@@ -6,6 +6,7 @@
 #  placement     :integer
 #  player1_score :integer          default(0), not null
 #  player2_score :integer          default(0), not null
+#  seeded        :boolean          default(FALSE), not null
 #  created_at    :datetime         not null
 #  updated_at    :datetime         not null
 #  player1_id    :bigint           not null

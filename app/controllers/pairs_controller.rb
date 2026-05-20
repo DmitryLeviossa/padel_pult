@@ -4,8 +4,9 @@ class PairsController < ApplicationController
   before_action :authorize_registration_open!, only: :create
   before_action :authorize_not_already_registered!, only: :create, unless: :owner_adding_pair?
   before_action :authorize_owner_for_pair_add!, only: :create, if: :owner_adding_pair?
-  before_action :set_pair, only: :destroy
+  before_action :set_pair, only: [ :destroy, :update ]
   before_action :authorize_league_owner!, only: :destroy
+  before_action :authorize_owner_for_set!, only: :update
 
   def create
     if owner_adding_pair?
@@ -22,6 +23,11 @@ class PairsController < ApplicationController
     else
       redirect_to tournament_path(@tournament)
     end
+  end
+
+  def update
+    @pair.update!(seeded: params.dig(:pair, :seeded) == "1")
+    redirect_to tournament_path(@tournament)
   end
 
   def destroy
@@ -91,6 +97,12 @@ class PairsController < ApplicationController
   end
 
   def authorize_owner_for_pair_add!
+    unless @tournament.league.owner == current_user
+      redirect_to tournament_path(@tournament), alert: "У вас нет прав для выполнения этого действия."
+    end
+  end
+
+  def authorize_owner_for_set!
     unless @tournament.league.owner == current_user
       redirect_to tournament_path(@tournament), alert: "У вас нет прав для выполнения этого действия."
     end

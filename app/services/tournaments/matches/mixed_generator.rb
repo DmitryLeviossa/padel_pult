@@ -25,8 +25,10 @@ module Tournaments
       def distribute_to_groups(pairs)
         count = @tournament.groups_count
         groups = Array.new(count) { [] }
-        seeds = pairs.first(count)
-        remaining = pairs.drop(count).shuffle
+        seeded = pairs.select(&:seeded)
+        non_seeded = pairs.reject(&:seeded)
+        seeds = seeded.first(count)
+        remaining = (seeded.drop(count) + non_seeded).shuffle
         seeds.each_with_index { |seed, i| groups[i] << seed }
         remaining.each_with_index { |pair, i| groups[i % count] << pair }
         groups

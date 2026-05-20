@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2026_05_20_090000) do
+ActiveRecord::Schema[8.0].define(version: 2026_05_20_132923) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -129,6 +129,7 @@ ActiveRecord::Schema[8.0].define(version: 2026_05_20_090000) do
     t.integer "placement"
     t.integer "player1_score", default: 0, null: false
     t.integer "player2_score", default: 0, null: false
+    t.boolean "seeded", default: false, null: false
     t.index ["player1_id"], name: "index_pairs_on_player1_id"
     t.index ["player2_id"], name: "index_pairs_on_player2_id"
     t.index ["tournament_id"], name: "index_pairs_on_tournament_id"

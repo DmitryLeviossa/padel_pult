@@ -2,7 +2,7 @@
   - if tournament.round_robin?
     = render "matches/round_robin", matches: matches, tournament: tournament, is_owner: false
   - elsif tournament.olympic?
-    = render "matches/olympic_bracket", bracket_rounds: bracket_rounds, third_place_match: third_place_match, tournament: tournament, is_owner: false
+    = render "matches/olympic_bracket", bracket_rounds: bracket_rounds, third_place_match: third_place_match, loser_bracket_rounds: loser_bracket_rounds, loser_third_place_match: loser_third_place_match, tournament: tournament, is_owner: false
   - elsif tournament.mixed?
     = render "matches/mixed", group_data: group_data, bracket_rounds: bracket_rounds, third_place_match: third_place_match, loser_bracket_rounds: loser_bracket_rounds, loser_third_place_match: loser_third_place_match, tournament: tournament, is_owner: false
 - else
