@@ -16,7 +16,8 @@ class TournamentsController < ApplicationController
 
   def show
     @matches = @tournament.matches.ordered
-                          .includes(pair1: [ { player1: :user }, { player2: :user } ],
+                          .includes(:match_sets,
+                                    pair1: [ { player1: :user }, { player2: :user } ],
                                     pair2: [ { player1: :user }, { player2: :user } ])
 
     if @tournament.olympic?
@@ -85,7 +86,7 @@ class TournamentsController < ApplicationController
     @tournament = @league.tournaments.build(tournament_params)
 
     if @tournament.save
-      redirect_to league_path(@league, anchor: "tournaments"), notice: "Tournament created successfully."
+      redirect_to tournament_path(@tournament), notice: t(".success")
     else
       render :new, status: :unprocessable_entity
     end
@@ -120,13 +121,13 @@ class TournamentsController < ApplicationController
 
   def open_registration
     unless @tournament.draft?
-      redirect_to league_path(@tournament.league, anchor: "tournaments"), alert: t(".not_draft")
+      redirect_to tournament_path(@tournament), alert: t(".not_draft")
       return
     end
 
     @tournament.registration!
     notify_league_users_about_registration
-    redirect_to league_path(@tournament.league, anchor: "tournaments"), notice: t(".success")
+    redirect_to tournament_path(@tournament), notice: t(".success")
   end
 
   def activate
@@ -154,7 +155,7 @@ class TournamentsController < ApplicationController
   end
 
   def fill_results
-    redirect_to tournament_path(@tournament), alert: t(".completed") if @tournament.completed?
+    redirect_to(tournament_path(@tournament), alert: t(".not_active")) and return unless @tournament.active?
     @suggested_placements = compute_suggested_placements
     @pairs = @tournament.pairs
                         .includes({ player1: :user }, { player2: :user })
@@ -162,15 +163,15 @@ class TournamentsController < ApplicationController
   end
 
   def complete
-    if @tournament.completed?
-      redirect_to tournament_path(@tournament), alert: t(".completed")
+    unless @tournament.active?
+      redirect_to tournament_path(@tournament), alert: t(".not_active")
       return
     end
 
     if Tournaments::CompleteService.new(@tournament, params[:placements] || {}).call
       redirect_to tournament_path(@tournament), notice: t(".success")
     else
-      redirect_to fill_results_tournament_path(@tournament), alert: t(".failure")
+      redirect_to tournament_path(@tournament), alert: t(".failure")
     end
   end
 
@@ -348,7 +349,7 @@ class TournamentsController < ApplicationController
   def tournament_params
     base = params.require(:tournament).permit(
       :name, :start_date, :end_date, :max_participants, :location, :type, :description,
-      :groups_count, :pairs_to_bracket, :loser_bracket
+      :groups_count, :pairs_to_bracket, :loser_bracket, :sets_per_match
     )
 
     raw_pp = params.dig(:tournament, :placement_points)
@@ -356,6 +357,11 @@ class TournamentsController < ApplicationController
       base[:placement_points] = raw_pp.to_unsafe_h
                                       .sort_by { |k, _| k.to_i }
                                       .map { |_, v| v.slice("from", "to", "points") }
+    elsif raw_pp.is_a?(Array)
+      base[:placement_points] = raw_pp.map do |v|
+        h = v.is_a?(ActionController::Parameters) ? v.to_unsafe_h : v.stringify_keys
+        h.slice("from", "to", "points")
+      end
     end
 
     base

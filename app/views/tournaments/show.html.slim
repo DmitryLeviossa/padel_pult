@@ -28,6 +28,21 @@
         dt.col-sm-3= t('.type')
         dd.col-sm-9= t("tournament.type.#{@tournament.type}")
 
+        - if @tournament.olympic?
+          dt.col-sm-3= t('.sets_per_match')
+          dd.col-sm-9= @tournament.sets_per_match
+        - elsif @tournament.mixed?
+          dt.col-sm-3= t('.groups_count')
+          dd.col-sm-9= @tournament.groups_count
+          dt.col-sm-3= t('.pairs_to_bracket')
+          dd.col-sm-9= @tournament.pairs_to_bracket
+          dt.col-sm-3= t('.loser_bracket')
+          dd.col-sm-9
+            - if @tournament.loser_bracket?
+              i.bi.bi-check-circle-fill.text-success
+            - else
+              i.bi.bi-x-circle.text-muted
+
         dt.col-sm-3= t('.max_participants')
         dd.col-sm-9= @tournament.max_participants
 

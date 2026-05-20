@@ -9,12 +9,26 @@
           button.btn-close type="button" data-bs-dismiss="modal"
         = form_with url: tournament_match_path(match.tournament, match), method: :patch, scope: :match do |f|
           .modal-body
-            .mb-3
-              label.form-label.fw-semibold= match.pair_display_name(match.pair1)
-              = f.number_field :pair1_score, class: "form-control", min: 0, required: true, placeholder: "0"
-            .mb-3
-              label.form-label.fw-semibold= match.pair_display_name(match.pair2)
-              = f.number_field :pair2_score, class: "form-control", min: 0, required: true, placeholder: "0"
+            - if tournament.sets_per_match > 1
+              - tournament.sets_per_match.times do |i|
+                - set_record = MatchSet.new(set_number: i + 1)
+                = f.fields_for :match_sets_attributes, set_record, index: i do |sf|
+                  = sf.hidden_field :set_number
+                  p.fw-semibold.mb-1= t("matches.set_number", number: i + 1)
+                  .row.g-2.mb-3
+                    .col
+                      label.form-label.small= match.pair_display_name(match.pair1)
+                      = sf.number_field :pair1_score, class: "form-control", min: 0, required: true, placeholder: "0"
+                    .col
+                      label.form-label.small= match.pair_display_name(match.pair2)
+                      = sf.number_field :pair2_score, class: "form-control", min: 0, required: true, placeholder: "0"
+            - else
+              .mb-3
+                label.form-label.fw-semibold= match.pair_display_name(match.pair1)
+                = f.number_field :pair1_score, class: "form-control", min: 0, required: true, placeholder: "0"
+              .mb-3
+                label.form-label.fw-semibold= match.pair_display_name(match.pair2)
+                = f.number_field :pair2_score, class: "form-control", min: 0, required: true, placeholder: "0"
 
           .modal-footer
             button.btn.btn-secondary type="button" data-bs-dismiss="modal"= t("matches.cancel")

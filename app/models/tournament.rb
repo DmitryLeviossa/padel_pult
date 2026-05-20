@@ -12,6 +12,7 @@
 #  name             :string           not null
 #  pairs_to_bracket :integer
 #  placement_points :jsonb            not null
+#  sets_per_match   :integer          default(1), not null
 #  start_date       :datetime         not null
 #  status           :string           default("draft"), not null
 #  type             :string           default("olympic"), not null
@@ -31,8 +32,8 @@ class Tournament < ApplicationRecord
   self.inheritance_column = nil
 
   belongs_to :league
-  has_many :pairs, dependent: :destroy
   has_many :matches, dependent: :destroy
+  has_many :pairs, dependent: :destroy
 
   enum :status, { draft: "draft", registration: "registration", active: "active", completed: "completed", cancelled: "cancelled" }
   enum :type, { olympic: "olympic", round_robin: "round_robin", mixed: "mixed" }
@@ -41,6 +42,8 @@ class Tournament < ApplicationRecord
   validates :end_date, presence: true
   validates :groups_count, numericality: { only_integer: true, greater_than: 0 }, allow_nil: true
   validates :pairs_to_bracket, numericality: { only_integer: true, greater_than: 0 }, allow_nil: true
+  validates :sets_per_match, numericality: { only_integer: true, greater_than: 0 }
+  before_validation :reset_sets_per_match, unless: :olympic?
   validate :end_date_not_before_start_date
   validate :placement_points_valid
   validate :mixed_config_present, if: :mixed?
@@ -82,6 +85,10 @@ class Tournament < ApplicationRecord
 
   def decrement_league_quota
     league.decrement!(:tournaments_quota) if league.tournaments_quota&.positive?
+  end
+
+  def reset_sets_per_match
+    self.sets_per_match = 1
   end
 
   def mixed_config_present

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2026_05_19_165129) do
+ActiveRecord::Schema[8.0].define(version: 2026_05_20_090000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -76,6 +76,17 @@ ActiveRecord::Schema[8.0].define(version: 2026_05_19_165129) do
     t.index ["owner_id"], name: "index_leagues_on_owner_id"
   end
 
+  create_table "match_sets", force: :cascade do |t|
+    t.bigint "match_id", null: false
+    t.integer "set_number", null: false
+    t.integer "pair1_score", null: false
+    t.integer "pair2_score", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["match_id", "set_number"], name: "index_match_sets_on_match_id_and_set_number", unique: true
+    t.index ["match_id"], name: "index_match_sets_on_match_id"
+  end
+
   create_table "matches", force: :cascade do |t|
     t.bigint "tournament_id", null: false
     t.bigint "pair1_id"
@@ -139,6 +150,7 @@ ActiveRecord::Schema[8.0].define(version: 2026_05_19_165129) do
     t.integer "groups_count"
     t.integer "pairs_to_bracket"
     t.boolean "loser_bracket", default: false, null: false
+    t.integer "sets_per_match", default: 1, null: false
     t.index ["league_id"], name: "index_tournaments_on_league_id"
   end
 
@@ -167,6 +179,7 @@ ActiveRecord::Schema[8.0].define(version: 2026_05_19_165129) do
   add_foreign_key "league_users", "leagues"
   add_foreign_key "league_users", "users"
   add_foreign_key "leagues", "users", column: "owner_id"
+  add_foreign_key "match_sets", "matches"
   add_foreign_key "matches", "pairs", column: "pair1_id"
   add_foreign_key "matches", "pairs", column: "pair2_id"
   add_foreign_key "matches", "pairs", column: "winner_id"

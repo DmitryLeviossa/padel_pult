@@ -88,12 +88,23 @@ en:
       player1_prompt: "— Player 1 —"
       player2_prompt: "— Player 2 —"
       add_pair: Add pair
+      sets_per_match: Sets per match
+      groups_count: Number of groups
+      pairs_to_bracket: Pairs to bracket
+      loser_bracket: Loser bracket
     create:
+      success: Tournament created successfully.
       quota_exceeded: Tournament quota exhausted. You cannot create more tournaments in this league.
     activate:
       activate_failed: Failed to activate tournament. Please try again.
+    fill_results:
+      not_active: Results can only be filled for an active tournament.
+    complete:
+      not_active: Only an active tournament can be completed.
     form:
       mixed_config_title: Group Stage Settings
+      olympic_config_title: Match Settings
+      sets_per_match: Sets per match
   matches:
     schedule_title: Schedule
     bracket_title: Bracket
@@ -117,6 +128,7 @@ en:
     complete_tournament: Complete tournament
     enter_result: Enter result
     enter_result_title: Enter match result
+    set_number: "Set %{number}"
     winner_label: Winner
     winner_prompt: "— select winner —"
     save_result: Save
@@ -144,6 +156,7 @@ en:
         groups_count: Number of groups
         pairs_to_bracket: Pairs advancing to bracket
         loser_bracket: Loser bracket
+        sets_per_match: Sets per match
       user:
         first_name: First name
         last_name: Last name

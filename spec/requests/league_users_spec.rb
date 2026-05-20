@@ -37,7 +37,7 @@ RSpec.describe "Leagues::LeagueUsers", type: :request do
         new_user = User.order(:created_at).last
         expect(new_user.pending_invitation?).to be true
         expect(new_user.leagues).to include(league)
-        expect(response).to redirect_to(league_path(league))
+        expect(response).to redirect_to(league_path(league, anchor: "league-users"))
       end
 
       it "renders new with errors given invalid params" do

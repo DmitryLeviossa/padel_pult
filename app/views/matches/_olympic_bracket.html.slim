@@ -116,13 +116,18 @@ css:
       - round_matches.each do |match|
         .bracket-match-wrapper style="flex: #{flex_size};"
           .bracket-match
-            - [[match.pair1, match.pair1_score, match.pair1_id], [match.pair2, match.pair2_score, match.pair2_id]].each do |pair, score, pair_id|
+            - sets = match.match_sets
+            - [[match.pair1, match.pair1_score, match.pair1_id, 0], [match.pair2, match.pair2_score, match.pair2_id, 1]].each do |pair, score, pair_id, idx|
               - is_winner = match.winner_id.present? && match.winner_id == pair_id
               - is_loser  = match.winner_id.present? && pair_id.present? && match.winner_id != pair_id
               - css_class = pair.nil? ? (match.bye? ? "bye-slot" : "empty-slot") : (is_winner ? "winner" : (is_loser ? "loser" : ""))
               .bracket-team class=css_class
                 span.bracket-name= pair ? match.pair_display_name(pair) : (match.bye? ? t("matches.bye") : "…")
-                - if score.present?
+                - if sets.any?
+                  .d-flex.gap-2
+                    - sets.each do |set|
+                      span.bracket-score= idx == 0 ? set.pair1_score : set.pair2_score
+                - elsif score.present?
                   span.bracket-score= score
           - if is_owner && match.pending? && match.pair1.present? && match.pair2.present?
             button.btn.btn-outline-primary.btn-sm.bracket-enter-btn(data-bs-toggle="modal" data-bs-target="#match-modal-#{match.id}")
@@ -133,13 +138,18 @@ css:
     .bracket-round-header.mb-2= t("matches.third_place")
     .d-flex.flex-column style="min-width: 240px; max-width: 360px;"
       .bracket-match
-        - [[third_place_match.pair1, third_place_match.pair1_score, third_place_match.pair1_id], [third_place_match.pair2, third_place_match.pair2_score, third_place_match.pair2_id]].each do |pair, score, pair_id|
+        - tp_sets = third_place_match.match_sets
+        - [[third_place_match.pair1, third_place_match.pair1_score, third_place_match.pair1_id, 0], [third_place_match.pair2, third_place_match.pair2_score, third_place_match.pair2_id, 1]].each do |pair, score, pair_id, idx|
           - is_winner = third_place_match.winner_id.present? && third_place_match.winner_id == pair_id
           - is_loser  = third_place_match.winner_id.present? && pair_id.present? && third_place_match.winner_id != pair_id
           - css_class = pair.nil? ? "empty-slot" : (is_winner ? "winner" : (is_loser ? "loser" : ""))
           .bracket-team class=css_class
             span.bracket-name= pair ? third_place_match.pair_display_name(pair) : "…"
-            - if score.present?
+            - if tp_sets.any?
+              .d-flex.gap-2
+                - tp_sets.each do |set|
+                  span.bracket-score= idx == 0 ? set.pair1_score : set.pair2_score
+            - elsif score.present?
               span.bracket-score= score
       - if is_owner && third_place_match.pending? && third_place_match.pair1.present? && third_place_match.pair2.present?
         button.btn.btn-outline-primary.btn-sm.bracket-enter-btn.mt-1(data-bs-toggle="modal" data-bs-target="#match-modal-#{third_place_match.id}")

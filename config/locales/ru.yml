@@ -107,6 +107,7 @@ ru:
         groups_count: Количество групп
         pairs_to_bracket: Пар в основную сетку
         loser_bracket: Сетка проигравших
+        sets_per_match: Сетов в матче
       user:
         first_name: Имя
         last_name: Фамилия
@@ -327,6 +328,10 @@ ru:
       cancel_confirm: Вы уверены, что хотите отменить этот турнир? Все зарегистрированные участники получат уведомление.
       delete_pair: Удалить
       delete_pair_confirm: Вы уверены, что хотите удалить эту пару?
+      sets_per_match: Сетов в матче
+      groups_count: Количество групп
+      pairs_to_bracket: Пар в основную сетку
+      loser_bracket: Сетка проигравших
     destroy:
       success: Турнир удалён.
       not_draft: Удалить можно только черновик.
@@ -334,6 +339,7 @@ ru:
       success: Регистрация на турнир открыта.
       not_draft: Регистрацию можно открыть только для турнира в статусе черновика.
     create:
+      success: Турнир успешно создан.
       quota_exceeded: Квота на создание турниров исчерпана. Вы не можете создать больше турниров в этой лиге.
     activate:
       success: Турнир активирован.
@@ -351,12 +357,16 @@ ru:
       placement_column: Место
       submit: Завершить турнир
       completed: Заполнить результаты можно только не для завершенного турнира.
+      not_active: Заполнить результаты можно только для активного турнира.
     complete:
       success: Турнир завершён, очки начислены.
       completed: Турнир уже завершен.
+      not_active: Завершить можно только активный турнир.
       failure: Не удалось завершить турнир. Попробуйте ещё раз.
     form:
       mixed_config_title: Настройки группового этапа
+      olympic_config_title: Настройки матча
+      sets_per_match: Сетов в матче
 
   not_authorized: Нет доступа.
   matches:
@@ -382,6 +392,7 @@ ru:
     complete_tournament: Завершить турнир
     enter_result: Ввести результат
     enter_result_title: Результат матча
+    set_number: "Сет %{number}"
     winner_label: Победитель
     winner_prompt: "— выберите победителя —"
     save_result: Сохранить

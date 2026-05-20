@@ -50,6 +50,16 @@
           = f.check_box :loser_bracket, class: "form-check-input"
           = f.label :loser_bracket, class: "form-check-label"
 
+  .col-12(data-tournament-type-target="olympicConfig" class=("d-none" unless tournament.olympic?))
+    hr
+    h5.mb-3= t("tournaments.form.olympic_config_title")
+    .row.g-3
+      .col-md-4
+        = f.label :sets_per_match, class: "form-label"
+        = f.number_field :sets_per_match, class: "form-control #{"is-invalid" if tournament.errors[:sets_per_match].any?}", min: 1
+        - if tournament.errors[:sets_per_match].any?
+          .invalid-feedback= tournament.errors[:sets_per_match].first
+
   .col-12
     = f.label :description, class: "form-label"
     = f.text_area :description, class: "form-control", rows: 3

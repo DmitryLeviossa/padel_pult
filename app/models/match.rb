@@ -37,6 +37,9 @@ class Match < ApplicationRecord
   belongs_to :pair1, class_name: "Pair", optional: true
   belongs_to :pair2, class_name: "Pair", optional: true
   belongs_to :winner, class_name: "Pair", optional: true
+  has_many :match_sets, dependent: :destroy
+
+  accepts_nested_attributes_for :match_sets
 
   enum :status, { pending: "pending", completed: "completed", bye: "bye" }
   enum :stage, { group_stage: "group", bracket: "bracket", loser_bracket: "loser_bracket" }
@@ -46,5 +49,17 @@ class Match < ApplicationRecord
   def pair_display_name(pair)
     return I18n.t("matches.bye") if pair.nil?
     "#{pair.player1.full_name} / #{pair.player2.full_name}"
+  end
+
+  def sets_won_by_pair1
+    match_sets.count { |s| s.pair1_score > s.pair2_score }
+  end
+
+  def sets_won_by_pair2
+    match_sets.count { |s| s.pair2_score > s.pair1_score }
+  end
+
+  def sets_score_summary
+    match_sets.map { |s| "#{s.pair1_score}:#{s.pair2_score}" }.join(", ")
   end
 end

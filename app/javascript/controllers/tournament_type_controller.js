@@ -1,7 +1,7 @@
 import { Controller } from "@hotwired/stimulus"
 
 export default class extends Controller {
-  static targets = ["mixedConfig"]
+  static targets = ["mixedConfig", "olympicConfig"]
 
   connect() {
     this.toggle()
@@ -9,7 +9,8 @@ export default class extends Controller {
 
   toggle() {
     const select = this.element.querySelector("select[data-tournament-type-select]")
-    const isMixed = select?.value === "mixed"
-    this.mixedConfigTarget.classList.toggle("d-none", !isMixed)
+    const type = select?.value
+    this.mixedConfigTarget.classList.toggle("d-none", type !== "mixed")
+    this.olympicConfigTarget.classList.toggle("d-none", type !== "olympic")
   }
 }
