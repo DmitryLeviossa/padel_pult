@@ -25,7 +25,7 @@ class MatchesController < ApplicationController
   def broadcast_tv_update
     tournament = @match.tournament
     data = Tournaments::MatchData.new(tournament)
-    Turbo::StreamsChannel.broadcast_replace_to(
+    Turbo::StreamsChannel.broadcast_update_to(
       "tournament_#{tournament.id}_tv",
       target: "tournament_matches",
       partial: "tournaments/tv_matches",
