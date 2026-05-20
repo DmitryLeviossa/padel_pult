@@ -25,6 +25,69 @@ RSpec.describe "Leagues::LeagueUsers", type: :request do
     end
   end
 
+  describe "GET /leagues/:league_id/league_users/:id/edit" do
+    let(:pending_user) { create(:user, :invited) }
+    let!(:league_user) { create(:league_user, league: league, user: pending_user) }
+
+    context "as owner" do
+      before { sign_in owner }
+
+      it "renders the edit form for a pending user" do
+        get edit_league_league_user_path(league, league_user)
+        expect(response).to have_http_status(:ok)
+      end
+
+      it "redirects away for a registered user" do
+        registered = create(:user)
+        lu = create(:league_user, league: league, user: registered)
+        get edit_league_league_user_path(league, lu)
+        expect(response).to redirect_to(league_path(league, anchor: "league-users"))
+      end
+    end
+
+    context "as non-owner" do
+      before { sign_in other_user }
+
+      it "redirects away" do
+        get edit_league_league_user_path(league, league_user)
+        expect(response).to redirect_to(leagues_path)
+      end
+    end
+  end
+
+  describe "PATCH /leagues/:league_id/league_users/:id (user name update)" do
+    let(:pending_user) { create(:user, :invited, first_name: "Old", last_name: "Name") }
+    let!(:league_user) { create(:league_user, league: league, user: pending_user) }
+
+    context "as owner" do
+      before { sign_in owner }
+
+      it "updates first_name and last_name of a pending user" do
+        patch league_league_user_path(league, league_user), params: { user: { first_name: "New", last_name: "Name" } }
+        expect(pending_user.reload.first_name).to eq("New")
+        expect(response).to redirect_to(league_path(league, anchor: "league-users"))
+      end
+
+      it "does not update a registered user" do
+        registered = create(:user, first_name: "Alice")
+        lu = create(:league_user, league: league, user: registered)
+        patch league_league_user_path(league, lu), params: { user: { first_name: "Hacked" } }
+        expect(registered.reload.first_name).to eq("Alice")
+        expect(response).to redirect_to(league_path(league, anchor: "league-users"))
+      end
+    end
+
+    context "as non-owner" do
+      before { sign_in other_user }
+
+      it "does not update and redirects" do
+        patch league_league_user_path(league, league_user), params: { user: { first_name: "X" } }
+        expect(pending_user.reload.first_name).to eq("Old")
+        expect(response).to redirect_to(leagues_path)
+      end
+    end
+  end
+
   describe "POST /leagues/:league_id/league_users" do
     context "as owner" do
       before { league; sign_in owner }

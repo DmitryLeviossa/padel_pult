@@ -197,6 +197,7 @@ ru:
       pending_badge: Ожидает регистрации
       copy_invite_link: Скопировать ссылку
       copy_invite_link_tooltip: Скопировать ссылку для приглашения
+      edit_member_tooltip: Редактировать имя участника
       not_authorized: Нет доступа.
       join: Вступить в лигу
       leave: Покинуть лигу
@@ -220,6 +221,13 @@ ru:
         cancel: Отмена
       create:
         success: Участник добавлен. Скопируйте ссылку для приглашения из списка участников.
+      edit:
+        title: Редактировать участника
+        submit: Сохранить
+        cancel: Отмена
+      update:
+        user_updated: Имя участника обновлено.
+        not_pending: Этот участник уже зарегистрировался и не может быть изменён.
     league_invitations:
       create:
         success: "Приглашения отправлены: %{count}"

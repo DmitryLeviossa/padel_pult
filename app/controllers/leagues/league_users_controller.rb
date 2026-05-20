@@ -2,10 +2,24 @@ class Leagues::LeagueUsersController < ApplicationController
   before_action :set_league
   before_action :authorize_owner!
 
+  def edit
+    @league_user = @league.league_users.find(params[:id])
+    redirect_to league_path(@league, anchor: "league-users") unless @league_user.user.pending_invitation?
+  end
+
   def update
     @league_user = @league.league_users.find(params[:id])
-    @league_user.update!(score: params[:league_user][:score].to_i)
-    head :ok
+
+    if params[:user]
+      unless @league_user.user.pending_invitation?
+        return redirect_to league_path(@league, anchor: "league-users"), alert: t(".not_pending")
+      end
+      @league_user.user.update!(user_params)
+      redirect_to league_path(@league, anchor: "league-users"), notice: t(".user_updated")
+    else
+      @league_user.update!(score: params[:league_user][:score].to_i)
+      head :ok
+    end
   end
 
   def new

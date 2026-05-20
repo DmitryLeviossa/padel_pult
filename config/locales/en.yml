@@ -57,6 +57,7 @@ en:
       settings_tab: Settings
       tournaments_quota_label: Tournament quota
       tournaments_quota_unlimited: Unlimited
+      edit_member_tooltip: Edit member name
     edit:
       title: Edit League
       submit: Save changes
@@ -69,6 +70,13 @@ en:
         cancel: Cancel
       create:
         success: Member added. Copy the invitation link from the members list.
+      edit:
+        title: Edit member
+        submit: Save
+        cancel: Cancel
+      update:
+        user_updated: Member name updated.
+        not_pending: This member has already registered and cannot be edited.
   tournaments:
     notifications:
       registration_open: "Registration is open for tournament \"%{tournament}\" in league \"%{league}\""

@@ -1,0 +1,19 @@
+.container.py-4
+  .row.justify-content-center
+    .col-md-6
+      h1.mb-4= t('.title')
+
+      = form_with model: @league_user.user, url: league_league_user_path(@league, @league_user), method: :patch, data: { turbo: false } do |f|
+        = render "devise/shared/error_messages", resource: @league_user.user
+
+        .mb-3
+          = f.label :first_name, t('activerecord.attributes.user.first_name'), class: "form-label"
+          = f.text_field :first_name, class: "form-control", autofocus: true
+
+        .mb-3
+          = f.label :last_name, t('activerecord.attributes.user.last_name'), class: "form-label"
+          = f.text_field :last_name, class: "form-control"
+
+        .d-flex.gap-2
+          = f.submit t('.submit'), class: "btn btn-primary"
+          = link_to t('.cancel'), league_path(@league, anchor: "league-users"), class: "btn btn-outline-secondary"

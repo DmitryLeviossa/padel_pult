@@ -101,8 +101,11 @@
                 - if @league.owner == current_user
                   td
                     - if league_user.user.pending_invitation?
-                      = button_tag type: "button", class: "btn btn-outline-secondary btn-sm", data: { copy_url: invitation_url(league_user.user.invitation_token), bs_toggle: "tooltip", bs_placement: "top", bs_title: t('.copy_invite_link_tooltip') } do
-                        i.bi.bi-link-45deg
+                      .d-flex.gap-1
+                        = button_tag type: "button", class: "btn btn-outline-secondary btn-sm", data: { copy_url: invitation_url(league_user.user.invitation_token), bs_toggle: "tooltip", bs_placement: "top", bs_title: t('.copy_invite_link_tooltip') } do
+                          i.bi.bi-link-45deg
+                        = link_to edit_league_league_user_path(@league, league_user), class: "btn btn-outline-primary btn-sm", title: t('.edit_member_tooltip') do
+                          i.bi.bi-pencil
       - else
         p.text-muted= t('.no_members')
 
