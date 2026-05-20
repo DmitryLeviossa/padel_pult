@@ -12,6 +12,7 @@ class MatchesController < ApplicationController
       when "mixed"
         handle_mixed_match_completion
       end
+      broadcast_tv_update
       redirect_to tournament_path(@match.tournament), notice: "Результат сохранён."
     else
       redirect_to tournament_path(@match.tournament), alert: "Не удалось сохранить результат."
@@ -19,6 +20,17 @@ class MatchesController < ApplicationController
   end
 
   private
+
+  def broadcast_tv_update
+    tournament = @match.tournament
+    data = Tournaments::MatchData.new(tournament)
+    Turbo::StreamsChannel.broadcast_replace_to(
+      "tournament_#{tournament.id}_tv",
+      target: "tournament_matches",
+      partial: "tournaments/tv_matches",
+      locals: data.to_locals
+    )
+  end
 
   def handle_mixed_match_completion
     if @match.group_stage?

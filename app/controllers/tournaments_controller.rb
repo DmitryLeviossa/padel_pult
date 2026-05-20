@@ -1,8 +1,9 @@
 class TournamentsController < ApplicationController
   before_action :set_league, only: [ :new, :create ]
-  before_action :set_tournament, only: [ :show, :edit, :update, :destroy, :open_registration, :activate, :cancel, :fill_results, :complete ]
+  before_action :set_tournament, only: [ :show, :edit, :update, :destroy, :open_registration, :activate, :cancel, :fill_results, :complete, :tv ]
   before_action :authorize_owner!, only: [ :new, :create ]
   before_action :authorize_tournament_owner!, only: [ :edit, :update, :destroy, :open_registration, :activate, :cancel, :fill_results, :complete ]
+  skip_before_action :authenticate_user!, only: [ :tv ]
 
   def index
     filter_params = params[:q]&.to_unsafe_h || {}
@@ -65,6 +66,11 @@ class TournamentsController < ApplicationController
         @owner_available_players = @tournament.league.league_users.includes(:user).where.not(id: occupied_ids)
       end
     end
+  end
+
+  def tv
+    @match_data = Tournaments::MatchData.new(@tournament)
+    render layout: "tv"
   end
 
   def new

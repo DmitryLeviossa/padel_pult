@@ -39,6 +39,7 @@ Rails.application.routes.draw do
       post :cancel
       get :fill_results
       patch :complete
+      get :tv
     end
   end
 end

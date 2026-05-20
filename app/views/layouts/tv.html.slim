@@ -1,0 +1,33 @@
+doctype html
+html data-bs-theme="dark"
+  head
+    meta charset="utf-8"
+    title= "#{@tournament&.name} — ТВ"
+    meta name="viewport" content="width=device-width,initial-scale=1"
+    = csrf_meta_tags
+    = csp_meta_tag
+    link rel="preconnect" href="https://fonts.googleapis.com"
+    link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="anonymous"
+    link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap"
+    link rel="icon" href="/icon.png" type="image/png"
+    = stylesheet_link_tag "application", "data-turbo-track": "reload"
+    = javascript_include_tag "tom-select.min", "data-turbo-track": "reload"
+    = javascript_include_tag "flatpickr.min", "data-turbo-track": "reload"
+    = javascript_importmap_tags
+    css:
+      body { overflow-x: hidden; }
+      .tv-header { padding: 1rem 1.5rem; border-bottom: 1px solid rgba(255,255,255,0.1); }
+      .tv-title { font-size: 1.8rem; font-weight: 600; margin: 0; }
+      .tv-meta { font-size: 1rem; opacity: 0.65; }
+
+  body
+    header.tv-header.d-flex.justify-content-between.align-items-center
+      div
+        h1.tv-title= @tournament.name
+        span.tv-meta= @tournament.league.name
+      div
+        - badge_class = { "active" => "success", "completed" => "primary" }.fetch(@tournament.status, "secondary")
+        span.badge class="bg-#{badge_class} fs-6"
+          = { "active" => "Активный", "completed" => "Завершён" }.fetch(@tournament.status, @tournament.status)
+    main.py-4
+      = yield
