@@ -86,11 +86,11 @@
         = f.select :player1_id,
             @owner_available_players.map { |lu| [ lu.full_name, lu.id ] },
             { prompt: t('.player1_prompt') },
-            class: "form-select form-select-sm w-auto"
+            class: "form-select form-select-sm", style: "width: 200px;"
         = f.select :player2_id,
             @owner_available_players.map { |lu| [ lu.full_name, lu.id ] },
             { prompt: t('.player2_prompt') },
-            class: "form-select form-select-sm w-auto"
+            class: "form-select form-select-sm", style: "width: 200px;"
         = f.submit t('.add_pair'), class: "btn btn-primary btn-sm"
   - if @tournament.pairs.any?
     table.table.table-hover

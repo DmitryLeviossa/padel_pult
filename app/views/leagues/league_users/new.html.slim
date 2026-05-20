@@ -3,7 +3,7 @@
     .col-md-6
       h1.mb-4= t('.title')
 
-      = form_with model: @user, url: league_league_users_path(@league), method: :post do |f|
+      = form_with model: @user, url: league_league_users_path(@league), method: :post, data: { turbo: false } do |f|
         = render "devise/shared/error_messages", resource: @user
 
         .mb-3

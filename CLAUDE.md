@@ -19,6 +19,7 @@ This is a Ruby on Rails application following Rails conventions.
 - Fat models, skinny controllers
 - Extract complex logic to service objects
 - Use concerns for shared model behavior
+- Should be mobile and table friendly
 
 ## Database
 
