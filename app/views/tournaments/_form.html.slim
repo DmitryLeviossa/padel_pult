@@ -59,6 +59,10 @@
         = f.number_field :sets_per_match, class: "form-control #{"is-invalid" if tournament.errors[:sets_per_match].any?}", min: 1
         - if tournament.errors[:sets_per_match].any?
           .invalid-feedback= tournament.errors[:sets_per_match].first
+      .col-md-4.d-flex.align-items-end
+        .form-check.mb-2
+          = f.check_box :loser_bracket, class: "form-check-input"
+          = f.label :loser_bracket, class: "form-check-label"
 
   .col-12
     = f.label :description, class: "form-label"

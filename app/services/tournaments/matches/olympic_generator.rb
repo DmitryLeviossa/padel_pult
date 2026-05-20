@@ -53,9 +53,49 @@ module Tournaments
         @tournament.matches.bye.each do |bye_match|
           Tournaments::Matches::AdvanceWinnerService.new(bye_match).call
         end
+
+        create_loser_bracket(pairs.length, n) if @tournament.loser_bracket?
       end
 
       private
+
+      def create_loser_bracket(pair_count, n)
+        loser_count = pair_count - n / 2
+        return if loser_count < 2
+
+        loser_n = next_power_of_two(loser_count)
+        loser_total_rounds = Math.log2(loser_n).to_i
+
+        (loser_n / 2).times do |i|
+          @tournament.matches.create!(
+            round_number: 1,
+            position: i + 1,
+            status: :pending,
+            stage: :loser_bracket
+          )
+        end
+
+        (2..loser_total_rounds).each do |round|
+          count = loser_n / (2 ** round)
+          count.times do |i|
+            @tournament.matches.create!(
+              round_number: round,
+              position: i + 1,
+              status: :pending,
+              stage: :loser_bracket
+            )
+          end
+        end
+
+        if loser_total_rounds > 1
+          @tournament.matches.create!(
+            round_number: loser_total_rounds,
+            position: 2,
+            status: :pending,
+            stage: :loser_bracket
+          )
+        end
+      end
 
       def next_power_of_two(n)
         return 2 if n <= 2

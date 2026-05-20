@@ -1,6 +1,4 @@
 - total_rounds = bracket_rounds.length
-- r1_count = bracket_rounds.first&.length || 0
-- bracket_height = [r1_count * 96, 200].max
 
 .d-flex.justify-content-between.align-items-center.mt-4.mb-3
   h4.mb-0 Сетка
@@ -106,15 +104,15 @@ css:
     align-self: flex-end;
   }
 
-.tournament-bracket style="height: #{bracket_height}px;"
+.tournament-bracket
   - bracket_rounds.each_with_index do |round_matches, idx|
     - round_num = idx + 1
     - round_label = round_num == total_rounds ? "Финал" : round_num == total_rounds - 1 && total_rounds > 2 ? "Полуфинал" : "Раунд #{round_num}"
     .bracket-round
       .bracket-round-header= round_label
-      - flex_size = 2 ** idx
+      - slot_height = 116 * (2 ** idx)
       - round_matches.each do |match|
-        .bracket-match-wrapper style="flex: #{flex_size};"
+        .bracket-match-wrapper style="min-height: #{slot_height}px;"
           .bracket-match
             - sets = match.match_sets
             - [[match.pair1, match.pair1_score, match.pair1_id, 0], [match.pair2, match.pair2_score, match.pair2_id, 1]].each do |pair, score, pair_id, idx|
@@ -154,3 +152,56 @@ css:
       - if is_owner && third_place_match.pending? && third_place_match.pair1.present? && third_place_match.pair2.present?
         button.btn.btn-outline-primary.btn-sm.bracket-enter-btn.mt-1(data-bs-toggle="modal" data-bs-target="#match-modal-#{third_place_match.id}")
           | Ввести результат
+
+- if loser_bracket_rounds&.any?
+  h4.mt-5.mb-3 Утешительная сетка
+
+  - lb_total_rounds = loser_bracket_rounds.length
+  .tournament-bracket
+    - loser_bracket_rounds.each_with_index do |round_matches, idx|
+      - round_num = idx + 1
+      - round_label = round_num == lb_total_rounds ? "Финал" : "Раунд #{round_num}"
+      .bracket-round
+        .bracket-round-header= round_label
+        - lb_slot_height = 116 * (2 ** idx)
+        - round_matches.each do |match|
+          .bracket-match-wrapper style="min-height: #{lb_slot_height}px;"
+            .bracket-match
+              - sets = match.match_sets
+              - [[match.pair1, match.pair1_score, match.pair1_id, 0], [match.pair2, match.pair2_score, match.pair2_id, 1]].each do |pair, score, pair_id, idx|
+                - is_winner = match.winner_id.present? && match.winner_id == pair_id
+                - is_loser  = match.winner_id.present? && pair_id.present? && match.winner_id != pair_id
+                - css_class = pair.nil? ? "empty-slot" : (is_winner ? "winner" : (is_loser ? "loser" : ""))
+                .bracket-team class=css_class
+                  span.bracket-name= pair ? match.pair_display_name(pair) : "…"
+                  - if sets.any?
+                    .d-flex.gap-2
+                      - sets.each do |set|
+                        span.bracket-score= idx == 0 ? set.pair1_score : set.pair2_score
+                  - elsif score.present?
+                    span.bracket-score= score
+            - if is_owner && match.pending? && match.pair1.present? && match.pair2.present?
+              button.btn.btn-outline-primary.btn-sm.bracket-enter-btn(data-bs-toggle="modal" data-bs-target="#match-modal-#{match.id}")
+                | Ввести результат
+
+  - if loser_third_place_match
+    .mt-4.d-flex.flex-column.align-items-center
+      .bracket-round-header.mb-2 Матч за 3-е место
+      .d-flex.flex-column style="min-width: 240px; max-width: 360px;"
+        .bracket-match
+          - ltp_sets = loser_third_place_match.match_sets
+          - [[loser_third_place_match.pair1, loser_third_place_match.pair1_score, loser_third_place_match.pair1_id, 0], [loser_third_place_match.pair2, loser_third_place_match.pair2_score, loser_third_place_match.pair2_id, 1]].each do |pair, score, pair_id, idx|
+            - is_winner = loser_third_place_match.winner_id.present? && loser_third_place_match.winner_id == pair_id
+            - is_loser  = loser_third_place_match.winner_id.present? && pair_id.present? && loser_third_place_match.winner_id != pair_id
+            - css_class = pair.nil? ? "empty-slot" : (is_winner ? "winner" : (is_loser ? "loser" : ""))
+            .bracket-team class=css_class
+              span.bracket-name= pair ? loser_third_place_match.pair_display_name(pair) : "…"
+              - if ltp_sets.any?
+                .d-flex.gap-2
+                  - ltp_sets.each do |set|
+                    span.bracket-score= idx == 0 ? set.pair1_score : set.pair2_score
+              - elsif score.present?
+                span.bracket-score= score
+        - if is_owner && loser_third_place_match.pending? && loser_third_place_match.pair1.present? && loser_third_place_match.pair2.present?
+          button.btn.btn-outline-primary.btn-sm.bracket-enter-btn.mt-1(data-bs-toggle="modal" data-bs-target="#match-modal-#{loser_third_place_match.id}")
+            | Ввести результат

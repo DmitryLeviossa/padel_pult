@@ -72,5 +72,45 @@ RSpec.describe Tournaments::Matches::OlympicGenerator do
         expect(tournament.matches.count).to eq(1)
       end
     end
+
+    context "with loser_bracket enabled" do
+      let(:tournament) { create(:tournament, :registration, type: :olympic, loser_bracket: true, league: league) }
+
+      context "with 4 pairs" do
+        before { 4.times { make_pair } }
+
+        it "creates loser bracket matches in addition to main bracket" do
+          described_class.new(tournament).call
+          expect(tournament.matches.loser_bracket.count).to eq(1)
+        end
+
+        it "loser bracket match has no pairs assigned yet" do
+          described_class.new(tournament).call
+          lb = tournament.matches.find_by(stage: :loser_bracket, round_number: 1, position: 1)
+          expect(lb.pair1_id).to be_nil
+          expect(lb.pair2_id).to be_nil
+        end
+      end
+
+      context "with 8 pairs" do
+        before { 8.times { make_pair } }
+
+        it "creates 2 loser bracket round-1 matches, 1 final, and 1 third-place" do
+          described_class.new(tournament).call
+          expect(tournament.matches.loser_bracket.where(round_number: 1).count).to eq(2)
+          # round 2: 1 final (position 1) + 1 third-place (position 2)
+          expect(tournament.matches.loser_bracket.where(round_number: 2).count).to eq(2)
+        end
+      end
+
+      context "with 3 pairs (only 1 real round-1 match, too few losers)" do
+        before { 3.times { make_pair } }
+
+        it "does not create a loser bracket" do
+          described_class.new(tournament).call
+          expect(tournament.matches.loser_bracket.count).to eq(0)
+        end
+      end
+    end
   end
 end

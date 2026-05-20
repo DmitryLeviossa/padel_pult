@@ -9,6 +9,7 @@ class MatchesController < ApplicationController
       when "olympic"
         Tournaments::Matches::AdvanceWinnerService.new(@match).call
         Tournaments::Matches::AdvanceLoserService.new(@match).call
+        Tournaments::Matches::AdvanceOlympicLoserService.new(@match).call
       when "mixed"
         handle_mixed_match_completion
       end
