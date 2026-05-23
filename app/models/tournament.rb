@@ -98,11 +98,6 @@ class Tournament < ApplicationRecord
   end
 
   def pairs_to_bracket_valid_for_groups
-    return unless pairs_to_bracket.present? && groups_count.present? && groups_count > 0
-
-    if pairs_to_bracket < groups_count
-      errors.add(:pairs_to_bracket, "должно быть не меньше количества групп (#{groups_count})")
-    end
   end
 
   def end_date_not_before_start_date

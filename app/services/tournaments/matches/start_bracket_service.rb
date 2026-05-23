@@ -21,15 +21,12 @@ module Tournaments
       end
 
       def determine_pairs
-        base = @tournament.pairs_to_bracket / @tournament.groups_count
-        extra = @tournament.pairs_to_bracket % @tournament.groups_count
-        raise "pairs_to_bracket (#{@tournament.pairs_to_bracket}) must be >= groups_count (#{@tournament.groups_count})" if base < 1
+        qualifying_slots = @tournament.pairs_to_bracket
 
         qualified_by_group = []
         consolation_by_group = []
 
         (1..@tournament.groups_count).each do |group_num|
-          qualifying_slots = base + (group_num <= extra ? 1 : 0)
           standings = group_standings(group_num)
           qualified_by_group << standings.first(qualifying_slots)
           consolation_by_group << standings.drop(qualifying_slots)

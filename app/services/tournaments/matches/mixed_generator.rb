@@ -7,9 +7,10 @@ module Tournaments
 
       def call
         seed_and_create_groups
-        pre_create_bracket("bracket", @tournament.pairs_to_bracket)
+        total_qualifying = @tournament.pairs_to_bracket * @tournament.groups_count
+        pre_create_bracket("bracket", total_qualifying)
         if @tournament.loser_bracket?
-          non_qualifying = @tournament.pairs.count - @tournament.pairs_to_bracket
+          non_qualifying = @tournament.pairs.count - total_qualifying
           pre_create_bracket("loser_bracket", non_qualifying) if non_qualifying >= 2
         end
       end

@@ -57,7 +57,7 @@ RSpec.describe Tournaments::Matches::MixedGenerator do
                type: :mixed,
                league: league,
                groups_count: 2,
-               pairs_to_bracket: 4,
+               pairs_to_bracket: 2,
                loser_bracket: true)
       end
 
