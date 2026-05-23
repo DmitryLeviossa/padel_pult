@@ -45,6 +45,8 @@
         = f.number_field :pairs_to_bracket, class: "form-control #{"is-invalid" if tournament.errors[:pairs_to_bracket].any?}", min: 1
         - if tournament.errors[:pairs_to_bracket].any?
           .invalid-feedback= tournament.errors[:pairs_to_bracket].first
+        - elsif tournament.groups_count.to_i > 0
+          small.form-text.text-muted Должно быть кратно количеству групп (например, #{tournament.groups_count.to_i * 2} при #{tournament.groups_count} группах)
       .col-md-4.d-flex.align-items-end
         .form-check.mb-2
           = f.check_box :loser_bracket, class: "form-check-input"

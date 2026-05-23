@@ -22,6 +22,7 @@ module Tournaments
 
       def determine_pairs
         pairs_per_group = @tournament.pairs_to_bracket / @tournament.groups_count
+        raise "pairs_to_bracket (#{@tournament.pairs_to_bracket}) must be >= groups_count (#{@tournament.groups_count})" if pairs_per_group < 1
 
         qualified_by_group = []
         consolation_by_group = []
