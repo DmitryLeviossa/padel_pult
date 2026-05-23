@@ -31,50 +31,52 @@ css:
     - unless any_completed
       = button_to "Расставить пары автоматически", auto_assign_pairs_tournament_path(tournament), method: :post, class: "btn btn-outline-secondary btn-sm"
 
-- group_data.each do |gd|
-  h5.mt-3.mb-2= "Группа #{gd[:group_number]}"
-  .table-responsive
-    table.table.table-bordered.table-sm.group-cross-table
-      thead.table-light
-        tr
-          th.text-center №
-          th Пара
-          - gd[:pairs_ordered].each_with_index do |_, i|
-            th.text-center= "#{i + 1})"
-          th.text-center В
-          th.text-center Разница
-          th.text-center Место
-      tbody
-        - gd[:pairs_ordered].each_with_index do |pair, row_idx|
-          - stat = gd[:stats_by_id][pair.id]
-          tr
-            td.text-center= row_idx + 1
-            td= pair.player1.full_name + " / " + pair.player2.full_name
-            - gd[:pairs_ordered].each_with_index do |opp, col_idx|
-              - if row_idx == col_idx
-                td.diagonal.text-center
-              - else
-                - score = gd[:scores][pair.id][opp.id]
-                - match = gd[:match_for][pair.id][opp.id]
-                - if score
-                  - win = score[0] > score[1]
-                  td.score-cell.text-center class=(win ? "score-win" : "score-loss")
-                    = "#{score[0]}/#{score[1]}"
-                - elsif match && is_owner && !match.completed?
-                  td.text-center
-                    button.btn.btn-outline-secondary.btn-sm.enter-score-btn data-bs-toggle="modal" data-bs-target="#match-modal-#{match.id}"
-                      | —
-                - elsif match && is_owner && match.completed? && !match.has_downstream_results?
-                  td.score-cell.text-center
-                    button.btn.btn-link.btn-sm.p-0.enter-score-btn data-bs-toggle="modal" data-bs-target="#match-modal-#{match.id}"
-                      = "#{score&.first || '?'}/#{score&.last || '?'}"
-                - else
-                  td.text-center.text-muted —
-            td.text-center= stat[:wins]
-            td.text-center
-              - diff = stat[:games_diff]
-              = diff > 0 ? "+#{diff}" : diff.to_s
-            td.text-center.fw-semibold= stat[:place]
+.row
+  - group_data.each do |gd|
+    .col-md-6
+      h5.mt-3.mb-2= "Группа #{gd[:group_number]}"
+      .table-responsive
+        table.table.table-bordered.table-sm.group-cross-table
+          thead.table-light
+            tr
+              th.text-center №
+              th Пара
+              - gd[:pairs_ordered].each_with_index do |_, i|
+                th.text-center= "#{i + 1})"
+              th.text-center В
+              th.text-center Разница
+              th.text-center Место
+          tbody
+            - gd[:pairs_ordered].each_with_index do |pair, row_idx|
+              - stat = gd[:stats_by_id][pair.id]
+              tr
+                td.text-center= row_idx + 1
+                td= pair.player1.full_name + " / " + pair.player2.full_name
+                - gd[:pairs_ordered].each_with_index do |opp, col_idx|
+                  - if row_idx == col_idx
+                    td.diagonal.text-center
+                  - else
+                    - score = gd[:scores][pair.id][opp.id]
+                    - match = gd[:match_for][pair.id][opp.id]
+                    - if score
+                      - win = score[0] > score[1]
+                      td.score-cell.text-center class=(win ? "score-win" : "score-loss")
+                        = "#{score[0]}/#{score[1]}"
+                    - elsif match && is_owner && !match.completed?
+                      td.text-center
+                        button.btn.btn-outline-secondary.btn-sm.enter-score-btn data-bs-toggle="modal" data-bs-target="#match-modal-#{match.id}"
+                          | —
+                    - elsif match && is_owner && match.completed? && !match.has_downstream_results?
+                      td.score-cell.text-center
+                        button.btn.btn-link.btn-sm.p-0.enter-score-btn data-bs-toggle="modal" data-bs-target="#match-modal-#{match.id}"
+                          = "#{score&.first || '?'}/#{score&.last || '?'}"
+                    - else
+                      td.text-center.text-muted —
+                td.text-center= stat[:wins]
+                td.text-center
+                  - diff = stat[:games_diff]
+                  = diff > 0 ? "+#{diff}" : diff.to_s
+                td.text-center.fw-semibold= stat[:place]
 
 / ── Main bracket ───────────────────────────────────────────────────────────
 - if bracket_rounds.any?
