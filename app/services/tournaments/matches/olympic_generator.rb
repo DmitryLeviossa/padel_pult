@@ -14,13 +14,15 @@ module Tournaments
         seeded = ordered + ([ nil ] * (n - ordered.length))
 
         total_rounds = Math.log2(n).to_i
+        bracket = @tournament.brackets.find_or_create_by!(bracket_type: :bracket, group_number: 0)
 
         (n / 2).times do |i|
           pair1 = seeded[i]
           pair2 = seeded[n - 1 - i]
           is_bye = pair1.nil? || pair2.nil?
 
-          @tournament.matches.create!(
+          bracket.matches.create!(
+            tournament: @tournament,
             pair1: pair1,
             pair2: pair2,
             winner: is_bye ? (pair1 || pair2) : nil,
@@ -30,11 +32,11 @@ module Tournaments
           )
         end
 
-        # Pre-create empty matches for subsequent rounds
         (2..total_rounds).each do |round|
           count = n / (2 ** round)
           count.times do |i|
-            @tournament.matches.create!(
+            bracket.matches.create!(
+              tournament: @tournament,
               round_number: round,
               position: i + 1,
               status: :pending
@@ -42,16 +44,15 @@ module Tournaments
           end
         end
 
-        # 3rd place match (between semifinal losers) when bracket has at least 2 rounds
         if total_rounds > 1
-          @tournament.matches.create!(
+          bracket.matches.create!(
+            tournament: @tournament,
             round_number: total_rounds,
             position: 2,
             status: :pending
           )
         end
 
-        # Immediately advance bye winners into the bracket
         @tournament.matches.bye.each do |bye_match|
           Tournaments::Matches::AdvanceWinnerService.new(bye_match).call
         end
@@ -67,34 +68,35 @@ module Tournaments
 
         loser_n = next_power_of_two(loser_count)
         loser_total_rounds = Math.log2(loser_n).to_i
+        lb = @tournament.brackets.find_or_create_by!(bracket_type: :loser_bracket, group_number: 0)
 
         (loser_n / 2).times do |i|
-          @tournament.matches.create!(
+          lb.matches.create!(
+            tournament: @tournament,
             round_number: 1,
             position: i + 1,
-            status: :pending,
-            stage: :loser_bracket
+            status: :pending
           )
         end
 
         (2..loser_total_rounds).each do |round|
           count = loser_n / (2 ** round)
           count.times do |i|
-            @tournament.matches.create!(
+            lb.matches.create!(
+              tournament: @tournament,
               round_number: round,
               position: i + 1,
-              status: :pending,
-              stage: :loser_bracket
+              status: :pending
             )
           end
         end
 
         if loser_total_rounds > 1
-          @tournament.matches.create!(
+          lb.matches.create!(
+            tournament: @tournament,
             round_number: loser_total_rounds,
             position: 2,
-            status: :pending,
-            stage: :loser_bracket
+            status: :pending
           )
         end
       end

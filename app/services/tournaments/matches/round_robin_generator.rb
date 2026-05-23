@@ -7,6 +7,7 @@ module Tournaments
       end
 
       def call
+        bracket = @tournament.brackets.find_or_create_by!(bracket_type: :bracket, group_number: 0)
         teams = @pairs.dup
         teams << nil if teams.length.odd?
         n = teams.length
@@ -17,7 +18,8 @@ module Tournaments
             pair2 = teams[n - 1 - i]
             next if pair1.nil? || pair2.nil?
 
-            @tournament.matches.create!(
+            bracket.matches.create!(
+              tournament: @tournament,
               pair1: pair1,
               pair2: pair2,
               round_number: round + 1,
@@ -26,7 +28,6 @@ module Tournaments
             )
           end
 
-          # Circle method: keep first fixed, rotate the rest right by one
           teams = [ teams[0] ] + [ teams[-1] ] + teams[1...-1]
         end
       end

@@ -11,7 +11,7 @@ RSpec.describe Tournaments::Matches::OlympicGenerator do
   end
 
   describe "#call" do
-    before { tournament.matches.destroy_all }
+    before { tournament.brackets.destroy_all }
     context "with 4 pairs (exact power of 2)" do
       before { 4.times { make_pair } }
 
@@ -32,9 +32,8 @@ RSpec.describe Tournaments::Matches::OlympicGenerator do
 
       it "seeds higher-score pairs into earlier positions" do
         high_score_pair = make_pair(score: 100)
-        # reload pairs so scores are current
         described_class.new(tournament.reload).call
-        r1_matches = tournament.matches.where(round_number: 1).ordered
+        r1_matches = tournament.matches.bracket.where(round_number: 1).ordered
         top_match = r1_matches.first
         expect([ top_match.pair1_id, top_match.pair2_id ]).to include(high_score_pair.id)
       end
@@ -58,7 +57,7 @@ RSpec.describe Tournaments::Matches::OlympicGenerator do
         bye_matches = tournament.matches.bye
         bye_matches.each do |bye|
           parent_pos = ((bye.position.to_f) / 2).ceil
-          parent = tournament.matches.find_by(round_number: 2, position: parent_pos)
+          parent = tournament.matches.bracket.find_by(round_number: 2, position: parent_pos)
           winner_slot = bye.position.odd? ? parent.pair1_id : parent.pair2_id
           expect(winner_slot).to eq(bye.winner_id)
         end
@@ -87,7 +86,7 @@ RSpec.describe Tournaments::Matches::OlympicGenerator do
 
         it "loser bracket match has no pairs assigned yet" do
           described_class.new(tournament).call
-          lb = tournament.matches.find_by(stage: :loser_bracket, round_number: 1, position: 1)
+          lb = tournament.brackets.loser_bracket.first&.matches&.find_by(round_number: 1, position: 1)
           expect(lb.pair1_id).to be_nil
           expect(lb.pair2_id).to be_nil
         end
@@ -99,7 +98,6 @@ RSpec.describe Tournaments::Matches::OlympicGenerator do
         it "creates 2 loser bracket round-1 matches, 1 final, and 1 third-place" do
           described_class.new(tournament).call
           expect(tournament.matches.loser_bracket.where(round_number: 1).count).to eq(2)
-          # round 2: 1 final (position 1) + 1 third-place (position 2)
           expect(tournament.matches.loser_bracket.where(round_number: 2).count).to eq(2)
         end
       end

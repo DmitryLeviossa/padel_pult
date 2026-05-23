@@ -11,8 +11,6 @@ RSpec.describe Tournaments::Matches::StartBracketService do
            loser_bracket: false)
   end
 
-  # Creates 4 pairs per group with given scores, generates group matches,
-  # then records results so standings are deterministic.
   def setup_groups_with_results
     pairs = []
     2.times do |g|
@@ -23,11 +21,10 @@ RSpec.describe Tournaments::Matches::StartBracketService do
       end
     end
     tournament.reload
-    tournament.matches.destroy_all
+    tournament.brackets.destroy_all
 
     Tournaments::Matches::MixedGenerator.new(tournament).call
 
-    # Complete all group matches: pair1 always wins with a higher score
     tournament.matches.group_stage.each do |m|
       m.update!(status: :completed, pair1_score: 6, pair2_score: 3, winner_id: m.pair1_id)
     end
@@ -48,7 +45,6 @@ RSpec.describe Tournaments::Matches::StartBracketService do
       it "assigns pairs from different groups to the same bracket match" do
         described_class.new(tournament).call
         r1 = tournament.matches.bracket.where(round_number: 1)
-        # Each match should have both pair1 and pair2 (no byes expected with 4 exact pairs)
         r1.each do |m|
           expect(m.pair1_id).to be_present
           expect(m.pair2_id).to be_present
@@ -66,9 +62,8 @@ RSpec.describe Tournaments::Matches::StartBracketService do
 
     context "when group matches are not yet all complete" do
       before do
-        tournament.matches.destroy_all
+        tournament.brackets.destroy_all
         Tournaments::Matches::MixedGenerator.new(tournament).call
-        # Leave one group match pending
         tournament.matches.group_stage.first(5).each do |m|
           m.update!(status: :completed, pair1_score: 6, pair2_score: 3, winner_id: m.pair1_id)
         end
@@ -98,6 +93,7 @@ RSpec.describe Tournaments::Matches::StartBracketService do
           create(:pair, tournament: tournament, player1: lu1, player2: lu2)
         end
         tournament.reload
+        tournament.brackets.destroy_all
         Tournaments::Matches::MixedGenerator.new(tournament).call
         tournament.matches.group_stage.each do |m|
           m.update!(status: :completed, pair1_score: 6, pair2_score: 3, winner_id: m.pair1_id)
@@ -123,7 +119,6 @@ RSpec.describe Tournaments::Matches::StartBracketService do
       end
 
       before do
-        # Assign pairs to groups manually: 2 pairs per group (exact pairs_to_bracket)
         3.times do
           2.times do
             lu1 = create(:league_user, league: league)
@@ -132,6 +127,7 @@ RSpec.describe Tournaments::Matches::StartBracketService do
           end
         end
         tournament.reload
+        tournament.brackets.destroy_all
         Tournaments::Matches::MixedGenerator.new(tournament).call
         tournament.matches.group_stage.each do |m|
           m.update!(status: :completed, pair1_score: 6, pair2_score: 3, winner_id: m.pair1_id)
@@ -146,11 +142,13 @@ RSpec.describe Tournaments::Matches::StartBracketService do
           next unless match.pair1_id && match.pair2_id
 
           group1 = tournament.matches.group_stage
-                             .where("pair1_id = ? OR pair2_id = ?", match.pair1_id, match.pair1_id)
-                             .pick(:group_number)
+                             .joins(:bracket)
+                             .where("matches.pair1_id = ? OR matches.pair1_id = ?", match.pair1_id, match.pair1_id)
+                             .pick("brackets.group_number")
           group2 = tournament.matches.group_stage
-                             .where("pair1_id = ? OR pair2_id = ?", match.pair2_id, match.pair2_id)
-                             .pick(:group_number)
+                             .joins(:bracket)
+                             .where("matches.pair1_id = ? OR matches.pair1_id = ?", match.pair2_id, match.pair2_id)
+                             .pick("brackets.group_number")
           expect(group1).not_to eq(group2), "R1 match #{match.id} pairs from same group #{group1}"
         end
       end
@@ -161,8 +159,6 @@ RSpec.describe Tournaments::Matches::StartBracketService do
         n = tournament.matches.bracket.where(round_number: 1).count * 2
         r1 = tournament.matches.bracket.where(round_number: 1).order(:position)
 
-        # Build a map: pair_id → which SF half it belongs to
-        # SF1 = positions 1..n/4, SF2 = positions n/4+1..n/2
         sf1_pairs = Set.new
         sf2_pairs = Set.new
 
@@ -175,9 +171,9 @@ RSpec.describe Tournaments::Matches::StartBracketService do
         end
 
         (1..tournament.groups_count).each do |group_num|
-          group_pair_ids = tournament.matches
-                                     .where(group_number: group_num, stage: "group")
-                                     .flat_map { |m| [m.pair1_id, m.pair2_id] }.compact.uniq
+          group_bracket = tournament.brackets.group_stage.find_by!(group_number: group_num)
+          group_pair_ids = group_bracket.matches
+                                        .flat_map { |m| [m.pair1_id, m.pair2_id] }.compact.uniq
           qualified = group_pair_ids.select { |id| sf1_pairs.include?(id) || sf2_pairs.include?(id) }
           next if qualified.length < 2
 

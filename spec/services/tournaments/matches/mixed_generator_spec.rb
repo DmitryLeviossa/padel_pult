@@ -11,14 +11,14 @@ RSpec.describe Tournaments::Matches::MixedGenerator do
            loser_bracket: false)
   end
 
-  def make_pair(score: 0)
+  def make_pair(score: 0, seeded: false)
     lu1 = create(:league_user, league: league, score: score)
     lu2 = create(:league_user, league: league, score: score)
-    create(:pair, tournament: tournament, player1: lu1, player2: lu2)
+    create(:pair, tournament: tournament, player1: lu1, player2: lu2, seeded: seeded)
   end
 
   describe "#call" do
-    before { tournament.matches.destroy_all }
+    before { tournament.brackets.destroy_all }
 
     context "with 8 pairs, 2 groups, 4 to bracket" do
       before { 8.times { make_pair } }
@@ -30,13 +30,13 @@ RSpec.describe Tournaments::Matches::MixedGenerator do
 
       it "creates matches for both groups" do
         described_class.new(tournament).call
-        expect(tournament.matches.group_stage.pluck(:group_number).uniq.sort).to eq([1, 2])
+        expect(tournament.matches.group_stage.pluck("brackets.group_number").uniq.sort).to eq([1, 2])
       end
 
       it "each group plays round-robin (4 pairs = 6 matches per group)" do
         described_class.new(tournament).call
         [1, 2].each do |g|
-          expect(tournament.matches.group_stage.where(group_number: g).count).to eq(6)
+          expect(tournament.matches.group_stage.where(brackets: { group_number: g }).count).to eq(6)
         end
       end
 
@@ -73,9 +73,8 @@ RSpec.describe Tournaments::Matches::MixedGenerator do
 
     context "seeding: top pairs are placed as group seeds" do
       before do
-        # Create high-score pair and lower-score pairs
-        make_pair(score: 100)
-        make_pair(score: 90)
+        make_pair(score: 100, seeded: true)
+        make_pair(score: 90, seeded: true)
         6.times { make_pair(score: 10) }
       end
 
@@ -84,9 +83,9 @@ RSpec.describe Tournaments::Matches::MixedGenerator do
         top_two_ids = pairs.first(2).map(&:id)
         described_class.new(tournament).call
 
-        group1_pair_ids = tournament.matches.group_stage.where(group_number: 1)
+        group1_pair_ids = tournament.matches.group_stage.where(brackets: { group_number: 1 })
                                     .flat_map { |m| [m.pair1_id, m.pair2_id] }.compact.uniq
-        group2_pair_ids = tournament.matches.group_stage.where(group_number: 2)
+        group2_pair_ids = tournament.matches.group_stage.where(brackets: { group_number: 2 })
                                     .flat_map { |m| [m.pair1_id, m.pair2_id] }.compact.uniq
 
         expect(group1_pair_ids).to include(top_two_ids[0])

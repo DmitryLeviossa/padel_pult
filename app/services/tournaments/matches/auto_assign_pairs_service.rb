@@ -12,9 +12,9 @@ module Tournaments
           @tournament.matches.update_all(pair1_id: nil, pair2_id: nil, winner_id: nil, status: "pending")
 
           case @tournament.type
-          when "olympic"    then assign_olympic
+          when "olympic"     then assign_olympic
           when "round_robin" then assign_round_robin
-          when "mixed"      then assign_mixed
+          when "mixed"       then assign_mixed
           end
         end
 
@@ -81,6 +81,7 @@ module Tournaments
       end
 
       def assign_group_matches(pairs, group_number)
+        bracket = @tournament.brackets.group_stage.find_by!(group_number: group_number)
         list = pairs.dup
         list << nil if list.length.odd?
         n = list.length
@@ -91,12 +92,7 @@ module Tournaments
             pair2 = list[n - 1 - i]
             next if pair1.nil? || pair2.nil?
 
-            match = @tournament.matches.find_by(
-              stage: :group_stage,
-              group_number: group_number,
-              round_number: round_idx + 1,
-              position: i + 1
-            )
+            match = bracket.matches.find_by(round_number: round_idx + 1, position: i + 1)
             match&.update!(pair1: pair1, pair2: pair2)
           end
 

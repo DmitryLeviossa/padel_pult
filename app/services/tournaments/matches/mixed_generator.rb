@@ -8,10 +8,10 @@ module Tournaments
       def call
         seed_and_create_groups
         total_qualifying = @tournament.pairs_to_bracket * @tournament.groups_count
-        pre_create_bracket("bracket", total_qualifying)
+        pre_create_bracket(:bracket, total_qualifying)
         if @tournament.loser_bracket?
           non_qualifying = @tournament.pairs.count - total_qualifying
-          pre_create_bracket("loser_bracket", non_qualifying) if non_qualifying >= 2
+          pre_create_bracket(:loser_bracket, non_qualifying) if non_qualifying >= 2
         end
       end
 
@@ -36,6 +36,7 @@ module Tournaments
       end
 
       def generate_group_matches(pairs, group_number)
+        bracket = @tournament.brackets.find_or_create_by!(bracket_type: :group_stage, group_number: group_number)
         list = pairs.dup
         list << nil if list.length.odd?
         n = list.length
@@ -46,47 +47,43 @@ module Tournaments
             pair2 = list[n - 1 - i]
             next if pair1.nil? || pair2.nil?
 
-            @tournament.matches.create!(
+            bracket.matches.create!(
+              tournament: @tournament,
               pair1: pair1,
               pair2: pair2,
               round_number: round_idx + 1,
               position: i + 1,
-              status: :pending,
-              stage: :group_stage,
-              group_number: group_number
+              status: :pending
             )
           end
 
-          # Circle method rotation: fix first, rotate rest
           list = [list[0]] + [list[n - 1]] + list[1..n - 2]
         end
       end
 
-      def pre_create_bracket(stage, size)
+      def pre_create_bracket(bracket_type, size)
         n = next_power_of_two(size)
         total_rounds = Math.log2(n).to_i
+        bracket = @tournament.brackets.find_or_create_by!(bracket_type: bracket_type, group_number: 0)
 
         (1..total_rounds).each do |round|
           (n / (2**round)).times do |i|
-            @tournament.matches.create!(
+            bracket.matches.create!(
+              tournament: @tournament,
               round_number: round,
               position: i + 1,
-              status: :pending,
-              stage: stage,
-              group_number: 0
+              status: :pending
             )
           end
         end
 
         return unless total_rounds > 1
 
-        # 3rd place match
-        @tournament.matches.create!(
+        bracket.matches.create!(
+          tournament: @tournament,
           round_number: total_rounds,
           position: 2,
-          status: :pending,
-          stage: stage,
-          group_number: 0
+          status: :pending
         )
       end
 

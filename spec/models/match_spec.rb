@@ -3,15 +3,14 @@
 # Table name: matches
 #
 #  id            :bigint           not null, primary key
-#  group_number  :integer          default(0), not null
 #  pair1_score   :integer
 #  pair2_score   :integer
 #  position      :integer          not null
 #  round_number  :integer          not null
-#  stage         :string           default("bracket"), not null
 #  status        :string           default("pending"), not null
 #  created_at    :datetime         not null
 #  updated_at    :datetime         not null
+#  bracket_id    :bigint           not null
 #  pair1_id      :bigint
 #  pair2_id      :bigint
 #  tournament_id :bigint           not null
@@ -19,14 +18,16 @@
 #
 # Indexes
 #
+#  index_matches_on_bracket_id     (bracket_id)
 #  index_matches_on_pair1_id       (pair1_id)
 #  index_matches_on_pair2_id       (pair2_id)
 #  index_matches_on_tournament_id  (tournament_id)
 #  index_matches_on_winner_id      (winner_id)
-#  index_matches_uniqueness        (tournament_id,stage,group_number,round_number,position) UNIQUE
+#  index_matches_uniqueness        (bracket_id,round_number,position) UNIQUE
 #
 # Foreign Keys
 #
+#  fk_rails_...  (bracket_id => brackets.id)
 #  fk_rails_...  (pair1_id => pairs.id)
 #  fk_rails_...  (pair2_id => pairs.id)
 #  fk_rails_...  (tournament_id => tournaments.id)

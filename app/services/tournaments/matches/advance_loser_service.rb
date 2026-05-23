@@ -8,7 +8,7 @@ module Tournaments
       def call
         return unless @match.winner_id.present?
 
-        bracket_matches = @match.tournament.matches.where(stage: @match.stage, group_number: 0)
+        bracket_matches = @match.bracket.matches
         total_rounds = bracket_matches.maximum(:round_number)
         return unless @match.round_number == total_rounds - 1
 

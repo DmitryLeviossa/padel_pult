@@ -14,20 +14,18 @@ module Tournaments
         loser_id = @match.pair1_id == @match.winner_id ? @match.pair2_id : @match.pair1_id
         return unless loser_id.present?
 
-        real_round1_positions = @match.tournament.matches
-          .where(stage: :bracket, round_number: 1)
-          .where.not(status: :bye)
-          .order(:position)
-          .pluck(:position)
+        main_bracket = @match.tournament.brackets.bracket.first
+        real_round1_positions = main_bracket&.matches
+                                            &.where(round_number: 1)
+                                            &.where.not(status: :bye)
+                                            &.order(:position)
+                                            &.pluck(:position) || []
 
         idx = real_round1_positions.index(@match.position)
         return unless idx
 
-        lb_match = @match.tournament.matches.find_by(
-          stage: :loser_bracket,
-          round_number: 1,
-          position: idx / 2 + 1
-        )
+        lb = @match.tournament.brackets.loser_bracket.first
+        lb_match = lb&.matches&.find_by(round_number: 1, position: idx / 2 + 1)
         return unless lb_match
 
         if idx.even?

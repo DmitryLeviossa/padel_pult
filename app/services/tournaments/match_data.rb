@@ -7,7 +7,8 @@ module Tournaments
     def initialize(tournament)
       @tournament = tournament
       @matches = tournament.matches.ordered
-                           .includes(:match_sets,
+                           .includes(:bracket,
+                                     :match_sets,
                                      pair1: [ { player1: :user }, { player2: :user } ],
                                      pair2: [ { player1: :user }, { player2: :user } ])
       prepare

@@ -11,7 +11,7 @@ RSpec.describe Tournaments::Matches::RoundRobinGenerator do
   end
 
   describe "#call" do
-    before { tournament.matches.destroy_all }
+    before { tournament.brackets.destroy_all }
 
     context "with 4 pairs (even)" do
       before { 4.times { make_pair } }

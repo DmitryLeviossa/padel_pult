@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2026_05_23_135811) do
+ActiveRecord::Schema[8.0].define(version: 2026_05_23_184554) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -40,6 +40,16 @@ ActiveRecord::Schema[8.0].define(version: 2026_05_23_135811) do
     t.bigint "blob_id", null: false
     t.string "variation_digest", null: false
     t.index ["blob_id", "variation_digest"], name: "index_active_storage_variant_records_uniqueness", unique: true
+  end
+
+  create_table "brackets", force: :cascade do |t|
+    t.bigint "tournament_id", null: false
+    t.string "bracket_type", null: false
+    t.integer "group_number", default: 0, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["tournament_id", "bracket_type", "group_number"], name: "index_brackets_uniqueness", unique: true
+    t.index ["tournament_id"], name: "index_brackets_on_tournament_id"
   end
 
   create_table "league_invitations", force: :cascade do |t|
@@ -99,11 +109,11 @@ ActiveRecord::Schema[8.0].define(version: 2026_05_23_135811) do
     t.string "status", default: "pending", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.string "stage", default: "bracket", null: false
-    t.integer "group_number", default: 0, null: false
+    t.bigint "bracket_id", null: false
+    t.index ["bracket_id", "round_number", "position"], name: "index_matches_uniqueness", unique: true
+    t.index ["bracket_id"], name: "index_matches_on_bracket_id"
     t.index ["pair1_id"], name: "index_matches_on_pair1_id"
     t.index ["pair2_id"], name: "index_matches_on_pair2_id"
-    t.index ["tournament_id", "stage", "group_number", "round_number", "position"], name: "index_matches_uniqueness", unique: true
     t.index ["tournament_id"], name: "index_matches_on_tournament_id"
     t.index ["winner_id"], name: "index_matches_on_winner_id"
   end
@@ -183,6 +193,7 @@ ActiveRecord::Schema[8.0].define(version: 2026_05_23_135811) do
 
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
+  add_foreign_key "brackets", "tournaments"
   add_foreign_key "league_invitations", "leagues"
   add_foreign_key "league_invitations", "users", column: "invited_by_id"
   add_foreign_key "league_invitations", "users", column: "invited_user_id"
@@ -190,6 +201,7 @@ ActiveRecord::Schema[8.0].define(version: 2026_05_23_135811) do
   add_foreign_key "league_users", "users"
   add_foreign_key "leagues", "users", column: "owner_id"
   add_foreign_key "match_sets", "matches"
+  add_foreign_key "matches", "brackets"
   add_foreign_key "matches", "pairs", column: "pair1_id"
   add_foreign_key "matches", "pairs", column: "pair2_id"
   add_foreign_key "matches", "pairs", column: "winner_id"
