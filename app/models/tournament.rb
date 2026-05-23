@@ -102,8 +102,6 @@ class Tournament < ApplicationRecord
 
     if pairs_to_bracket < groups_count
       errors.add(:pairs_to_bracket, "должно быть не меньше количества групп (#{groups_count})")
-    elsif pairs_to_bracket % groups_count != 0
-      errors.add(:pairs_to_bracket, "должно быть кратно количеству групп (#{groups_count})")
     end
   end
 

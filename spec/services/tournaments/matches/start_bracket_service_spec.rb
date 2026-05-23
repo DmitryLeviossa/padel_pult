@@ -79,6 +79,37 @@ RSpec.describe Tournaments::Matches::StartBracketService do
       end
     end
 
+    context "with unequal group sizes (13 pairs, 4 groups, 8 to bracket)" do
+      let(:tournament) do
+        create(:tournament, :active,
+               type: :mixed,
+               league: league,
+               groups_count: 4,
+               pairs_to_bracket: 8,
+               loser_bracket: false)
+      end
+
+      before do
+        13.times do
+          lu1 = create(:league_user, league: league)
+          lu2 = create(:league_user, league: league)
+          create(:pair, tournament: tournament, player1: lu1, player2: lu2)
+        end
+        tournament.reload
+        Tournaments::Matches::MixedGenerator.new(tournament).call
+        tournament.matches.group_stage.each do |m|
+          m.update!(status: :completed, pair1_score: 6, pair2_score: 3, winner_id: m.pair1_id)
+        end
+      end
+
+      it "fills bracket with exactly pairs_to_bracket pairs" do
+        described_class.new(tournament).call
+        seeded = tournament.matches.bracket.where(round_number: 1)
+                           .flat_map { |m| [m.pair1_id, m.pair2_id] }.compact
+        expect(seeded.uniq.count).to eq(8)
+      end
+    end
+
     context "with loser bracket enabled" do
       let(:tournament) do
         create(:tournament, :active,

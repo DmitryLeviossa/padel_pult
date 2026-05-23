@@ -21,16 +21,18 @@ module Tournaments
       end
 
       def determine_pairs
-        pairs_per_group = @tournament.pairs_to_bracket / @tournament.groups_count
-        raise "pairs_to_bracket (#{@tournament.pairs_to_bracket}) must be >= groups_count (#{@tournament.groups_count})" if pairs_per_group < 1
+        base = @tournament.pairs_to_bracket / @tournament.groups_count
+        extra = @tournament.pairs_to_bracket % @tournament.groups_count
+        raise "pairs_to_bracket (#{@tournament.pairs_to_bracket}) must be >= groups_count (#{@tournament.groups_count})" if base < 1
 
         qualified_by_group = []
         consolation_by_group = []
 
         (1..@tournament.groups_count).each do |group_num|
+          qualifying_slots = base + (group_num <= extra ? 1 : 0)
           standings = group_standings(group_num)
-          qualified_by_group << standings.first(pairs_per_group)
-          consolation_by_group << standings.drop(pairs_per_group)
+          qualified_by_group << standings.first(qualifying_slots)
+          consolation_by_group << standings.drop(qualifying_slots)
         end
 
         [interleave_seeds(qualified_by_group), consolation_by_group.flatten.shuffle]
