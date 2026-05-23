@@ -110,6 +110,83 @@ RSpec.describe Tournaments::Matches::StartBracketService do
       end
     end
 
+    context "with 3 groups × 2 advancing (6 pairs in 8-slot bracket)" do
+      let(:tournament) do
+        create(:tournament, :active,
+               type: :mixed,
+               league: league,
+               groups_count: 3,
+               pairs_to_bracket: 2,
+               loser_bracket: false)
+      end
+
+      before do
+        # Assign pairs to groups manually: 2 pairs per group (exact pairs_to_bracket)
+        3.times do
+          2.times do
+            lu1 = create(:league_user, league: league)
+            lu2 = create(:league_user, league: league)
+            create(:pair, tournament: tournament, player1: lu1, player2: lu2)
+          end
+        end
+        tournament.reload
+        Tournaments::Matches::MixedGenerator.new(tournament).call
+        tournament.matches.group_stage.each do |m|
+          m.update!(status: :completed, pair1_score: 6, pair2_score: 3, winner_id: m.pair1_id)
+        end
+      end
+
+      it "never places same-group pairs against each other in round 1" do
+        described_class.new(tournament).call
+
+        r1 = tournament.matches.bracket.where(round_number: 1, status: :pending)
+        r1.each do |match|
+          next unless match.pair1_id && match.pair2_id
+
+          group1 = tournament.matches.group_stage
+                             .where("pair1_id = ? OR pair2_id = ?", match.pair1_id, match.pair1_id)
+                             .pick(:group_number)
+          group2 = tournament.matches.group_stage
+                             .where("pair1_id = ? OR pair2_id = ?", match.pair2_id, match.pair2_id)
+                             .pick(:group_number)
+          expect(group1).not_to eq(group2), "R1 match #{match.id} pairs from same group #{group1}"
+        end
+      end
+
+      it "places same-group pairs in opposite bracket halves so they can meet in the final" do
+        described_class.new(tournament).call
+
+        n = tournament.matches.bracket.where(round_number: 1).count * 2
+        r1 = tournament.matches.bracket.where(round_number: 1).order(:position)
+
+        # Build a map: pair_id → which SF half it belongs to
+        # SF1 = positions 1..n/4, SF2 = positions n/4+1..n/2
+        sf1_pairs = Set.new
+        sf2_pairs = Set.new
+
+        r1.each do |match|
+          half = match.position <= n / 4 ? :sf1 : :sf2
+          sf1_pairs << match.pair1_id if match.pair1_id && half == :sf1
+          sf1_pairs << match.pair2_id if match.pair2_id && half == :sf1
+          sf2_pairs << match.pair1_id if match.pair1_id && half == :sf2
+          sf2_pairs << match.pair2_id if match.pair2_id && half == :sf2
+        end
+
+        (1..tournament.groups_count).each do |group_num|
+          group_pair_ids = tournament.matches
+                                     .where(group_number: group_num, stage: "group")
+                                     .flat_map { |m| [m.pair1_id, m.pair2_id] }.compact.uniq
+          qualified = group_pair_ids.select { |id| sf1_pairs.include?(id) || sf2_pairs.include?(id) }
+          next if qualified.length < 2
+
+          in_sf1 = qualified.count { |id| sf1_pairs.include?(id) }
+          in_sf2 = qualified.count { |id| sf2_pairs.include?(id) }
+          expect(in_sf1).to eq(1), "Group #{group_num}: expected 1 pair in SF1 half, got #{in_sf1}"
+          expect(in_sf2).to eq(1), "Group #{group_num}: expected 1 pair in SF2 half, got #{in_sf2}"
+        end
+      end
+    end
+
     context "with loser bracket enabled" do
       let(:tournament) do
         create(:tournament, :active,
