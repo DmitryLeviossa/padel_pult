@@ -2,6 +2,7 @@
   - next if match.bye?
   - next if match.pair1.nil? || match.pair2.nil?
   - next if match.has_downstream_results?
+  - next if tournament.completed?
   .modal.fade id="match-modal-#{match.id}" tabindex="-1"
     .modal-dialog.modal-lg
       .modal-content

@@ -1,6 +1,7 @@
 class MatchesController < ApplicationController
   before_action :set_match
   before_action :authorize_tournament_owner!, except: :result_card
+  before_action :ensure_tournament_not_completed!, except: :result_card
 
   def update
     if @match.has_downstream_results?
@@ -98,6 +99,12 @@ class MatchesController < ApplicationController
 
   def set_match
     @match = Match.includes(:tournament).find(params[:id])
+  end
+
+  def ensure_tournament_not_completed!
+    if @match.tournament.completed?
+      redirect_to tournament_path(@match.tournament), alert: "Нельзя изменить результат: турнир завершён."
+    end
   end
 
   def authorize_tournament_owner!
