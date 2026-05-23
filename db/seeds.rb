@@ -166,7 +166,6 @@ t_active_olympic_loser = Tournament.create!(
   location:          "Спортивный комплекс «Олимпийский»",
   type:              "olympic",
   status:            "active",
-  sets_per_match:    3,
   loser_bracket:     true,
   description:       "Олимпийский турнир с утешительной сеткой, идёт первый раунд",
   placement_points:  standard_points

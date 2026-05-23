@@ -31,8 +31,6 @@
         dd.col-sm-9= { "olympic" => "Олимпийский", "round_robin" => "Круговой", "mixed" => "Смешанный" }.fetch(@tournament.type, @tournament.type)
 
         - if @tournament.olympic?
-          dt.col-sm-3 Сетов в матче
-          dd.col-sm-9= @tournament.sets_per_match
           dt.col-sm-3 Сетка проигравших
           dd.col-sm-9
             - if @tournament.loser_bracket?

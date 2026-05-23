@@ -51,10 +51,7 @@
                       span.badge class="bg-#{badge_class}"
                         = { "draft" => "Черновик", "registration" => "Регистрация", "active" => "Активный", "completed" => "Завершён", "cancelled" => "Отменён" }.fetch(tournament.status, tournament.status)
                       small.text-muted= "#{tournament.pairs.size * 2}/#{tournament.max_participants}"
-                  - if tournament.olympic?
-                    .d-flex.align-items-center.gap-3
-                      small.text-muted= "Сетов в матче: #{tournament.sets_per_match}"
-                  - elsif tournament.mixed?
+                  - if tournament.mixed?
                     .d-flex.align-items-center.gap-3
                       small.text-muted= "Количество групп: #{tournament.groups_count}"
                       small.text-muted= "Пар в основную сетку: #{tournament.pairs_to_bracket}"

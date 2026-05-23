@@ -9,28 +9,40 @@
           h5.modal-title= match.completed? ? "Изменить результат" : "Результат матча"
           button.btn-close type="button" data-bs-dismiss="modal"
         = form_with url: tournament_match_path(match.tournament, match), method: :patch, scope: :match do |f|
-          .modal-body
-            - if tournament.sets_per_match > 1
-              - tournament.sets_per_match.times do |i|
-                - existing_set = match.match_sets.find { |s| s.set_number == i + 1 }
-                - set_record = existing_set || MatchSet.new(set_number: i + 1)
-                = f.fields_for :match_sets_attributes, set_record, index: i do |sf|
-                  = sf.hidden_field :set_number
-                  p.fw-semibold.mb-1= "Сет #{i + 1}"
-                  .row.g-2.mb-3
-                    .col
-                      label.form-label.small= match.pair_display_name(match.pair1)
-                      = sf.number_field :pair1_score, class: "form-control", min: 0, required: true, placeholder: "0", value: existing_set&.pair1_score
-                    .col
-                      label.form-label.small= match.pair_display_name(match.pair2)
-                      = sf.number_field :pair2_score, class: "form-control", min: 0, required: true, placeholder: "0", value: existing_set&.pair2_score
-            - else
-              .mb-3
-                label.form-label.fw-semibold= match.pair_display_name(match.pair1)
-                = f.number_field :pair1_score, class: "form-control", min: 0, required: true, placeholder: "0", value: match.pair1_score
-              .mb-3
-                label.form-label.fw-semibold= match.pair_display_name(match.pair2)
-                = f.number_field :pair2_score, class: "form-control", min: 0, required: true, placeholder: "0", value: match.pair2_score
+          .modal-body data-controller="match-sets"
+            div data-match-sets-target="list"
+              - sets = match.match_sets.any? ? match.match_sets : [MatchSet.new(set_number: 1)]
+              - sets.each_with_index do |set_record, i|
+                .set-row
+                  = f.fields_for :match_sets_attributes, set_record, index: i do |sf|
+                    = sf.hidden_field :set_number
+                    .d-flex.align-items-center.justify-content-between.mb-1
+                      p.fw-semibold.mb-0= "Сет #{i + 1}"
+                      button.btn.btn-outline-danger.btn-sm type="button" data-action="match-sets#removeSet" ×
+                    .row.g-2.mb-3
+                      .col
+                        label.form-label.small= match.pair_display_name(match.pair1)
+                        = sf.number_field :pair1_score, class: "form-control", min: 0, required: true, placeholder: "0"
+                      .col
+                        label.form-label.small= match.pair_display_name(match.pair2)
+                        = sf.number_field :pair2_score, class: "form-control", min: 0, required: true, placeholder: "0"
+
+            template data-match-sets-target="template"
+              .set-row
+                input type="hidden" name="match[match_sets_attributes][__INDEX__][set_number]" value="__SET_NUM__"
+                .d-flex.align-items-center.justify-content-between.mb-1
+                  p.fw-semibold.mb-0 __SET_LABEL__
+                  button.btn.btn-outline-danger.btn-sm type="button" data-action="match-sets#removeSet" ×
+                .row.g-2.mb-3
+                  .col
+                    label.form-label.small= match.pair_display_name(match.pair1)
+                    input.form-control type="number" name="match[match_sets_attributes][__INDEX__][pair1_score]" min="0" required="" placeholder="0"
+                  .col
+                    label.form-label.small= match.pair_display_name(match.pair2)
+                    input.form-control type="number" name="match[match_sets_attributes][__INDEX__][pair2_score]" min="0" required="" placeholder="0"
+
+            button.btn.btn-outline-secondary.btn-sm.mt-2 type="button" data-action="match-sets#addSet"
+              | + Добавить сет
 
           .modal-footer
             button.btn.btn-secondary type="button" data-bs-dismiss="modal" Отмена

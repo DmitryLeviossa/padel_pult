@@ -368,7 +368,7 @@ class TournamentsController < ApplicationController
   def tournament_params
     base = params.require(:tournament).permit(
       :name, :start_date, :end_date, :max_participants, :location, :type, :description,
-      :groups_count, :pairs_to_bracket, :loser_bracket, :sets_per_match
+      :groups_count, :pairs_to_bracket, :loser_bracket
     )
 
     raw_pp = params.dig(:tournament, :placement_points)

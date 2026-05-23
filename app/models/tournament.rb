@@ -12,7 +12,6 @@
 #  name             :string           not null
 #  pairs_to_bracket :integer
 #  placement_points :jsonb            not null
-#  sets_per_match   :integer          default(1), not null
 #  start_date       :datetime         not null
 #  status           :string           default("draft"), not null
 #  type             :string           default("olympic"), not null
@@ -42,8 +41,6 @@ class Tournament < ApplicationRecord
   validates :end_date, presence: true
   validates :groups_count, numericality: { only_integer: true, greater_than: 0 }, allow_nil: true
   validates :pairs_to_bracket, numericality: { only_integer: true, greater_than: 0 }, allow_nil: true
-  validates :sets_per_match, numericality: { only_integer: true, greater_than: 0 }
-  before_validation :reset_sets_per_match, unless: :olympic?
   validate :end_date_not_before_start_date
   validate :placement_points_valid
   validate :mixed_config_present, if: :mixed?
@@ -100,10 +97,6 @@ class Tournament < ApplicationRecord
 
   def structure_params_changed?
     saved_changes.keys.any? { |k| %w[max_participants type groups_count pairs_to_bracket loser_bracket].include?(k) }
-  end
-
-  def reset_sets_per_match
-    self.sets_per_match = 1
   end
 
   def mixed_config_present

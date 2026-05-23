@@ -54,13 +54,7 @@
 
   .col-12(data-tournament-type-target="olympicConfig" class=("d-none" unless tournament.olympic?))
     hr
-    h5.mb-3 Настройки матча
     .row.g-3
-      .col-md-4
-        = f.label :sets_per_match, class: "form-label"
-        = f.number_field :sets_per_match, class: "form-control #{"is-invalid" if tournament.errors[:sets_per_match].any?}", min: 1
-        - if tournament.errors[:sets_per_match].any?
-          .invalid-feedback= tournament.errors[:sets_per_match].first
       .col-md-4.d-flex.align-items-end
         .form-check.mb-2
           = f.check_box :loser_bracket, class: "form-check-input"

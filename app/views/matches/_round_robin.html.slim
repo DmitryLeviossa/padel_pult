@@ -42,7 +42,13 @@
               = match.pair_display_name(match.pair1)
           td.text-center
             - if match.completed?
-              strong= "#{match.pair1_score} : #{match.pair2_score}"
+              - rr_sets = match.match_sets
+              - if rr_sets.any?
+                .d-flex.justify-content-center.gap-1.flex-wrap
+                  - rr_sets.each do |set|
+                    span.badge.bg-secondary= "#{set.pair1_score}:#{set.pair2_score}"
+              - else
+                strong= "#{match.pair1_score} : #{match.pair2_score}"
             - else
               span.text-muted —
           td

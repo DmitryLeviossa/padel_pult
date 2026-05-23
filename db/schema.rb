@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2026_05_20_180150) do
+ActiveRecord::Schema[8.0].define(version: 2026_05_23_135811) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -161,7 +161,6 @@ ActiveRecord::Schema[8.0].define(version: 2026_05_20_180150) do
     t.integer "groups_count"
     t.integer "pairs_to_bracket"
     t.boolean "loser_bracket", default: false, null: false
-    t.integer "sets_per_match", default: 1, null: false
     t.index ["league_id"], name: "index_tournaments_on_league_id"
   end
 

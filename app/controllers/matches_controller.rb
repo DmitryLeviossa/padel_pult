@@ -9,7 +9,7 @@ class MatchesController < ApplicationController
     end
 
     was_completed = @match.completed?
-    @match.match_sets.destroy_all if @match.tournament.sets_per_match > 1 && was_completed
+    @match.match_sets.destroy_all if was_completed
 
     attrs, winner_id = build_match_attrs
     if @match.update(attrs.merge(status: :completed, winner_id: winner_id))
@@ -84,23 +84,16 @@ class MatchesController < ApplicationController
   end
 
   def build_match_attrs
-    if @match.tournament.sets_per_match > 1
-      sets = match_params[:match_sets_attributes]&.values || []
-      pair1_sets = sets.count { |s| s[:pair1_score].to_i > s[:pair2_score].to_i }
-      pair2_sets = sets.count { |s| s[:pair2_score].to_i > s[:pair1_score].to_i }
-      winner_id = pair1_sets >= pair2_sets ? @match.pair1_id : @match.pair2_id
-      attrs = match_params.merge(pair1_score: pair1_sets, pair2_score: pair2_sets)
-      [ attrs, winner_id ]
-    else
-      scores = match_params
-      winner_id = scores[:pair1_score].to_i >= scores[:pair2_score].to_i ? @match.pair1_id : @match.pair2_id
-      [ scores, winner_id ]
-    end
+    sets = match_params[:match_sets_attributes]&.values || []
+    pair1_sets = sets.count { |s| s[:pair1_score].to_i > s[:pair2_score].to_i }
+    pair2_sets = sets.count { |s| s[:pair2_score].to_i > s[:pair1_score].to_i }
+    winner_id = pair1_sets >= pair2_sets ? @match.pair1_id : @match.pair2_id
+    attrs = match_params.merge(pair1_score: pair1_sets, pair2_score: pair2_sets)
+    [ attrs, winner_id ]
   end
 
   def match_params
     params.require(:match).permit(
-      :pair1_score, :pair2_score,
       match_sets_attributes: [ :set_number, :pair1_score, :pair2_score ]
     )
   end

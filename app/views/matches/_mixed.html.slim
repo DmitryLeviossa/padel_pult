@@ -60,8 +60,14 @@ css:
                     - match = gd[:match_for][pair.id][opp.id]
                     - if score
                       - win = score[0] > score[1]
+                      - cell_sets = match&.match_sets || []
                       td.score-cell.text-center class=(win ? "score-win" : "score-loss")
-                        = "#{score[0]}/#{score[1]}"
+                        - if cell_sets.any?
+                          - cell_is_pair2 = match && match.pair2_id == pair.id
+                          - cell_sets.each do |set|
+                            span.d-block= cell_is_pair2 ? "#{set.pair2_score}:#{set.pair1_score}" : "#{set.pair1_score}:#{set.pair2_score}"
+                        - else
+                          = "#{score[0]}/#{score[1]}"
                         - if match
                           = link_to result_card_tournament_match_path(tournament, match), target: "_blank", class: "d-block text-secondary mt-1" do
                             i.bi.bi-image style="font-size:0.75rem;"
@@ -107,7 +113,8 @@ css:
               = form_with url: assign_pairs_tournament_match_path(tournament, match), method: :patch, id: "pairs-form-#{match.id}", data: {turbo: false} do
                 / empty
             .bracket-match
-              - [[match.pair1, match.pair1_score, match.pair1_id, :pair1_id], [match.pair2, match.pair2_score, match.pair2_id, :pair2_id]].each do |pair, score, pair_id, field_name|
+              - sets = match.match_sets
+              - [[match.pair1, match.pair1_score, match.pair1_id, :pair1_id, 0], [match.pair2, match.pair2_score, match.pair2_id, :pair2_id, 1]].each do |pair, score, pair_id, field_name, slot_idx|
                 - is_winner = match.winner_id.present? && match.winner_id == pair_id
                 - is_loser  = match.winner_id.present? && pair_id.present? && match.winner_id != pair_id
                 - css_class = pair.nil? ? "empty-slot" : (is_winner ? "winner" : (is_loser ? "loser" : ""))
@@ -119,7 +126,11 @@ css:
                         option value=id selected=(pair_id == id) = label
                   - else
                     span.bracket-name= pair ? match.pair_display_name(pair) : "…"
-                  - if score.present?
+                  - if sets.any?
+                    .d-flex.gap-1
+                      - sets.each do |set|
+                        span.bracket-score= slot_idx == 0 ? set.pair1_score : set.pair2_score
+                  - elsif score.present?
                     span.bracket-score= score
             - if can_enter_result
               - btn_label = match.completed? ? "Изменить результат" : "Ввести результат"
@@ -138,7 +149,8 @@ css:
           = form_with url: assign_pairs_tournament_match_path(tournament, third_place_match), method: :patch, id: "pairs-form-#{third_place_match.id}", data: {turbo: false} do
             / empty
         .bracket-match
-          - [[third_place_match.pair1, third_place_match.pair1_score, third_place_match.pair1_id, :pair1_id], [third_place_match.pair2, third_place_match.pair2_score, third_place_match.pair2_id, :pair2_id]].each do |pair, score, pair_id, field_name|
+          - tp_sets = third_place_match.match_sets
+          - [[third_place_match.pair1, third_place_match.pair1_score, third_place_match.pair1_id, :pair1_id, 0], [third_place_match.pair2, third_place_match.pair2_score, third_place_match.pair2_id, :pair2_id, 1]].each do |pair, score, pair_id, field_name, slot_idx|
             - is_winner = third_place_match.winner_id.present? && third_place_match.winner_id == pair_id
             - is_loser  = third_place_match.winner_id.present? && pair_id.present? && third_place_match.winner_id != pair_id
             - css_class = pair.nil? ? "empty-slot" : (is_winner ? "winner" : (is_loser ? "loser" : ""))
@@ -150,7 +162,11 @@ css:
                     option value=id selected=(pair_id == id) = label
               - else
                 span.bracket-name= pair ? third_place_match.pair_display_name(pair) : "…"
-              - if score.present?
+              - if tp_sets.any?
+                .d-flex.gap-1
+                  - tp_sets.each do |set|
+                    span.bracket-score= slot_idx == 0 ? set.pair1_score : set.pair2_score
+              - elsif score.present?
                 span.bracket-score= score
         - if is_owner && !third_place_match.bye? && third_place_match.pair1.present? && third_place_match.pair2.present? && !third_place_match.has_downstream_results?
           - tp_btn_label = third_place_match.completed? ? "Изменить результат" : "Ввести результат"
@@ -180,7 +196,8 @@ css:
               = form_with url: assign_pairs_tournament_match_path(tournament, match), method: :patch, id: "pairs-form-#{match.id}", data: {turbo: false} do
                 / empty
             .bracket-match
-              - [[match.pair1, match.pair1_score, match.pair1_id, :pair1_id], [match.pair2, match.pair2_score, match.pair2_id, :pair2_id]].each do |pair, score, pair_id, field_name|
+              - sets = match.match_sets
+              - [[match.pair1, match.pair1_score, match.pair1_id, :pair1_id, 0], [match.pair2, match.pair2_score, match.pair2_id, :pair2_id, 1]].each do |pair, score, pair_id, field_name, slot_idx|
                 - is_winner = match.winner_id.present? && match.winner_id == pair_id
                 - is_loser  = match.winner_id.present? && pair_id.present? && match.winner_id != pair_id
                 - css_class = pair.nil? ? "empty-slot" : (is_winner ? "winner" : (is_loser ? "loser" : ""))
@@ -192,7 +209,11 @@ css:
                         option value=id selected=(pair_id == id) = label
                   - else
                     span.bracket-name= pair ? match.pair_display_name(pair) : "…"
-                  - if score.present?
+                  - if sets.any?
+                    .d-flex.gap-1
+                      - sets.each do |set|
+                        span.bracket-score= slot_idx == 0 ? set.pair1_score : set.pair2_score
+                  - elsif score.present?
                     span.bracket-score= score
             - if can_enter_result
               - btn_label = match.completed? ? "Изменить результат" : "Ввести результат"
@@ -211,7 +232,8 @@ css:
           = form_with url: assign_pairs_tournament_match_path(tournament, loser_third_place_match), method: :patch, id: "pairs-form-#{loser_third_place_match.id}", data: {turbo: false} do
             / empty
         .bracket-match
-          - [[loser_third_place_match.pair1, loser_third_place_match.pair1_score, loser_third_place_match.pair1_id, :pair1_id], [loser_third_place_match.pair2, loser_third_place_match.pair2_score, loser_third_place_match.pair2_id, :pair2_id]].each do |pair, score, pair_id, field_name|
+          - ltp_sets = loser_third_place_match.match_sets
+          - [[loser_third_place_match.pair1, loser_third_place_match.pair1_score, loser_third_place_match.pair1_id, :pair1_id, 0], [loser_third_place_match.pair2, loser_third_place_match.pair2_score, loser_third_place_match.pair2_id, :pair2_id, 1]].each do |pair, score, pair_id, field_name, slot_idx|
             - is_winner = loser_third_place_match.winner_id.present? && loser_third_place_match.winner_id == pair_id
             - is_loser  = loser_third_place_match.winner_id.present? && pair_id.present? && loser_third_place_match.winner_id != pair_id
             - css_class = pair.nil? ? "empty-slot" : (is_winner ? "winner" : (is_loser ? "loser" : ""))
@@ -223,7 +245,11 @@ css:
                     option value=id selected=(pair_id == id) = label
               - else
                 span.bracket-name= pair ? loser_third_place_match.pair_display_name(pair) : "…"
-              - if score.present?
+              - if ltp_sets.any?
+                .d-flex.gap-1
+                  - ltp_sets.each do |set|
+                    span.bracket-score= slot_idx == 0 ? set.pair1_score : set.pair2_score
+              - elsif score.present?
                 span.bracket-score= score
         - if is_owner && !loser_third_place_match.bye? && loser_third_place_match.pair1.present? && loser_third_place_match.pair2.present? && !loser_third_place_match.has_downstream_results?
           - ltp_btn_label = loser_third_place_match.completed? ? "Изменить результат" : "Ввести результат"
