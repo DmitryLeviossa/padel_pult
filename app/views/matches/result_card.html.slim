@@ -4,157 +4,252 @@ html lang="ru"
     meta charset="utf-8"
     meta name="viewport" content="width=device-width,initial-scale=1"
     title= "Результат — #{@match.tournament.name}"
-    link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
-    link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css"
     css:
+      *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
       body {
-        background: #0d0d1a;
+        background: #060c1a;
         color: #fff;
         font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
         min-height: 100vh;
         display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 20px;
+      }
+      .result-card {
+        width: 960px;
+        max-width: 100%;
+        min-height: 420px;
+        background: #0c1326;
+        border-radius: 20px;
+        overflow: hidden;
+        display: grid;
+        grid-template-columns: 270px 1fr 270px;
+        position: relative;
+        box-shadow: 0 24px 80px rgba(0,0,0,0.7);
+      }
+      .result-card::before {
+        content: '';
+        position: absolute;
+        inset: 0;
+        background: repeating-linear-gradient(
+          -55deg,
+          transparent,
+          transparent 18px,
+          rgba(255,255,255,0.012) 18px,
+          rgba(255,255,255,0.012) 19px
+        );
+        pointer-events: none;
+        z-index: 0;
+      }
+
+      /* ── Side panels ── */
+      .team-panel {
+        position: relative;
+        z-index: 1;
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-end;
+        overflow: hidden;
+      }
+      .team-panel-left  { background: linear-gradient(140deg, #0d2244 0%, #0c1326 100%); border-right: 1px solid rgba(255,255,255,0.07); }
+      .team-panel-right { background: linear-gradient(220deg, #0d2244 0%, #0c1326 100%); border-left:  1px solid rgba(255,255,255,0.07); }
+
+      .photo-area {
+        position: absolute;
+        top: 0; left: 0; right: 0;
+        bottom: 100px;
+        display: flex;
+        align-items: flex-end;
+        justify-content: center;
+        overflow: hidden;
+      }
+      .photo-area img.pair-photo {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        object-position: top center;
+      }
+      .photo-area .players-row {
+        display: flex;
+        gap: 8px;
+        width: 100%;
+        height: 100%;
+        padding: 20px 16px 0;
+        align-items: flex-end;
+      }
+      .player-thumb {
+        flex: 1;
+        min-height: 0;
+        height: 170px;
+        border-radius: 10px;
+        object-fit: cover;
+        object-position: top;
+      }
+      .player-initials-box {
+        flex: 1;
+        height: 170px;
+        border-radius: 10px;
+        background: rgba(255,255,255,0.07);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 26px;
+        font-weight: 700;
+        color: rgba(255,255,255,0.35);
+      }
+
+      /* Bottom gradient fading photo into info */
+      .team-panel::after {
+        content: '';
+        position: absolute;
+        bottom: 0; left: 0; right: 0;
+        height: 180px;
+        background: linear-gradient(to top, #0c1326 45%, transparent 100%);
+        z-index: 2;
+        pointer-events: none;
+      }
+      .team-info {
+        position: relative;
+        z-index: 3;
+        padding: 0 20px 24px;
+      }
+      .team-panel-right .team-info { text-align: right; }
+
+      .team-names {
+        font-size: 1.3rem;
+        font-weight: 900;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+        line-height: 1.25;
+        color: #fff;
+        margin-bottom: 4px;
+      }
+      .team-label {
+        font-size: 0.68rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.15em;
+        color: rgba(255,255,255,0.3);
+      }
+      .team-panel.winner .team-names { color: #4dd991; }
+      .team-panel.loser  .team-names { color: rgba(255,255,255,0.3); }
+      .team-panel.loser .photo-area  { opacity: 0.45; }
+
+      /* ── Center panel ── */
+      .center-panel {
+        position: relative;
+        z-index: 1;
+        display: flex;
         flex-direction: column;
         align-items: center;
         justify-content: center;
-        padding: 24px 16px;
+        padding: 28px 20px 32px;
+        background: #101929;
       }
-      .card-wrap {
-        background: #1a1a2e;
-        border: 1px solid rgba(255,255,255,0.08);
-        border-radius: 20px;
-        padding: 40px 32px;
-        max-width: 900px;
-        width: 100%;
-        box-shadow: 0 8px 48px rgba(0,0,0,0.5);
-      }
-      .tournament-title {
-        font-size: 1.1rem;
-        font-weight: 600;
-        letter-spacing: 0.05em;
+
+      .tournament-name {
+        font-size: 1.15rem;
+        font-weight: 900;
         text-transform: uppercase;
-        color: rgba(255,255,255,0.5);
+        letter-spacing: 0.1em;
+        color: #fff;
+        text-align: center;
+        line-height: 1.15;
         margin-bottom: 4px;
       }
       .round-label {
-        font-size: 0.85rem;
-        color: rgba(255,255,255,0.3);
-        margin-bottom: 32px;
-      }
-      .match-layout {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        gap: 24px;
-      }
-      .pair-side {
-        flex: 1;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        gap: 16px;
-        min-width: 0;
-      }
-      .pair-photo {
-        width: 180px;
-        height: 180px;
-        border-radius: 16px;
-        object-fit: cover;
-        border: 3px solid rgba(255,255,255,0.1);
-      }
-      .pair-photo-placeholder {
-        width: 180px;
-        height: 180px;
-        border-radius: 16px;
-        background: rgba(255,255,255,0.06);
-        border: 3px solid rgba(255,255,255,0.1);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        gap: 8px;
-        flex-wrap: wrap;
-        padding: 12px;
-      }
-      .player-avatar {
-        width: 72px;
-        height: 72px;
-        border-radius: 50%;
-        object-fit: cover;
-        border: 2px solid rgba(255,255,255,0.15);
-      }
-      .player-avatar-initials {
-        width: 72px;
-        height: 72px;
-        border-radius: 50%;
-        background: rgba(255,255,255,0.1);
-        border: 2px solid rgba(255,255,255,0.15);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 20px;
-        font-weight: 700;
-        color: rgba(255,255,255,0.6);
-      }
-      .pair-name {
-        font-size: 1rem;
+        font-size: 0.68rem;
         font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.15em;
+        color: rgba(255,255,255,0.3);
         text-align: center;
-        line-height: 1.5;
+        margin-bottom: 22px;
+      }
+
+      .match-heading {
+        font-size: 1.55rem;
+        font-weight: 900;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        text-align: center;
+        color: #fff;
+        margin-bottom: 6px;
+      }
+      .teal-bar {
+        width: 65%;
+        height: 2px;
+        background: linear-gradient(90deg, transparent, #26c6da 30%, #26c6da 70%, transparent);
+        margin: 0 auto 20px;
+      }
+
+      /* Per-set score blocks */
+      .set-block {
+        width: 100%;
+        text-align: center;
+        margin-bottom: 14px;
+      }
+      .set-block + .set-block {
+        border-top: 1px solid rgba(255,255,255,0.07);
+        padding-top: 14px;
+      }
+      .set-name {
+        font-size: 0.63rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.18em;
+        color: #26c6da;
+        margin-bottom: 4px;
+      }
+      .set-score {
+        font-size: 3.6rem;
+        font-weight: 900;
+        letter-spacing: -3px;
+        line-height: 1;
         color: #fff;
       }
-      .winner-badge {
-        font-size: 0.7rem;
-        font-weight: 700;
-        letter-spacing: 0.08em;
-        text-transform: uppercase;
-        color: #4dd991;
-        background: rgba(25,135,84,0.15);
-        border: 1px solid rgba(25,135,84,0.3);
-        border-radius: 20px;
-        padding: 3px 10px;
-      }
-      .score-center {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        gap: 8px;
-        flex-shrink: 0;
-      }
-      .score-main {
-        font-size: 4.5rem;
-        font-weight: 800;
-        line-height: 1;
-        letter-spacing: -2px;
-      }
-      .score-sep {
-        color: rgba(255,255,255,0.25);
+      .set-score .dash {
+        font-size: 2.2rem;
+        letter-spacing: 0;
+        color: rgba(255,255,255,0.2);
         margin: 0 6px;
       }
-      .score-sets {
-        display: flex;
-        gap: 6px;
+      .w1 { color: #4dd991; }
+      .w2 { color: #4dd991; }
+
+      /* Fallback: overall score when no sets */
+      .overall-score {
+        font-size: 4.5rem;
+        font-weight: 900;
+        letter-spacing: -4px;
+        line-height: 1;
+        color: #fff;
+        text-align: center;
       }
-      .score-set-chip {
-        font-size: 0.8rem;
-        font-weight: 600;
-        color: rgba(255,255,255,0.5);
-        background: rgba(255,255,255,0.06);
-        border-radius: 8px;
-        padding: 2px 8px;
+      .overall-score .dash {
+        font-size: 2.8rem;
+        letter-spacing: 0;
+        color: rgba(255,255,255,0.2);
+        margin: 0 10px;
       }
-      .winner-side .pair-photo,
-      .winner-side .pair-photo-placeholder {
-        border-color: rgba(25,135,84,0.5);
-        box-shadow: 0 0 24px rgba(25,135,84,0.2);
+
+      .league-logo {
+        max-width: 120px;
+        max-height: 80px;
+        width: auto;
+        height: auto;
+        object-fit: contain;
+        margin-bottom: 10px;
+        filter: drop-shadow(0 2px 8px rgba(0,0,0,0.5));
       }
-      .winner-side .pair-name { color: #4dd991; }
-      .loser-side .pair-photo,
-      .loser-side .pair-photo-placeholder { opacity: 0.5; }
-      .loser-side .pair-name { color: rgba(255,255,255,0.4); }
-      @media (max-width: 600px) {
-        .match-layout { flex-direction: column; gap: 16px; }
-        .pair-photo, .pair-photo-placeholder { width: 120px; height: 120px; }
-        .score-main { font-size: 3rem; }
-        .player-avatar, .player-avatar-initials { width: 50px; height: 50px; font-size: 14px; }
+      @media (max-width: 700px) {
+        .result-card { grid-template-columns: 1fr; min-height: unset; }
+        .center-panel { order: -1; border-bottom: 1px solid rgba(255,255,255,0.07); }
+        .team-panel { min-height: 220px; }
+        .photo-area { bottom: 80px; }
+        .team-panel::after { height: 120px; }
+        .set-score { font-size: 2.5rem; }
       }
   body
     - tournament = @match.tournament
@@ -162,80 +257,93 @@ html lang="ru"
     - pair2 = @pair2
     - winner_id = @match.winner_id
     - p1_wins = winner_id.present? && winner_id == @match.pair1_id
-    - p1_loses = winner_id.present? && winner_id != @match.pair1_id
     - p2_wins = winner_id.present? && winner_id == @match.pair2_id
-    - p2_loses = winner_id.present? && winner_id != @match.pair2_id
+    - p1_loses = winner_id.present? && !p1_wins
+    - p2_loses = winner_id.present? && !p2_wins
     - total_bracket_rounds = tournament.matches.where(stage: :bracket).maximum(:round_number).to_i
     - round_num = @match.round_number.to_i
     - if @match.group_stage?
       - round_label = "Групповой этап"
     - elsif @match.loser_bracket?
-      - round_label = "Утешительная сетка — Раунд #{round_num}"
+      - round_label = "Утешительная сетка · Раунд #{round_num}"
     - elsif round_num == total_bracket_rounds
       - round_label = "Финал"
     - elsif round_num == total_bracket_rounds - 1 && total_bracket_rounds > 2
       - round_label = "Полуфинал"
     - else
       - round_label = "Раунд #{round_num}"
+    - set_name_map = %w[ПЕРВЫЙ ВТОРОЙ ТРЕТИЙ ЧЕТВЁРТЫЙ ПЯТЫЙ]
 
-    .card-wrap
-      .text-center
-        .tournament-title= tournament.name
-        .round-label= round_label
-
-      .match-layout
-        .pair-side class=(p1_wins ? "winner-side" : (p1_loses ? "loser-side" : ""))
+    .result-card
+      / ── Left: Team 1 ──
+      .team-panel.team-panel-left class=((p1_wins ? "winner" : (p1_loses ? "loser" : "")))
+        .photo-area
           - if pair1.nil?
-            .pair-photo-placeholder
-              i.bi.bi-people style="font-size:40px;opacity:0.3;"
+            .players-row
+              .player-initials-box ?
+              .player-initials-box ?
           - elsif pair1.photo.attached?
-            = image_tag pair1.photo.variant(resize_to_fill: [360, 360]), class: "pair-photo", alt: @match.pair_display_name(pair1)
+            = image_tag pair1.photo.variant(resize_to_fill: [540, 400]), class: "pair-photo", alt: ""
           - else
-            .pair-photo-placeholder
+            .players-row
               - [pair1.player1, pair1.player2].each do |player|
                 - user = player.user
-                - initials = user.full_name.split.map(&:first).first(2).join.upcase
                 - if user.photo.attached?
-                  = image_tag user.photo.variant(resize_to_fill: [144, 144]), class: "player-avatar", alt: user.full_name
+                  = image_tag user.photo.variant(resize_to_fill: [200, 340]), class: "player-thumb", alt: ""
                 - else
-                  .player-avatar-initials= initials
+                  .player-initials-box= user.full_name.split.map(&:first).first(2).join.upcase
+        .team-info
           - if pair1
-            .pair-name
-              = pair1.player1.full_name
+            .team-names
+              = pair1.player1.full_name.split.last
               br
-              = pair1.player2.full_name
-          - if p1_wins
-            span.winner-badge Победитель
+              = pair1.player2.full_name.split.last
 
-        .score-center
-          .score-main
-            span(class=(p1_wins ? "text-success" : ""))= @match.pair1_score.to_i
-            span.score-sep = " : "
-            span(class=(p2_wins ? "text-success" : ""))= @match.pair2_score.to_i
-          - if @match_sets.any?
-            .score-sets
-              - @match_sets.each do |set|
-                span.score-set-chip= "#{set.pair1_score}:#{set.pair2_score}"
+      / ── Center ──
+      .center-panel
+        - league = tournament.league
+        - if league.logo.attached?
+          = image_tag league.logo.variant(resize_to_limit: [120, 80]), class: "league-logo", alt: league.name
+        .tournament-name= tournament.name
+        .round-label= round_label
+        .match-heading Итоги матча
+        .teal-bar
+        - if @match_sets.any?
+          - @match_sets.each_with_index do |set, i|
+            - s1_wins = set.pair1_score.to_i > set.pair2_score.to_i
+            - s2_wins = set.pair2_score.to_i > set.pair1_score.to_i
+            .set-block
+              .set-name= "#{set_name_map[i] || "Сет #{i+1}"} сет"
+              .set-score
+                span(class=(s1_wins ? "w1" : ""))= set.pair1_score.to_i
+                span.dash —
+                span(class=(s2_wins ? "w2" : ""))= set.pair2_score.to_i
+        - else
+          .overall-score
+            span(class=(p1_wins ? "w1" : ""))= @match.pair1_score.to_i
+            span.dash —
+            span(class=(p2_wins ? "w2" : ""))= @match.pair2_score.to_i
 
-        .pair-side class=(p2_wins ? "winner-side" : (p2_loses ? "loser-side" : ""))
+      / ── Right: Team 2 ──
+      .team-panel.team-panel-right class=((p2_wins ? "winner" : (p2_loses ? "loser" : "")))
+        .photo-area
           - if pair2.nil?
-            .pair-photo-placeholder
-              i.bi.bi-people style="font-size:40px;opacity:0.3;"
+            .players-row
+              .player-initials-box ?
+              .player-initials-box ?
           - elsif pair2.photo.attached?
-            = image_tag pair2.photo.variant(resize_to_fill: [360, 360]), class: "pair-photo", alt: @match.pair_display_name(pair2)
+            = image_tag pair2.photo.variant(resize_to_fill: [540, 400]), class: "pair-photo", alt: ""
           - else
-            .pair-photo-placeholder
+            .players-row
               - [pair2.player1, pair2.player2].each do |player|
                 - user = player.user
-                - initials = user.full_name.split.map(&:first).first(2).join.upcase
                 - if user.photo.attached?
-                  = image_tag user.photo.variant(resize_to_fill: [144, 144]), class: "player-avatar", alt: user.full_name
+                  = image_tag user.photo.variant(resize_to_fill: [200, 340]), class: "player-thumb", alt: ""
                 - else
-                  .player-avatar-initials= initials
+                  .player-initials-box= user.full_name.split.map(&:first).first(2).join.upcase
+        .team-info
           - if pair2
-            .pair-name
-              = pair2.player1.full_name
+            .team-names
+              = pair2.player1.full_name.split.last
               br
-              = pair2.player2.full_name
-          - if p2_wins
-            span.winner-badge Победитель
+              = pair2.player2.full_name.split.last
