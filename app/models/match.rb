@@ -58,8 +58,9 @@ class Match < ApplicationRecord
     )
     return true if parent&.winner_id.present?
 
-    # For round 1 bracket matches: also check if loser entered loser bracket with a result
-    if bracket? && round_number == 1 && tournament.loser_bracket?
+    # For round 1 bracket matches in Olympic format: losers feed LB R1, so check if that result exists.
+    # Mixed tournaments seed LB independently from group stage, so no link exists.
+    if bracket? && round_number == 1 && tournament.loser_bracket? && tournament.olympic?
       real_positions = tournament.matches
         .where(stage: :bracket, round_number: 1)
         .order(:position)
