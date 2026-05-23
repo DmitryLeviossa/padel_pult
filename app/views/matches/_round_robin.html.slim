@@ -13,7 +13,7 @@
 / Pair assignment forms rendered outside table (HTML5 form attribute association)
 - if is_owner
   - matches.select { |m| m.pending? }.each do |match|
-    = form_with url: assign_pairs_tournament_match_path(tournament, match), method: :patch, id: "pairs-form-#{match.id}", data: {turbo: false, scroll_to_top: true} do
+    = form_with url: assign_pairs_tournament_match_path(tournament, match), method: :patch, id: "pairs-form-#{match.id}", data: {turbo: false} do
       / empty
 
 - rounds = matches.group_by(&:round_number).sort_by { |r, _| r }

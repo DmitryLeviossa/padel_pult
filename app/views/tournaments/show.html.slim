@@ -173,5 +173,14 @@
     - elsif @tournament.mixed?
       = render "matches/mixed", group_data: @group_data, bracket_rounds: @bracket_rounds, third_place_match: @third_place_match, loser_bracket_rounds: @loser_bracket_rounds, loser_third_place_match: @loser_third_place_match, tournament: @tournament, is_owner: is_owner, any_completed: any_completed
 
+  - if @custom_bracket_data.any?
+    - any_completed ||= false
+    - @custom_bracket_data.each do |data|
+      = render "brackets/custom_bracket", bracket: data[:bracket], bracket_rounds: data[:rounds], third_place_match: data[:third_place], tournament: @tournament, is_owner: is_owner
+
+  - if is_owner && !@tournament.completed?
+    .mt-4
+      = link_to "Добавить сетку", new_tournament_bracket_path(@tournament), class: "btn btn-outline-primary btn-sm"
+
   - if is_owner
     = render "matches/result_modal", matches: @matches, tournament: @tournament

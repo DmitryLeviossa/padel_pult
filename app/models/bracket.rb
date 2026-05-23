@@ -5,6 +5,8 @@
 #  id            :bigint           not null, primary key
 #  bracket_type  :string           not null
 #  group_number  :integer          default(0), not null
+#  name          :string
+#  pairs_count   :integer
 #  created_at    :datetime         not null
 #  updated_at    :datetime         not null
 #  tournament_id :bigint           not null
@@ -23,4 +25,13 @@ class Bracket < ApplicationRecord
   has_many :matches, dependent: :destroy
 
   enum :bracket_type, { group_stage: "group", bracket: "bracket", loser_bracket: "loser_bracket" }
+
+  validates :name, presence: true, if: :manual?
+  validates :pairs_count, presence: true,
+                          numericality: { only_integer: true, greater_than_or_equal_to: 2, less_than_or_equal_to: 64 },
+                          if: :manual?
+
+  def manual?
+    bracket? && group_number > 0
+  end
 end

@@ -36,6 +36,13 @@ class TournamentsController < ApplicationController
       prepare_mixed_data
     end
 
+    manual_brackets = @tournament.brackets.where(bracket_type: :bracket).where("group_number > 0").order(:group_number)
+    @custom_bracket_data = manual_brackets.map do |bracket|
+      bracket_matches = @matches.select { |m| m.bracket_id == bracket.id }
+      rounds, third_place = extract_bracket_rounds(bracket_matches)
+      { bracket: bracket, rounds: rounds, third_place: third_place }
+    end
+
     default_sort = @tournament.completed? ? "placement" : "score"
     default_dir  = @tournament.completed? ? "asc" : "desc"
     @sort = params[:sort].presence_in(%w[score player1 player2 player1_score player2_score created_at placement]) || default_sort

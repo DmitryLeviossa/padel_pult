@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2026_05_23_184554) do
+ActiveRecord::Schema[8.0].define(version: 2026_05_23_184555) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -48,6 +48,8 @@ ActiveRecord::Schema[8.0].define(version: 2026_05_23_184554) do
     t.integer "group_number", default: 0, null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.string "name"
+    t.integer "pairs_count"
     t.index ["tournament_id", "bracket_type", "group_number"], name: "index_brackets_uniqueness", unique: true
     t.index ["tournament_id"], name: "index_brackets_on_tournament_id"
   end

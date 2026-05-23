@@ -108,6 +108,10 @@ function fallbackCopy(text, done) {
 document.addEventListener("submit", (e) => {
   if (e.target.dataset.scrollToTop) {
     sessionStorage.setItem("scroll_to_top", "1")
+  } else if (e.target.dataset.turbo === "false") {
+    sessionStorage.setItem("scroll_restore_x", window.scrollX)
+    sessionStorage.setItem("scroll_restore_y", window.scrollY)
+    sessionStorage.setItem("scroll_restore_from", location.pathname)
   }
 })
 

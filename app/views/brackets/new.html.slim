@@ -1,0 +1,26 @@
+.container.py-4
+  .row.justify-content-center
+    .col-md-6
+      .d-flex.align-items-center.gap-2.mb-4
+        = link_to "←", tournament_path(@tournament), class: "btn btn-outline-secondary btn-sm"
+        h1.mb-0 Новая сетка
+
+      = form_with model: @bracket, url: tournament_brackets_path(@tournament), method: :post do |f|
+        - if @bracket.errors.any?
+          .alert.alert-danger
+            ul.mb-0
+              - @bracket.errors.full_messages.each do |msg|
+                li= msg
+
+        .mb-3
+          = f.label :name, "Название сетки", class: "form-label"
+          = f.text_field :name, class: "form-control", placeholder: "например, Основная сетка"
+
+        .mb-3
+          = f.label :pairs_count, "Количество пар", class: "form-label"
+          = f.number_field :pairs_count, class: "form-control", min: 2, max: 64, placeholder: "2–64"
+          .form-text Размер сетки будет округлён до ближайшей степени двойки.
+
+        .d-flex.gap-2
+          = f.submit "Создать сетку", class: "btn btn-primary"
+          = link_to "Отмена", tournament_path(@tournament), class: "btn btn-outline-secondary"

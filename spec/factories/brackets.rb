@@ -5,6 +5,8 @@
 #  id            :bigint           not null, primary key
 #  bracket_type  :string           not null
 #  group_number  :integer          default(0), not null
+#  name          :string
+#  pairs_count   :integer
 #  created_at    :datetime         not null
 #  updated_at    :datetime         not null
 #  tournament_id :bigint           not null

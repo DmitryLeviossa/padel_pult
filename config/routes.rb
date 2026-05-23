@@ -31,6 +31,7 @@ Rails.application.routes.draw do
   end
 
   resources :tournaments do
+    resources :brackets, only: [ :new, :create ]
     resources :pairs, only: [ :create, :destroy, :update ]
     resources :matches, only: [ :update ] do
       member do
