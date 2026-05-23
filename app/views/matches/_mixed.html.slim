@@ -1,3 +1,5 @@
+- pairs_options = tournament.pairs.map { |p| [p.player1.full_name + " / " + p.player2.full_name, p.id] }
+
 css:
   .bracket-round { display: flex; flex-direction: column; min-width: 240px; padding: 0 16px; position: relative; }
   .bracket-round:not(:last-child)::after { content: ''; position: absolute; right: 0; top: 5%; height: 90%; border-right: 2px dashed var(--bs-border-color); }
@@ -14,6 +16,7 @@ css:
   .bracket-team.winner .bracket-score { color: var(--bs-success); }
   .bracket-team.loser  .bracket-score { color: var(--bs-secondary-color); }
   .bracket-enter-btn { font-size: 11px; padding: 2px 8px; margin-top: 5px; align-self: flex-end; }
+  .bracket-pair-select { flex: 1; font-size: 11px; padding: 2px 4px; border: 1px solid var(--bs-border-color); background: var(--bs-body-bg); color: var(--bs-body-color); border-radius: 4px; min-width: 0; }
   .tournament-bracket { display: flex; align-items: stretch; overflow-x: auto; padding-bottom: 8px; justify-content: center; }
   .group-cross-table td.diagonal { background-color: var(--bs-secondary-bg); }
   .group-cross-table td.score-cell { font-size: 13px; font-weight: 600; white-space: nowrap; }
@@ -24,6 +27,9 @@ css:
 / ── Group stage ────────────────────────────────────────────────────────────
 .d-flex.justify-content-between.align-items-center.mt-4.mb-3
   h4.mb-0 Групповой этап
+  - if is_owner && !tournament.completed?
+    - unless any_completed
+      = button_to "Расставить пары автоматически", auto_assign_pairs_tournament_path(tournament), method: :post, class: "btn btn-outline-secondary btn-sm"
 
 - group_data.each do |gd|
   h5.mt-3.mb-2= "Группа #{gd[:group_number]}"
@@ -58,6 +64,10 @@ css:
                   td.text-center
                     button.btn.btn-outline-secondary.btn-sm.enter-score-btn data-bs-toggle="modal" data-bs-target="#match-modal-#{match.id}"
                       | —
+                - elsif match && is_owner && match.completed? && !match.has_downstream_results?
+                  td.score-cell.text-center
+                    button.btn.btn-link.btn-sm.p-0.enter-score-btn data-bs-toggle="modal" data-bs-target="#match-modal-#{match.id}"
+                      = "#{score&.first || '?'}/#{score&.last || '?'}"
                 - else
                   td.text-center.text-muted —
             td.text-center= stat[:wins]
@@ -71,8 +81,10 @@ css:
   .d-flex.justify-content-between.align-items-center.mt-5.mb-3
     h4.mb-0 Сетка
     - if is_owner && !tournament.completed?
-      - all_done = tournament.all_matches_completed?
-      = link_to "Завершить турнир", fill_results_tournament_path(tournament), class: "btn btn-success btn-sm#{' disabled' unless all_done}", aria: { disabled: (true unless all_done) }, tabindex: (all_done ? nil : "-1")
+      .d-flex.gap-2
+        - if tournament.active?
+          - all_done = tournament.all_matches_completed?
+          = link_to "Завершить турнир", fill_results_tournament_path(tournament), class: "btn btn-success btn-sm#{' disabled' unless all_done}", aria: { disabled: (true unless all_done) }, tabindex: (all_done ? nil : "-1")
 
   - total_rounds = bracket_rounds.length
   .tournament-bracket
@@ -84,35 +96,58 @@ css:
         - slot_height = 116 * (2 ** idx)
         - round_matches.each do |match|
           .bracket-match-wrapper style="min-height: #{slot_height}px;"
+            - can_edit_pairs = is_owner && !match.completed? && !match.bye?
+            - can_enter_result = is_owner && !match.bye? && match.pair1.present? && match.pair2.present? && !match.has_downstream_results?
+            - if can_edit_pairs
+              = form_with url: assign_pairs_tournament_match_path(tournament, match), method: :patch, id: "pairs-form-#{match.id}", data: {turbo: false} do
+                / empty
             .bracket-match
-              - [[match.pair1, match.pair1_score, match.pair1_id], [match.pair2, match.pair2_score, match.pair2_id]].each do |pair, score, pair_id|
+              - [[match.pair1, match.pair1_score, match.pair1_id, :pair1_id], [match.pair2, match.pair2_score, match.pair2_id, :pair2_id]].each do |pair, score, pair_id, field_name|
                 - is_winner = match.winner_id.present? && match.winner_id == pair_id
                 - is_loser  = match.winner_id.present? && pair_id.present? && match.winner_id != pair_id
                 - css_class = pair.nil? ? "empty-slot" : (is_winner ? "winner" : (is_loser ? "loser" : ""))
                 .bracket-team class=css_class
-                  span.bracket-name= pair ? match.pair_display_name(pair) : "…"
+                  - if can_edit_pairs
+                    select.bracket-pair-select form="pairs-form-#{match.id}" name="match[#{field_name}]" onchange="document.getElementById('pairs-form-#{match.id}').requestSubmit()"
+                      option value="" selected=(pair_id.nil?) — …
+                      - pairs_options.each do |label, id|
+                        option value=id selected=(pair_id == id) = label
+                  - else
+                    span.bracket-name= pair ? match.pair_display_name(pair) : "…"
                   - if score.present?
                     span.bracket-score= score
-            - if is_owner && match.pending? && match.pair1.present? && match.pair2.present?
+            - if can_enter_result
+              - btn_label = match.completed? ? "Изменить результат" : "Ввести результат"
               button.btn.btn-outline-primary.btn-sm.bracket-enter-btn data-bs-toggle="modal" data-bs-target="#match-modal-#{match.id}"
-                | Ввести результат
+                = btn_label
 
   - if third_place_match
     .mt-4.d-flex.flex-column.align-items-center
       .bracket-round-header.mb-2 Матч за 3-е место
       .d-flex.flex-column style="min-width: 240px; max-width: 360px;"
+        - can_edit_tp = is_owner && !third_place_match.completed? && !third_place_match.bye?
+        - if can_edit_tp
+          = form_with url: assign_pairs_tournament_match_path(tournament, third_place_match), method: :patch, id: "pairs-form-#{third_place_match.id}", data: {turbo: false} do
+            / empty
         .bracket-match
-          - [[third_place_match.pair1, third_place_match.pair1_score, third_place_match.pair1_id], [third_place_match.pair2, third_place_match.pair2_score, third_place_match.pair2_id]].each do |pair, score, pair_id|
+          - [[third_place_match.pair1, third_place_match.pair1_score, third_place_match.pair1_id, :pair1_id], [third_place_match.pair2, third_place_match.pair2_score, third_place_match.pair2_id, :pair2_id]].each do |pair, score, pair_id, field_name|
             - is_winner = third_place_match.winner_id.present? && third_place_match.winner_id == pair_id
             - is_loser  = third_place_match.winner_id.present? && pair_id.present? && third_place_match.winner_id != pair_id
             - css_class = pair.nil? ? "empty-slot" : (is_winner ? "winner" : (is_loser ? "loser" : ""))
             .bracket-team class=css_class
-              span.bracket-name= pair ? third_place_match.pair_display_name(pair) : "…"
+              - if can_edit_tp
+                select.bracket-pair-select form="pairs-form-#{third_place_match.id}" name="match[#{field_name}]" onchange="document.getElementById('pairs-form-#{third_place_match.id}').requestSubmit()"
+                  option value="" selected=(pair_id.nil?) — …
+                  - pairs_options.each do |label, id|
+                    option value=id selected=(pair_id == id) = label
+              - else
+                span.bracket-name= pair ? third_place_match.pair_display_name(pair) : "…"
               - if score.present?
                 span.bracket-score= score
-        - if is_owner && third_place_match.pending? && third_place_match.pair1.present? && third_place_match.pair2.present?
+        - if is_owner && !third_place_match.bye? && third_place_match.pair1.present? && third_place_match.pair2.present? && !third_place_match.has_downstream_results?
+          - tp_btn_label = third_place_match.completed? ? "Изменить результат" : "Ввести результат"
           button.btn.btn-outline-primary.btn-sm.bracket-enter-btn.mt-1 data-bs-toggle="modal" data-bs-target="#match-modal-#{third_place_match.id}"
-            | Ввести результат
+            = tp_btn_label
 
 / ── Consolation bracket ─────────────────────────────────────────────────────
 - if loser_bracket_rounds&.any?
@@ -128,32 +163,55 @@ css:
         - slot_height = 116 * (2 ** idx)
         - round_matches.each do |match|
           .bracket-match-wrapper style="min-height: #{slot_height}px;"
+            - can_edit_pairs = is_owner && !match.completed? && !match.bye?
+            - can_enter_result = is_owner && !match.bye? && match.pair1.present? && match.pair2.present? && !match.has_downstream_results?
+            - if can_edit_pairs
+              = form_with url: assign_pairs_tournament_match_path(tournament, match), method: :patch, id: "pairs-form-#{match.id}", data: {turbo: false} do
+                / empty
             .bracket-match
-              - [[match.pair1, match.pair1_score, match.pair1_id], [match.pair2, match.pair2_score, match.pair2_id]].each do |pair, score, pair_id|
+              - [[match.pair1, match.pair1_score, match.pair1_id, :pair1_id], [match.pair2, match.pair2_score, match.pair2_id, :pair2_id]].each do |pair, score, pair_id, field_name|
                 - is_winner = match.winner_id.present? && match.winner_id == pair_id
                 - is_loser  = match.winner_id.present? && pair_id.present? && match.winner_id != pair_id
                 - css_class = pair.nil? ? "empty-slot" : (is_winner ? "winner" : (is_loser ? "loser" : ""))
                 .bracket-team class=css_class
-                  span.bracket-name= pair ? match.pair_display_name(pair) : "…"
+                  - if can_edit_pairs
+                    select.bracket-pair-select form="pairs-form-#{match.id}" name="match[#{field_name}]" onchange="document.getElementById('pairs-form-#{match.id}').requestSubmit()"
+                      option value="" selected=(pair_id.nil?) — …
+                      - pairs_options.each do |label, id|
+                        option value=id selected=(pair_id == id) = label
+                  - else
+                    span.bracket-name= pair ? match.pair_display_name(pair) : "…"
                   - if score.present?
                     span.bracket-score= score
-            - if is_owner && match.pending? && match.pair1.present? && match.pair2.present?
+            - if can_enter_result
+              - btn_label = match.completed? ? "Изменить результат" : "Ввести результат"
               button.btn.btn-outline-primary.btn-sm.bracket-enter-btn data-bs-toggle="modal" data-bs-target="#match-modal-#{match.id}"
-                | Ввести результат
+                = btn_label
 
   - if loser_third_place_match
     .mt-4.d-flex.flex-column.align-items-center
       .bracket-round-header.mb-2 Матч за 3-е место
       .d-flex.flex-column style="min-width: 240px; max-width: 360px;"
+        - can_edit_ltp = is_owner && !loser_third_place_match.completed? && !loser_third_place_match.bye?
+        - if can_edit_ltp
+          = form_with url: assign_pairs_tournament_match_path(tournament, loser_third_place_match), method: :patch, id: "pairs-form-#{loser_third_place_match.id}", data: {turbo: false} do
+            / empty
         .bracket-match
-          - [[loser_third_place_match.pair1, loser_third_place_match.pair1_score, loser_third_place_match.pair1_id], [loser_third_place_match.pair2, loser_third_place_match.pair2_score, loser_third_place_match.pair2_id]].each do |pair, score, pair_id|
+          - [[loser_third_place_match.pair1, loser_third_place_match.pair1_score, loser_third_place_match.pair1_id, :pair1_id], [loser_third_place_match.pair2, loser_third_place_match.pair2_score, loser_third_place_match.pair2_id, :pair2_id]].each do |pair, score, pair_id, field_name|
             - is_winner = loser_third_place_match.winner_id.present? && loser_third_place_match.winner_id == pair_id
             - is_loser  = loser_third_place_match.winner_id.present? && pair_id.present? && loser_third_place_match.winner_id != pair_id
             - css_class = pair.nil? ? "empty-slot" : (is_winner ? "winner" : (is_loser ? "loser" : ""))
             .bracket-team class=css_class
-              span.bracket-name= pair ? loser_third_place_match.pair_display_name(pair) : "…"
+              - if can_edit_ltp
+                select.bracket-pair-select form="pairs-form-#{loser_third_place_match.id}" name="match[#{field_name}]" onchange="document.getElementById('pairs-form-#{loser_third_place_match.id}').requestSubmit()"
+                  option value="" selected=(pair_id.nil?) — …
+                  - pairs_options.each do |label, id|
+                    option value=id selected=(pair_id == id) = label
+              - else
+                span.bracket-name= pair ? loser_third_place_match.pair_display_name(pair) : "…"
               - if score.present?
                 span.bracket-score= score
-        - if is_owner && loser_third_place_match.pending? && loser_third_place_match.pair1.present? && loser_third_place_match.pair2.present?
+        - if is_owner && !loser_third_place_match.bye? && loser_third_place_match.pair1.present? && loser_third_place_match.pair2.present? && !loser_third_place_match.has_downstream_results?
+          - ltp_btn_label = loser_third_place_match.completed? ? "Изменить результат" : "Ввести результат"
           button.btn.btn-outline-primary.btn-sm.bracket-enter-btn.mt-1 data-bs-toggle="modal" data-bs-target="#match-modal-#{loser_third_place_match.id}"
-            | Ввести результат
+            = ltp_btn_label

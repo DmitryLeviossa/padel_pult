@@ -46,6 +46,46 @@ class Match < ApplicationRecord
 
   scope :ordered, -> { order(:stage, :group_number, :round_number, :position) }
 
+  def has_downstream_results?
+    return false if group_stage?
+    return false if tournament.round_robin?
+
+    parent = tournament.matches.find_by(
+      stage: stage,
+      group_number: group_number,
+      round_number: round_number + 1,
+      position: ((position.to_f) / 2).ceil
+    )
+    return true if parent&.winner_id.present?
+
+    # For round 1 bracket matches: also check if loser entered loser bracket with a result
+    if bracket? && round_number == 1 && tournament.loser_bracket?
+      real_positions = tournament.matches
+        .where(stage: :bracket, round_number: 1)
+        .order(:position)
+        .pluck(:position)
+      idx = real_positions.index(position)
+      if idx
+        lb_match = tournament.matches.find_by(
+          stage: :loser_bracket, round_number: 1, position: idx / 2 + 1
+        )
+        return true if lb_match&.winner_id.present?
+      end
+    end
+
+    # For semifinal matches: check if loser went to 3rd place match with a result
+    bracket_matches = tournament.matches.where(stage: stage, group_number: group_number)
+    total_rounds = bracket_matches.maximum(:round_number)
+    if total_rounds && round_number == total_rounds - 1
+      third_place = tournament.matches.find_by(
+        stage: stage, group_number: 0, round_number: total_rounds, position: 2
+      )
+      return true if third_place&.winner_id.present?
+    end
+
+    false
+  end
+
   def pair_display_name(pair)
     return "Свободен" if pair.nil?
     "#{pair.player1.full_name} / #{pair.player2.full_name}"

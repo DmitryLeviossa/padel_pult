@@ -51,6 +51,8 @@ class Tournament < ApplicationRecord
   validate :league_quota_available, on: :create
 
   after_create :decrement_league_quota
+  after_create :generate_match_structure
+  after_update :regenerate_match_structure, if: :structure_params_changed?
 
   def all_matches_completed?
     matches.any? && !matches.pending.exists?
@@ -86,6 +88,18 @@ class Tournament < ApplicationRecord
 
   def decrement_league_quota
     league.decrement!(:tournaments_quota) if league.tournaments_quota&.positive?
+  end
+
+  def generate_match_structure
+    Tournaments::Matches::StructureGenerator.new(self).call
+  end
+
+  def regenerate_match_structure
+    Tournaments::Matches::StructureGenerator.new(self).call
+  end
+
+  def structure_params_changed?
+    saved_changes.keys.any? { |k| %w[max_participants type groups_count pairs_to_bracket loser_bracket].include?(k) }
   end
 
   def reset_sets_per_match

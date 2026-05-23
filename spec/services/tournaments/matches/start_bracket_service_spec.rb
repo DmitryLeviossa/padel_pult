@@ -23,6 +23,7 @@ RSpec.describe Tournaments::Matches::StartBracketService do
       end
     end
     tournament.reload
+    tournament.matches.destroy_all
 
     Tournaments::Matches::MixedGenerator.new(tournament).call
 
@@ -65,6 +66,7 @@ RSpec.describe Tournaments::Matches::StartBracketService do
 
     context "when group matches are not yet all complete" do
       before do
+        tournament.matches.destroy_all
         Tournaments::Matches::MixedGenerator.new(tournament).call
         # Leave one group match pending
         tournament.matches.group_stage.first(5).each do |m|

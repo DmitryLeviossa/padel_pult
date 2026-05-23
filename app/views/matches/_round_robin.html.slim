@@ -1,8 +1,20 @@
+- pairs_options = tournament.pairs.map { |p| [p.player1.full_name + " / " + p.player2.full_name, p.id] }
+
 .d-flex.justify-content-between.align-items-center.mt-4.mb-3
   h4.mb-0 Расписание
   - if is_owner && !tournament.completed?
-    - all_done = tournament.all_matches_completed?
-    = link_to "Завершить турнир", fill_results_tournament_path(tournament), class: "btn btn-success btn-sm#{' disabled' unless all_done}", aria: { disabled: (true unless all_done) }, tabindex: (all_done ? nil : "-1")
+    .d-flex.gap-2
+      - unless any_completed
+        = button_to "Расставить пары автоматически", auto_assign_pairs_tournament_path(tournament), method: :post, class: "btn btn-outline-secondary btn-sm"
+      - if tournament.active?
+        - all_done = tournament.all_matches_completed?
+        = link_to "Завершить турнир", fill_results_tournament_path(tournament), class: "btn btn-success btn-sm#{' disabled' unless all_done}", aria: { disabled: (true unless all_done) }, tabindex: (all_done ? nil : "-1")
+
+/ Pair assignment forms rendered outside table (HTML5 form attribute association)
+- if is_owner
+  - matches.select { |m| m.pending? }.each do |match|
+    = form_with url: assign_pairs_tournament_match_path(tournament, match), method: :patch, id: "pairs-form-#{match.id}", data: {turbo: false} do
+      / empty
 
 - rounds = matches.group_by(&:round_number).sort_by { |r, _| r }
 - rounds.each do |round_number, round_matches|
@@ -18,22 +30,37 @@
           th
     tbody
       - round_matches.each do |match|
+        - next unless match.pair1.present? || match.pair2.present? || is_owner
         tr
-          td= match.pair_display_name(match.pair1)
+          td
+            - if is_owner && match.pending?
+              select.form-select.form-select-sm form="pairs-form-#{match.id}" name="match[pair1_id]" onchange="document.getElementById('pairs-form-#{match.id}').requestSubmit()"
+                option value="" selected=(match.pair1_id.nil?) — …
+                - pairs_options.each do |label, id|
+                  option value=id selected=(match.pair1_id == id) = label
+            - else
+              = match.pair_display_name(match.pair1)
           td.text-center
             - if match.completed?
               strong= "#{match.pair1_score} : #{match.pair2_score}"
             - else
               span.text-muted —
-          td= match.pair_display_name(match.pair2)
+          td
+            - if is_owner && match.pending?
+              select.form-select.form-select-sm form="pairs-form-#{match.id}" name="match[pair2_id]" onchange="document.getElementById('pairs-form-#{match.id}').requestSubmit()"
+                option value="" selected=(match.pair2_id.nil?) — …
+                - pairs_options.each do |label, id|
+                  option value=id selected=(match.pair2_id == id) = label
+            - else
+              = match.pair_display_name(match.pair2)
           td.text-center
             - if match.completed?
               span.badge.bg-success Завершён
             - else
               span.badge.bg-secondary Не сыгран
-          - if is_owner && !match.completed?
+          - if is_owner
             td
-              button.btn.btn-outline-primary.btn-sm data-bs-toggle="modal" data-bs-target="#match-modal-#{match.id}"
-                | Ввести результат
-          - elsif is_owner
-            td
+              - if !match.bye? && match.pair1.present? && match.pair2.present?
+                - btn_label = match.completed? ? "Изменить" : "Ввести результат"
+                button.btn.btn-outline-primary.btn-sm data-bs-toggle="modal" data-bs-target="#match-modal-#{match.id}"
+                  = btn_label

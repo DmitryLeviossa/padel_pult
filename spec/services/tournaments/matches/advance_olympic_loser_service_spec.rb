@@ -3,6 +3,8 @@ require "rails_helper"
 RSpec.describe Tournaments::Matches::AdvanceOlympicLoserService do
   let(:league) { create(:league) }
 
+  before { tournament.matches.destroy_all }
+
   def make_pair(tournament)
     lu1 = create(:league_user, league: league)
     lu2 = create(:league_user, league: league)

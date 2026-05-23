@@ -11,6 +11,7 @@ RSpec.describe Tournaments::Matches::OlympicGenerator do
   end
 
   describe "#call" do
+    before { tournament.matches.destroy_all }
     context "with 4 pairs (exact power of 2)" do
       before { 4.times { make_pair } }
 

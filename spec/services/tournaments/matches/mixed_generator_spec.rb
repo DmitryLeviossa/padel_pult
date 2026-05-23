@@ -18,6 +18,8 @@ RSpec.describe Tournaments::Matches::MixedGenerator do
   end
 
   describe "#call" do
+    before { tournament.matches.destroy_all }
+
     context "with 8 pairs, 2 groups, 4 to bracket" do
       before { 8.times { make_pair } }
 

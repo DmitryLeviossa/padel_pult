@@ -153,13 +153,14 @@
 
   - is_owner = @tournament.league.owner == current_user
 
-  - if (@tournament.active? || @tournament.completed?) && @matches.any?
+  - if @matches.any?
+    - any_completed = @matches.any?(&:completed?)
     - if @tournament.round_robin?
-      = render "matches/round_robin", matches: @matches, tournament: @tournament, is_owner: is_owner
+      = render "matches/round_robin", matches: @matches, tournament: @tournament, is_owner: is_owner, any_completed: any_completed
     - elsif @tournament.olympic?
-      = render "matches/olympic_bracket", bracket_rounds: @bracket_rounds, third_place_match: @third_place_match, loser_bracket_rounds: @loser_bracket_rounds, loser_third_place_match: @loser_third_place_match, tournament: @tournament, is_owner: is_owner
+      = render "matches/olympic_bracket", bracket_rounds: @bracket_rounds, third_place_match: @third_place_match, loser_bracket_rounds: @loser_bracket_rounds, loser_third_place_match: @loser_third_place_match, tournament: @tournament, is_owner: is_owner, any_completed: any_completed
     - elsif @tournament.mixed?
-      = render "matches/mixed", group_data: @group_data, bracket_rounds: @bracket_rounds, third_place_match: @third_place_match, loser_bracket_rounds: @loser_bracket_rounds, loser_third_place_match: @loser_third_place_match, tournament: @tournament, is_owner: is_owner
+      = render "matches/mixed", group_data: @group_data, bracket_rounds: @bracket_rounds, third_place_match: @third_place_match, loser_bracket_rounds: @loser_bracket_rounds, loser_third_place_match: @loser_third_place_match, tournament: @tournament, is_owner: is_owner, any_completed: any_completed
 
   - if is_owner
     = render "matches/result_modal", matches: @matches, tournament: @tournament
