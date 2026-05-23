@@ -1,8 +1,8 @@
 class TournamentsController < ApplicationController
   before_action :set_league, only: [ :new, :create ]
-  before_action :set_tournament, only: [ :show, :edit, :update, :destroy, :open_registration, :activate, :cancel, :fill_results, :complete, :online ]
+  before_action :set_tournament, only: [ :show, :edit, :update, :destroy, :open_registration, :activate, :cancel, :fill_results, :complete, :online, :auto_assign_pairs ]
   before_action :authorize_owner!, only: [ :new, :create ]
-  before_action :authorize_tournament_owner!, only: [ :edit, :update, :destroy, :open_registration, :activate, :cancel, :fill_results, :complete ]
+  before_action :authorize_tournament_owner!, only: [ :edit, :update, :destroy, :open_registration, :activate, :cancel, :fill_results, :complete, :auto_assign_pairs ]
   skip_before_action :authenticate_user!, only: [ :online ]
 
   def index
@@ -171,6 +171,14 @@ class TournamentsController < ApplicationController
     @pairs = @tournament.pairs
                         .includes({ player1: :user }, { player2: :user })
                         .sort_by { |p| @suggested_placements.fetch(p.id, Float::INFINITY) }
+  end
+
+  def auto_assign_pairs
+    if Tournaments::Matches::AutoAssignPairsService.new(@tournament).call
+      redirect_to tournament_path(@tournament), notice: "Пары автоматически расставлены."
+    else
+      redirect_to tournament_path(@tournament), alert: "Не удалось расставить пары. Возможно, некоторые матчи уже сыграны."
+    end
   end
 
   def complete

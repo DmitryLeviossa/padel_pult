@@ -32,7 +32,11 @@ Rails.application.routes.draw do
 
   resources :tournaments do
     resources :pairs, only: [ :create, :destroy, :update ]
-    resources :matches, only: [ :update ]
+    resources :matches, only: [ :update ] do
+      member do
+        patch :assign_pairs
+      end
+    end
     member do
       post :open_registration
       post :activate
@@ -40,6 +44,7 @@ Rails.application.routes.draw do
       get :fill_results
       patch :complete
       get :online
+      post :auto_assign_pairs
     end
   end
 end
