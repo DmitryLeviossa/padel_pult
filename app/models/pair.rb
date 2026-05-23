@@ -30,6 +30,8 @@ class Pair < ApplicationRecord
   belongs_to :player2, class_name: "LeagueUser"
   belongs_to :tournament
 
+  has_one_attached :photo
+
   before_create :snapshot_player_scores
 
   validate :players_must_be_different

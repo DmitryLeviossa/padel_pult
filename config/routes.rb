@@ -35,6 +35,7 @@ Rails.application.routes.draw do
     resources :matches, only: [ :update ] do
       member do
         patch :assign_pairs
+        get :result_card
       end
     end
     member do

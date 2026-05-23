@@ -62,6 +62,9 @@ css:
                       - win = score[0] > score[1]
                       td.score-cell.text-center class=(win ? "score-win" : "score-loss")
                         = "#{score[0]}/#{score[1]}"
+                        - if match
+                          = link_to result_card_tournament_match_path(tournament, match), target: "_blank", class: "d-block text-secondary mt-1" do
+                            i.bi.bi-image style="font-size:0.75rem;"
                     - elsif match && is_owner && !match.completed?
                       td.text-center
                         button.btn.btn-outline-secondary.btn-sm.enter-score-btn data-bs-toggle="modal" data-bs-target="#match-modal-#{match.id}"
@@ -122,6 +125,9 @@ css:
               - btn_label = match.completed? ? "Изменить результат" : "Ввести результат"
               button.btn.btn-outline-primary.btn-sm.bracket-enter-btn data-bs-toggle="modal" data-bs-target="#match-modal-#{match.id}"
                 = btn_label
+            - if match.completed? && match.pair1.present? && match.pair2.present?
+              = link_to result_card_tournament_match_path(tournament, match), target: "_blank", class: "btn btn-outline-secondary btn-sm bracket-enter-btn" do
+                i.bi.bi-image
 
   - if third_place_match
     .mt-4.d-flex.flex-column.align-items-center
@@ -150,6 +156,9 @@ css:
           - tp_btn_label = third_place_match.completed? ? "Изменить результат" : "Ввести результат"
           button.btn.btn-outline-primary.btn-sm.bracket-enter-btn.mt-1 data-bs-toggle="modal" data-bs-target="#match-modal-#{third_place_match.id}"
             = tp_btn_label
+        - if third_place_match.completed? && third_place_match.pair1.present? && third_place_match.pair2.present?
+          = link_to result_card_tournament_match_path(tournament, third_place_match), target: "_blank", class: "btn btn-outline-secondary btn-sm bracket-enter-btn mt-1" do
+            i.bi.bi-image
 
 / ── Consolation bracket ─────────────────────────────────────────────────────
 - if loser_bracket_rounds&.any?
@@ -189,6 +198,9 @@ css:
               - btn_label = match.completed? ? "Изменить результат" : "Ввести результат"
               button.btn.btn-outline-primary.btn-sm.bracket-enter-btn data-bs-toggle="modal" data-bs-target="#match-modal-#{match.id}"
                 = btn_label
+            - if match.completed? && match.pair1.present? && match.pair2.present?
+              = link_to result_card_tournament_match_path(tournament, match), target: "_blank", class: "btn btn-outline-secondary btn-sm bracket-enter-btn" do
+                i.bi.bi-image
 
   - if loser_third_place_match
     .mt-4.d-flex.flex-column.align-items-center
@@ -217,3 +229,6 @@ css:
           - ltp_btn_label = loser_third_place_match.completed? ? "Изменить результат" : "Ввести результат"
           button.btn.btn-outline-primary.btn-sm.bracket-enter-btn.mt-1 data-bs-toggle="modal" data-bs-target="#match-modal-#{loser_third_place_match.id}"
             = ltp_btn_label
+        - if loser_third_place_match.completed? && loser_third_place_match.pair1.present? && loser_third_place_match.pair2.present?
+          = link_to result_card_tournament_match_path(tournament, loser_third_place_match), target: "_blank", class: "btn btn-outline-secondary btn-sm bracket-enter-btn mt-1" do
+            i.bi.bi-image

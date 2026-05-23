@@ -1,6 +1,6 @@
 class MatchesController < ApplicationController
   before_action :set_match
-  before_action :authorize_tournament_owner!
+  before_action :authorize_tournament_owner!, except: :result_card
 
   def update
     if @match.has_downstream_results?
@@ -30,6 +30,13 @@ class MatchesController < ApplicationController
     else
       redirect_to tournament_path(@match.tournament), alert: "Не удалось сохранить результат."
     end
+  end
+
+  def result_card
+    @pair1 = @match.pair1
+    @pair2 = @match.pair2
+    @match_sets = @match.match_sets.order(:set_number)
+    render layout: false
   end
 
   def assign_pairs

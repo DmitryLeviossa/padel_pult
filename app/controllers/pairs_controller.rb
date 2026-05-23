@@ -26,7 +26,11 @@ class PairsController < ApplicationController
   end
 
   def update
-    @pair.update!(seeded: params.dig(:pair, :seeded) == "1")
+    if params.dig(:pair, :photo).present?
+      @pair.photo.attach(params.dig(:pair, :photo))
+    else
+      @pair.update!(seeded: params.dig(:pair, :seeded) == "1")
+    end
     redirect_to tournament_path(@tournament)
   end
 

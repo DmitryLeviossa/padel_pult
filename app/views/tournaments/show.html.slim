@@ -116,6 +116,7 @@
           th= sort_link(@tournament, "player2_score", "Очки", @sort, @direction)
           th= sort_link(@tournament, "score", "Очки пары", @sort, @direction)
           th= sort_link(@tournament, "created_at", "Дата подачи заявки", @sort, @direction)
+          th Фото пары
           - if @tournament.registration? && @tournament.league.owner == current_user
             th Сеяная
             th
@@ -141,6 +142,17 @@
             td= pair.player2_score
             td= pair.score
             td= ru_datetime(pair.created_at)
+            td
+              - if @tournament.league.owner == current_user
+                = form_with url: tournament_pair_path(@tournament, pair), method: :patch, multipart: true, data: {turbo: false} do |f|
+                  label style="cursor:pointer;display:block;"
+                    = file_field_tag "pair[photo]", accept: "image/*", class: "d-none", onchange: "this.form.submit()"
+                    - if pair.photo.attached?
+                      i.bi.bi-check-circle-fill.text-success style="font-size:1.2rem;" title="Фото загружено"
+                    - else
+                      i.bi.bi-camera.text-muted style="font-size:1.2rem;" title="Загрузить фото пары"
+              - elsif pair.photo.attached?
+                = image_tag pair.photo.variant(resize_to_fill: [80, 80]), class: "rounded", style: "width:40px;height:40px;object-fit:cover;"
             - if @tournament.registration? && @tournament.league.owner == current_user
               td
                 = form_with url: tournament_pair_path(@tournament, pair), method: :patch, class: "d-inline" do |f|

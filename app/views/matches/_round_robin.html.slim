@@ -60,7 +60,11 @@
               span.badge.bg-secondary Не сыгран
           - if is_owner
             td
-              - if !match.bye? && match.pair1.present? && match.pair2.present?
-                - btn_label = match.completed? ? "Изменить" : "Ввести результат"
-                button.btn.btn-outline-primary.btn-sm data-bs-toggle="modal" data-bs-target="#match-modal-#{match.id}"
-                  = btn_label
+              .d-flex.align-items-center.gap-1
+                - if !match.bye? && match.pair1.present? && match.pair2.present?
+                  - btn_label = match.completed? ? "Изменить" : "Ввести результат"
+                  button.btn.btn-outline-primary.btn-sm data-bs-toggle="modal" data-bs-target="#match-modal-#{match.id}"
+                    = btn_label
+                - if match.completed? && match.pair1.present? && match.pair2.present?
+                  = link_to result_card_tournament_match_path(tournament, match), target: "_blank", class: "btn btn-outline-secondary btn-sm" do
+                    i.bi.bi-image
