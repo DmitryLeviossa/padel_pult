@@ -34,53 +34,103 @@ input[type="datetime-local"] {
   color-scheme: dark;
 }
 
-// Flatpickr dark-mode overrides to match Bootstrap dark theme
+// Flatpickr dark-mode overrides — uses project color tokens
 .flatpickr-calendar {
-  background: #2b3035;
-  border: 1px solid #495057;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.5);
-  color: #dee2e6;
+  background: var(--color-bg-surface);
+  border: 1px solid var(--color-border);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.6);
+  color: var(--color-text-primary);
 
-  &.arrowTop::before { border-bottom-color: #495057; }
-  &.arrowTop::after  { border-bottom-color: #2b3035; }
+  &.arrowTop::before { border-bottom-color: var(--color-border); }
+  &.arrowTop::after  { border-bottom-color: var(--color-bg-surface); }
+  &.arrowBottom::before { border-top-color: var(--color-border); }
+  &.arrowBottom::after  { border-top-color: var(--color-bg-surface); }
 
   .flatpickr-months {
+    background: var(--color-bg-navbar);
+    border-radius: 4px 4px 0 0;
+
     .flatpickr-month,
     .flatpickr-prev-month,
     .flatpickr-next-month {
-      background: #343a40;
-      color: #dee2e6;
-      fill: #dee2e6;
+      background: var(--color-bg-navbar);
+      color: var(--color-text-primary);
+      fill: var(--color-text-primary);
       &:hover { color: #fff; fill: #fff; }
     }
     .flatpickr-current-month {
-      color: #dee2e6;
-      input.cur-year { color: #dee2e6; }
+      color: var(--color-text-primary);
+      input.cur-year { color: var(--color-text-primary); }
+      .flatpickr-monthDropdown-months {
+        background: var(--color-bg-navbar);
+        color: var(--color-text-primary);
+      }
     }
   }
 
-  .flatpickr-weekdays { background: #343a40; }
-  span.flatpickr-weekday { background: #343a40; color: #adb5bd; }
+  .flatpickr-innerContainer { background: var(--color-bg-surface); }
+  .flatpickr-rContainer { background: var(--color-bg-surface); }
+
+  .flatpickr-weekdays { background: var(--color-bg-navbar); }
+  span.flatpickr-weekday { background: var(--color-bg-navbar); color: var(--color-text-muted); }
+
+  .flatpickr-days { border-color: var(--color-border); }
+  .dayContainer { background: var(--color-bg-surface); }
 
   .flatpickr-day {
-    color: #dee2e6;
-    &:hover, &:focus { background: #495057; border-color: #495057; }
-    &.today { border-color: #0d6efd; }
-    &.today:hover { background: #0d6efd; color: #fff; }
+    color: var(--color-text-primary);
+    border-color: transparent;
+    &:hover, &:focus {
+      background: var(--color-border);
+      border-color: var(--color-border);
+    }
+    &.today {
+      border-color: var(--color-accent);
+      &:hover { background: var(--color-accent); color: #fff; border-color: var(--color-accent); }
+    }
     &.selected,
     &.startRange,
     &.endRange {
-      background: #0d6efd;
-      border-color: #0d6efd;
+      background: var(--color-accent);
+      border-color: var(--color-accent);
       color: #fff;
     }
     &.inRange {
-      background: rgba(13, 110, 253, 0.2);
-      border-color: rgba(13, 110, 253, 0.2);
-      box-shadow: -5px 0 0 rgba(13, 110, 253, 0.2), 5px 0 0 rgba(13, 110, 253, 0.2);
+      background: var(--color-accent-subtle);
+      border-color: var(--color-accent-subtle);
+      box-shadow: -5px 0 0 var(--color-accent-subtle), 5px 0 0 var(--color-accent-subtle);
     }
     &.flatpickr-disabled, &.prevMonthDay, &.nextMonthDay {
-      color: #6c757d;
+      color: var(--color-text-muted);
+      opacity: 0.4;
+    }
+  }
+
+  // Time picker
+  .flatpickr-time {
+    background: var(--color-bg-surface);
+    border-top: 1px solid var(--color-border);
+
+    input,
+    .flatpickr-time-separator,
+    .flatpickr-am-pm {
+      background: var(--color-bg-surface);
+      color: var(--color-text-primary);
+      border-color: transparent;
+    }
+
+    input:hover,
+    input:focus,
+    .flatpickr-am-pm:hover,
+    .flatpickr-am-pm:focus {
+      background: var(--color-border);
+    }
+
+    .numInputWrapper {
+      &:hover { background: var(--color-border); }
+
+      span.arrowUp::after  { border-bottom-color: var(--color-text-muted); }
+      span.arrowDown::after { border-top-color: var(--color-text-muted); }
     }
   }
 }

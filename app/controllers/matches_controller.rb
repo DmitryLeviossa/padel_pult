@@ -39,6 +39,29 @@ class MatchesController < ApplicationController
     render layout: false
   end
 
+  def finish
+    if @match.completed? || @match.bye? || (@match.pair1.present? && @match.pair2.present?)
+      redirect_to tournament_path(@match.tournament), alert: "Этот матч нельзя завершить таким способом."
+      return
+    end
+
+    winner_id = @match.pair1_id || @match.pair2_id
+    if @match.update(status: :completed, winner_id: winner_id)
+      case @match.tournament.type
+      when "olympic"
+        Tournaments::Matches::AdvanceWinnerService.new(@match).call
+        Tournaments::Matches::AdvanceLoserService.new(@match).call
+        Tournaments::Matches::AdvanceOlympicLoserService.new(@match).call
+      when "mixed"
+        handle_mixed_match_completion
+      end
+      broadcast_online_update
+      redirect_to tournament_path(@match.tournament), notice: "Матч завершён."
+    else
+      redirect_to tournament_path(@match.tournament), alert: "Не удалось завершить матч."
+    end
+  end
+
   def assign_pairs
     if @match.update(pair_assignment_params)
       redirect_to tournament_path(@match.tournament)

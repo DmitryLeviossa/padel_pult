@@ -105,6 +105,12 @@ function fallbackCopy(text, done) {
   try { document.execCommand("copy"); done() } finally { ta.remove() }
 }
 
+document.addEventListener("submit", (e) => {
+  if (e.target.dataset.scrollToTop) {
+    sessionStorage.setItem("scroll_to_top", "1")
+  }
+})
+
 document.addEventListener("turbo:submit-start", () => {
   sessionStorage.setItem("scroll_restore_x", window.scrollX)
   sessionStorage.setItem("scroll_restore_y", window.scrollY)
@@ -112,11 +118,16 @@ document.addEventListener("turbo:submit-start", () => {
 })
 
 document.addEventListener("turbo:load", () => {
-  const fromPath = sessionStorage.getItem("scroll_restore_from")
-  if (fromPath && fromPath === location.pathname) {
-    const x = parseInt(sessionStorage.getItem("scroll_restore_x"))
-    const y = parseInt(sessionStorage.getItem("scroll_restore_y"))
-    window.scrollTo(x, y)
+  if (sessionStorage.getItem("scroll_to_top")) {
+    sessionStorage.removeItem("scroll_to_top")
+    window.scrollTo(0, 0)
+  } else {
+    const fromPath = sessionStorage.getItem("scroll_restore_from")
+    if (fromPath && fromPath === location.pathname) {
+      const x = parseInt(sessionStorage.getItem("scroll_restore_x"))
+      const y = parseInt(sessionStorage.getItem("scroll_restore_y"))
+      window.scrollTo(x, y)
+    }
   }
   sessionStorage.removeItem("scroll_restore_x")
   sessionStorage.removeItem("scroll_restore_y")

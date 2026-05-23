@@ -36,6 +36,7 @@ Rails.application.routes.draw do
       member do
         patch :assign_pairs
         get :result_card
+        post :finish
       end
     end
     member do

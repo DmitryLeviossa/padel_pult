@@ -120,7 +120,7 @@ css:
             - can_edit_pairs = is_owner && !match.completed? && !match.bye? && match.round_number == 1
             - can_enter_result = is_owner && !match.bye? && match.pair1.present? && match.pair2.present? && !match.has_downstream_results?
             - if can_edit_pairs
-              = form_with url: assign_pairs_tournament_match_path(tournament, match), method: :patch, id: "pairs-form-#{match.id}", data: {turbo: false} do
+              = form_with url: assign_pairs_tournament_match_path(tournament, match), method: :patch, id: "pairs-form-#{match.id}", data: {turbo: false, scroll_to_top: true} do
                 / empty
             .bracket-match
               - sets = match.match_sets
@@ -146,6 +146,8 @@ css:
               - btn_label = match.completed? ? "Изменить результат" : "Ввести результат"
               button.btn.btn-outline-primary.btn-sm.bracket-enter-btn data-bs-toggle="modal" data-bs-target="#match-modal-#{match.id}"
                 = btn_label
+            - if is_owner && !match.completed? && !match.bye? && !(match.pair1.present? && match.pair2.present?)
+              = link_to "Завершить матч", finish_tournament_match_path(tournament, match), data: { turbo_method: :post }, class: "btn btn-outline-warning btn-sm bracket-enter-btn"
             - if match.completed? && match.pair1.present? && match.pair2.present?
               = link_to result_card_tournament_match_path(tournament, match), target: "_blank", class: "btn btn-outline-secondary btn-sm bracket-enter-btn" do
                 i.bi.bi-image
@@ -156,7 +158,7 @@ css:
       .d-flex.flex-column style="min-width: 240px; max-width: 360px;"
         - can_edit_tp = is_owner && !third_place_match.completed? && !third_place_match.bye?
         - if can_edit_tp
-          = form_with url: assign_pairs_tournament_match_path(tournament, third_place_match), method: :patch, id: "pairs-form-#{third_place_match.id}", data: {turbo: false} do
+          = form_with url: assign_pairs_tournament_match_path(tournament, third_place_match), method: :patch, id: "pairs-form-#{third_place_match.id}", data: {turbo: false, scroll_to_top: true} do
             / empty
         .bracket-match
           - tp_sets = third_place_match.match_sets
@@ -182,6 +184,8 @@ css:
           - tp_btn_label = third_place_match.completed? ? "Изменить результат" : "Ввести результат"
           button.btn.btn-outline-primary.btn-sm.bracket-enter-btn.mt-1 data-bs-toggle="modal" data-bs-target="#match-modal-#{third_place_match.id}"
             = tp_btn_label
+        - if is_owner && !third_place_match.completed? && !third_place_match.bye? && !(third_place_match.pair1.present? && third_place_match.pair2.present?)
+          = link_to "Завершить матч", finish_tournament_match_path(tournament, third_place_match), data: { turbo_method: :post }, class: "btn btn-outline-warning btn-sm bracket-enter-btn mt-1"
         - if third_place_match.completed? && third_place_match.pair1.present? && third_place_match.pair2.present?
           = link_to result_card_tournament_match_path(tournament, third_place_match), target: "_blank", class: "btn btn-outline-secondary btn-sm bracket-enter-btn mt-1" do
             i.bi.bi-image
@@ -203,7 +207,7 @@ css:
             - can_edit_pairs = is_owner && !match.completed? && !match.bye? && match.round_number == 1
             - can_enter_result = is_owner && !match.bye? && match.pair1.present? && match.pair2.present? && !match.has_downstream_results?
             - if can_edit_pairs
-              = form_with url: assign_pairs_tournament_match_path(tournament, match), method: :patch, id: "pairs-form-#{match.id}", data: {turbo: false} do
+              = form_with url: assign_pairs_tournament_match_path(tournament, match), method: :patch, id: "pairs-form-#{match.id}", data: {turbo: false, scroll_to_top: true} do
                 / empty
             .bracket-match
               - sets = match.match_sets
@@ -229,6 +233,8 @@ css:
               - btn_label = match.completed? ? "Изменить результат" : "Ввести результат"
               button.btn.btn-outline-primary.btn-sm.bracket-enter-btn data-bs-toggle="modal" data-bs-target="#match-modal-#{match.id}"
                 = btn_label
+            - if is_owner && !match.completed? && !match.bye? && !(match.pair1.present? && match.pair2.present?)
+              = link_to "Завершить матч", finish_tournament_match_path(tournament, match), data: { turbo_method: :post }, class: "btn btn-outline-warning btn-sm bracket-enter-btn"
             - if match.completed? && match.pair1.present? && match.pair2.present?
               = link_to result_card_tournament_match_path(tournament, match), target: "_blank", class: "btn btn-outline-secondary btn-sm bracket-enter-btn" do
                 i.bi.bi-image
@@ -239,7 +245,7 @@ css:
       .d-flex.flex-column style="min-width: 240px; max-width: 360px;"
         - can_edit_ltp = is_owner && !loser_third_place_match.completed? && !loser_third_place_match.bye?
         - if can_edit_ltp
-          = form_with url: assign_pairs_tournament_match_path(tournament, loser_third_place_match), method: :patch, id: "pairs-form-#{loser_third_place_match.id}", data: {turbo: false} do
+          = form_with url: assign_pairs_tournament_match_path(tournament, loser_third_place_match), method: :patch, id: "pairs-form-#{loser_third_place_match.id}", data: {turbo: false, scroll_to_top: true} do
             / empty
         .bracket-match
           - ltp_sets = loser_third_place_match.match_sets
@@ -265,6 +271,8 @@ css:
           - ltp_btn_label = loser_third_place_match.completed? ? "Изменить результат" : "Ввести результат"
           button.btn.btn-outline-primary.btn-sm.bracket-enter-btn.mt-1 data-bs-toggle="modal" data-bs-target="#match-modal-#{loser_third_place_match.id}"
             = ltp_btn_label
+        - if is_owner && !loser_third_place_match.completed? && !loser_third_place_match.bye? && !(loser_third_place_match.pair1.present? && loser_third_place_match.pair2.present?)
+          = link_to "Завершить матч", finish_tournament_match_path(tournament, loser_third_place_match), data: { turbo_method: :post }, class: "btn btn-outline-warning btn-sm bracket-enter-btn mt-1"
         - if loser_third_place_match.completed? && loser_third_place_match.pair1.present? && loser_third_place_match.pair2.present?
           = link_to result_card_tournament_match_path(tournament, loser_third_place_match), target: "_blank", class: "btn btn-outline-secondary btn-sm bracket-enter-btn mt-1" do
             i.bi.bi-image
