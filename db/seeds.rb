@@ -317,14 +317,6 @@ def complete_match!(match, winner_pair, winner_score, loser_score)
   Tournaments::Matches::AdvanceWinnerService.new(match).call
 end
 
-Tournaments::Matches::OlympicGenerator.new(t_completed_1).call
-Tournaments::Matches::OlympicGenerator.new(t_completed_2).call
-Tournaments::Matches::OlympicGenerator.new(t_active).call
-Tournaments::Matches::OlympicGenerator.new(t_active_olympic_loser).call
-Tournaments::Matches::RoundRobinGenerator.new(t_active_rr).call
-Tournaments::Matches::MixedGenerator.new(t_active_mixed).call
-Tournaments::Matches::MixedGenerator.new(t_mixed_loser_bracket).call
-Tournaments::Matches::MixedGenerator.new(t_mixed_group_stage).call
 
 # Complete all rounds for t_completed_1 (4 pairs → 2 rounds)
 t_completed_1.matches.reload.ordered.group_by(&:round_number).each do |_round, matches|

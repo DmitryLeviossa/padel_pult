@@ -3,17 +3,17 @@
 
   = form_with model: @league, class: "mt-4" do |f|
     .mb-3
-      = f.label :name, class: "form-label"
+      = f.label :name, "Название", class: "form-label"
       = f.text_field :name, class: "form-control", required: true
       - if @league.errors[:name].any?
         .text-danger.small= @league.errors[:name].first
 
     .mb-3
-      = f.label :description, class: "form-label"
+      = f.label :description, "Описание", class: "form-label"
       = f.text_area :description, class: "form-control", rows: 4
 
     .mb-3
-      = f.label :logo, class: "form-label"
+      = f.label :logo, "Логотип", class: "form-label"
       - if @league.logo.attached?
         .mb-2
           = image_tag @league.logo, class: "rounded", style: "width: 80px; height: 80px; object-fit: cover;"

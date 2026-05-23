@@ -114,12 +114,14 @@ class TournamentsController < ApplicationController
   end
 
   def edit
-    redirect_to tournament_path(@tournament), alert: "Редактировать можно только черновик." unless @tournament.draft?
+    unless @tournament.draft? || @tournament.registration?
+      redirect_to tournament_path(@tournament), alert: "Редактировать можно только черновик или турнир на регистрации."
+    end
   end
 
   def update
-    unless @tournament.draft?
-      redirect_to tournament_path(@tournament), alert: "Редактировать можно только черновик."
+    unless @tournament.draft? || @tournament.registration?
+      redirect_to tournament_path(@tournament), alert: "Редактировать можно только черновик или турнир на регистрации."
       return
     end
 

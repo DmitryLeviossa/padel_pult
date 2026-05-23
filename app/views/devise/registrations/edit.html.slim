@@ -10,36 +10,36 @@
 
             .mb-3.text-center
               = render "shared/avatar", user: resource, size: 100
-              = f.label :photo, class: "form-label d-block"
+              = f.label :photo, "Фото", class: "form-label d-block"
               = f.file_field :photo, accept: "image/*", class: "form-control"
 
             .row.mb-3
               .col
-                = f.label :first_name, class: "form-label"
+                = f.label :first_name, "Имя", class: "form-label"
                 = f.text_field :first_name, autocomplete: "given-name", class: "form-control"
               .col
-                = f.label :last_name, class: "form-label"
+                = f.label :last_name, "Фамилия", class: "form-label"
                 = f.text_field :last_name, autocomplete: "family-name", class: "form-control"
 
             .mb-3
-              = f.label :gender, class: "form-label"
+              = f.label :gender, "Пол", class: "form-label"
               = f.select :gender, User.genders.keys.map { |g| [{ "male" => "Мужской", "female" => "Женский" }.fetch(g, g), g] }, { include_blank: "— Выберите —" }, class: "form-select"
 
             .mb-3
-              = f.label :email, class: "form-label"
+              = f.label :email, "Email", class: "form-label"
               = f.email_field :email, autofocus: true, autocomplete: "email", class: "form-control"
               - if devise_mapping.confirmable? && resource.pending_reconfirmation?
                 small.text-muted= "Ожидается подтверждение для: #{resource.unconfirmed_email}"
 
             .mb-3
-              = f.label :password, class: "form-label"
+              = f.label :password, "Пароль", class: "form-label"
               small.text-muted.d-block.mb-1 Оставьте пустым, если не хотите менять
               = f.password_field :password, autocomplete: "new-password", class: "form-control"
               - if @minimum_password_length
                 small.text-muted= "Минимум #{@minimum_password_length} символов"
 
             .mb-3
-              = f.label :password_confirmation, class: "form-label"
+              = f.label :password_confirmation, "Подтверждение пароля", class: "form-label"
               = f.password_field :password_confirmation, autocomplete: "new-password", class: "form-control"
 
             = f.submit "Обновить", class: "btn btn-primary"

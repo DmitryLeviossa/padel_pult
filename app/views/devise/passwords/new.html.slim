@@ -9,7 +9,7 @@
             = render "devise/shared/error_messages", resource: resource
 
             .mb-3
-              = f.label :email, class: "form-label"
+              = f.label :email, "Email", class: "form-label"
               = f.email_field :email, autofocus: true, autocomplete: "email", class: "form-control"
 
             = f.submit "Отправить инструкции по сбросу пароля", class: "btn btn-primary w-100"

@@ -3,7 +3,7 @@
   - next if match.pair1.nil? || match.pair2.nil?
   - next if match.has_downstream_results?
   .modal.fade id="match-modal-#{match.id}" tabindex="-1"
-    .modal-dialog
+    .modal-dialog.modal-lg
       .modal-content
         .modal-header
           h5.modal-title= match.completed? ? "Изменить результат" : "Результат матча"

@@ -1,12 +1,12 @@
 = form_with model: form_model, class: "row g-3", data: { controller: "tournament-type" } do |f|
   .col-md-6
-    = f.label :name, class: "form-label"
+    = f.label :name, "Название", class: "form-label"
     = f.text_field :name, class: "form-control #{"is-invalid" if tournament.errors[:name].any?}"
     - if tournament.errors[:name].any?
       .invalid-feedback= tournament.errors[:name].first
 
   .col-md-6
-    = f.label :location, class: "form-label"
+    = f.label :location, "Локация", class: "form-label"
     = f.text_field :location, class: "form-control"
 
   .col-md-3
@@ -24,11 +24,11 @@
       .invalid-feedback= tournament.errors[:end_date].first
 
   .col-md-3
-    = f.label :max_participants, class: "form-label"
+    = f.label :max_participants, "Макс. участников", class: "form-label"
     = f.number_field :max_participants, class: "form-control", min: 2
 
   .col-md-3
-    = f.label :type, class: "form-label"
+    = f.label :type, "Тип", class: "form-label"
     = f.select :type, Tournament.types.keys.map { |tp| [{ "olympic" => "Олимпийский", "round_robin" => "Круговой", "mixed" => "Смешанный" }.fetch(tp, tp), tp] }, {}, class: "form-select", data: { tournament_type_select: true, action: "change->tournament-type#toggle" }
 
   .col-12(data-tournament-type-target="mixedConfig" class=("d-none" unless tournament.mixed?))
@@ -36,12 +36,12 @@
     h5.mb-3 Настройки группового этапа
     .row.g-3
       .col-md-4
-        = f.label :groups_count, class: "form-label"
+        = f.label :groups_count, "Количество групп", class: "form-label"
         = f.number_field :groups_count, class: "form-control #{"is-invalid" if tournament.errors[:groups_count].any?}", min: 1
         - if tournament.errors[:groups_count].any?
           .invalid-feedback= tournament.errors[:groups_count].first
       .col-md-4
-        = f.label :pairs_to_bracket, class: "form-label"
+        = f.label :pairs_to_bracket, "Пар в плей-офф", class: "form-label"
         = f.number_field :pairs_to_bracket, class: "form-control #{"is-invalid" if tournament.errors[:pairs_to_bracket].any?}", min: 1
         - if tournament.errors[:pairs_to_bracket].any?
           .invalid-feedback= tournament.errors[:pairs_to_bracket].first
@@ -50,7 +50,7 @@
       .col-md-4.d-flex.align-items-end
         .form-check.mb-2
           = f.check_box :loser_bracket, class: "form-check-input"
-          = f.label :loser_bracket, class: "form-check-label"
+          = f.label :loser_bracket, "Сетка проигравших", class: "form-check-label"
 
   .col-12(data-tournament-type-target="olympicConfig" class=("d-none" unless tournament.olympic?))
     hr
@@ -58,10 +58,10 @@
       .col-md-4.d-flex.align-items-end
         .form-check.mb-2
           = f.check_box :loser_bracket, class: "form-check-input"
-          = f.label :loser_bracket, class: "form-check-label"
+          = f.label :loser_bracket, "Сетка проигравших", class: "form-check-label"
 
   .col-12
-    = f.label :description, class: "form-label"
+    = f.label :description, "Описание", class: "form-label"
     = f.text_area :description, class: "form-control", rows: 3
 
   .col-12

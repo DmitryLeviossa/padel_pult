@@ -10,28 +10,28 @@
 
             .row.mb-3
               .col
-                = f.label :first_name, class: "form-label"
+                = f.label :first_name, "Имя", class: "form-label"
                 = f.text_field :first_name, autofocus: true, autocomplete: "given-name", class: "form-control"
               .col
-                = f.label :last_name, class: "form-label"
+                = f.label :last_name, "Фамилия", class: "form-label"
                 = f.text_field :last_name, autocomplete: "family-name", class: "form-control"
 
             .mb-3
-              = f.label :gender, class: "form-label"
+              = f.label :gender, "Пол", class: "form-label"
               = f.select :gender, User.genders.keys.map { |g| [{ "male" => "Мужской", "female" => "Женский" }.fetch(g, g), g] }, { include_blank: "— Выберите —" }, class: "form-select"
 
             .mb-3
-              = f.label :email, class: "form-label"
+              = f.label :email, "Email", class: "form-label"
               = f.email_field :email, autocomplete: "email", class: "form-control"
 
             .mb-3
-              = f.label :password, class: "form-label"
+              = f.label :password, "Пароль", class: "form-label"
               - if @minimum_password_length
                 small.text-muted.d-block.mb-1= "Минимум #{@minimum_password_length} символов"
               = f.password_field :password, autocomplete: "new-password", class: "form-control"
 
             .mb-3
-              = f.label :password_confirmation, class: "form-label"
+              = f.label :password_confirmation, "Подтверждение пароля", class: "form-label"
               = f.password_field :password_confirmation, autocomplete: "new-password", class: "form-control"
 
             = f.submit "Зарегистрироваться", class: "btn btn-primary w-100"
