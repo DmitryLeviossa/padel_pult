@@ -3,7 +3,11 @@
 
 .d-flex.justify-content-between.align-items-center.mt-5.mb-3 id="bracket-#{bracket.id}"
   h4.mb-0= bracket.name
-  small.text-muted= "#{bracket.pairs_count} пар"
+  .d-flex.align-items-center.gap-3
+    small.text-muted= "#{bracket.pairs_count} пар"
+    - if is_owner && !tournament.completed?
+      = link_to tournament_bracket_path(tournament, bracket), data: { turbo_method: :delete, turbo_confirm: "Удалить сетку «#{bracket.name}»? Все матчи в ней будут удалены." }, class: "btn btn-outline-danger btn-sm" do
+        i.bi.bi-trash
 
 .tournament-bracket
   - bracket_rounds.each_with_index do |round_matches, idx|

@@ -1,6 +1,7 @@
 class BracketsController < ApplicationController
   before_action :set_tournament
   before_action :authorize_owner!
+  before_action :set_bracket, only: [:destroy]
 
   def new
     @bracket = Bracket.new
@@ -16,10 +17,19 @@ class BracketsController < ApplicationController
     end
   end
 
+  def destroy
+    @bracket.destroy!
+    redirect_to tournament_path(@tournament), notice: "Сетка удалена."
+  end
+
   private
 
   def set_tournament
     @tournament = Tournament.find(params[:tournament_id])
+  end
+
+  def set_bracket
+    @bracket = @tournament.brackets.find(params[:id])
   end
 
   def authorize_owner!

@@ -251,99 +251,122 @@ html lang="ru"
         .team-panel::after { height: 120px; }
         .set-score { font-size: 2.5rem; }
       }
+      .download-btn {
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        background: rgba(255,255,255,0.12);
+        color: #fff;
+        border: 1px solid rgba(255,255,255,0.2);
+        border-radius: 10px;
+        padding: 10px 18px;
+        font-size: 0.82rem;
+        font-weight: 600;
+        text-decoration: none;
+        letter-spacing: 0.05em;
+        backdrop-filter: blur(8px);
+        transition: background 0.2s;
+      }
+      .download-btn:hover { background: rgba(255,255,255,0.22); color: #fff; }
   body
-    - tournament = @match.tournament
-    - pair1 = @pair1
-    - pair2 = @pair2
-    - winner_id = @match.winner_id
-    - p1_wins = winner_id.present? && winner_id == @match.pair1_id
-    - p2_wins = winner_id.present? && winner_id == @match.pair2_id
-    - p1_loses = winner_id.present? && !p1_wins
-    - p2_loses = winner_id.present? && !p2_wins
-    - total_bracket_rounds = tournament.matches.where(stage: :bracket).maximum(:round_number).to_i
-    - round_num = @match.round_number.to_i
-    - if @match.group_stage?
-      - round_label = "Групповой этап"
-    - elsif @match.loser_bracket?
-      - round_label = "Утешительная сетка · Раунд #{round_num}"
-    - elsif round_num == total_bracket_rounds
-      - round_label = "Финал"
-    - elsif round_num == total_bracket_rounds - 1 && total_bracket_rounds > 2
-      - round_label = "Полуфинал"
+    - if @match.result_card_image.attached? && params[:source].blank?
+      = image_tag rails_blob_url(@match.result_card_image), alt: "Результат матча", style: "max-width:960px;width:100%;border-radius:20px;display:block;box-shadow:0 24px 80px rgba(0,0,0,0.7);"
     - else
-      - round_label = "Раунд #{round_num}"
-    - set_name_map = %w[ПЕРВЫЙ ВТОРОЙ ТРЕТИЙ ЧЕТВЁРТЫЙ ПЯТЫЙ]
+      - tournament = @match.tournament
+      - pair1 = @pair1
+      - pair2 = @pair2
+      - winner_id = @match.winner_id
+      - p1_wins = winner_id.present? && winner_id == @match.pair1_id
+      - p2_wins = winner_id.present? && winner_id == @match.pair2_id
+      - p1_loses = winner_id.present? && !p1_wins
+      - p2_loses = winner_id.present? && !p2_wins
+      - total_bracket_rounds = @match.bracket.matches.maximum(:round_number).to_i
+      - round_num = @match.round_number.to_i
+      - if @match.group_stage?
+        - round_label = "Групповой этап"
+      - elsif @match.loser_bracket?
+        - round_label = "Утешительная сетка · Раунд #{round_num}"
+      - elsif round_num == total_bracket_rounds
+        - round_label = "Финал"
+      - elsif round_num == total_bracket_rounds - 1 && total_bracket_rounds > 2
+        - round_label = "Полуфинал"
+      - else
+        - round_label = "Раунд #{round_num}"
+      - set_name_map = %w[ПЕРВЫЙ ВТОРОЙ ТРЕТИЙ ЧЕТВЁРТЫЙ ПЯТЫЙ]
 
-    .result-card
-      / ── Left: Team 1 ──
-      .team-panel.team-panel-left class=((p1_wins ? "winner" : (p1_loses ? "loser" : "")))
-        .photo-area
-          - if pair1.nil?
-            .players-row
-              .player-initials-box ?
-              .player-initials-box ?
-          - elsif pair1.photo.attached?
-            = image_tag pair1.photo.variant(resize_to_fill: [540, 400]), class: "pair-photo", alt: ""
+      .result-card
+        / ── Left: Team 1 ──
+        .team-panel.team-panel-left class=((p1_wins ? "winner" : (p1_loses ? "loser" : "")))
+          .photo-area
+            - if pair1.nil?
+              .players-row
+                .player-initials-box ?
+                .player-initials-box ?
+            - elsif pair1.photo.attached?
+              = image_tag pair1.photo.variant(resize_to_fill: [540, 400]), class: "pair-photo", alt: ""
+            - else
+              .players-row
+                - [pair1.player1, pair1.player2].each do |player|
+                  - user = player.user
+                  - if user.photo.attached?
+                    = image_tag user.photo.variant(resize_to_fill: [200, 340]), class: "player-thumb", alt: ""
+                  - else
+                    .player-initials-box= user.full_name.split.map(&:first).first(2).join.upcase
+          .team-info
+            - if pair1
+              .team-names
+                = pair1.player1.full_name.split.last
+                br
+                = pair1.player2.full_name.split.last
+
+        / ── Center ──
+        .center-panel
+          - league = tournament.league
+          - if league.logo.attached?
+            = image_tag league.logo.variant(resize_to_limit: [120, 80]), class: "league-logo", alt: league.name
+          .tournament-name= tournament.name
+          .round-label= round_label
+          .match-heading Итоги матча
+          .teal-bar
+          - if @match_sets.any?
+            - @match_sets.each_with_index do |set, i|
+              - s1_wins = set.pair1_score.to_i > set.pair2_score.to_i
+              - s2_wins = set.pair2_score.to_i > set.pair1_score.to_i
+              .set-block
+                .set-name= "#{set_name_map[i] || "Сет #{i+1}"} сет"
+                .set-score
+                  span(class=(s1_wins ? "w1" : ""))= set.pair1_score.to_i
+                  span.dash —
+                  span(class=(s2_wins ? "w2" : ""))= set.pair2_score.to_i
           - else
-            .players-row
-              - [pair1.player1, pair1.player2].each do |player|
-                - user = player.user
-                - if user.photo.attached?
-                  = image_tag user.photo.variant(resize_to_fill: [200, 340]), class: "player-thumb", alt: ""
-                - else
-                  .player-initials-box= user.full_name.split.map(&:first).first(2).join.upcase
-        .team-info
-          - if pair1
-            .team-names
-              = pair1.player1.full_name.split.last
-              br
-              = pair1.player2.full_name.split.last
+            .overall-score
+              span(class=(p1_wins ? "w1" : ""))= @match.pair1_score.to_i
+              span.dash —
+              span(class=(p2_wins ? "w2" : ""))= @match.pair2_score.to_i
 
-      / ── Center ──
-      .center-panel
-        - league = tournament.league
-        - if league.logo.attached?
-          = image_tag league.logo.variant(resize_to_limit: [120, 80]), class: "league-logo", alt: league.name
-        .tournament-name= tournament.name
-        .round-label= round_label
-        .match-heading Итоги матча
-        .teal-bar
-        - if @match_sets.any?
-          - @match_sets.each_with_index do |set, i|
-            - s1_wins = set.pair1_score.to_i > set.pair2_score.to_i
-            - s2_wins = set.pair2_score.to_i > set.pair1_score.to_i
-            .set-block
-              .set-name= "#{set_name_map[i] || "Сет #{i+1}"} сет"
-              .set-score
-                span(class=(s1_wins ? "w1" : ""))= set.pair1_score.to_i
-                span.dash —
-                span(class=(s2_wins ? "w2" : ""))= set.pair2_score.to_i
-        - else
-          .overall-score
-            span(class=(p1_wins ? "w1" : ""))= @match.pair1_score.to_i
-            span.dash —
-            span(class=(p2_wins ? "w2" : ""))= @match.pair2_score.to_i
-
-      / ── Right: Team 2 ──
-      .team-panel.team-panel-right class=((p2_wins ? "winner" : (p2_loses ? "loser" : "")))
-        .photo-area
-          - if pair2.nil?
-            .players-row
-              .player-initials-box ?
-              .player-initials-box ?
-          - elsif pair2.photo.attached?
-            = image_tag pair2.photo.variant(resize_to_fill: [540, 400]), class: "pair-photo", alt: ""
-          - else
-            .players-row
-              - [pair2.player1, pair2.player2].each do |player|
-                - user = player.user
-                - if user.photo.attached?
-                  = image_tag user.photo.variant(resize_to_fill: [200, 340]), class: "player-thumb", alt: ""
-                - else
-                  .player-initials-box= user.full_name.split.map(&:first).first(2).join.upcase
-        .team-info
-          - if pair2
-            .team-names
-              = pair2.player1.full_name.split.last
-              br
-              = pair2.player2.full_name.split.last
+        / ── Right: Team 2 ──
+        .team-panel.team-panel-right class=((p2_wins ? "winner" : (p2_loses ? "loser" : "")))
+          .photo-area
+            - if pair2.nil?
+              .players-row
+                .player-initials-box ?
+                .player-initials-box ?
+            - elsif pair2.photo.attached?
+              = image_tag pair2.photo.variant(resize_to_fill: [540, 400]), class: "pair-photo", alt: ""
+            - else
+              .players-row
+                - [pair2.player1, pair2.player2].each do |player|
+                  - user = player.user
+                  - if user.photo.attached?
+                    = image_tag user.photo.variant(resize_to_fill: [200, 340]), class: "player-thumb", alt: ""
+                  - else
+                    .player-initials-box= user.full_name.split.map(&:first).first(2).join.upcase
+          .team-info
+            - if pair2
+              .team-names
+                = pair2.player1.full_name.split.last
+                br
+                = pair2.player2.full_name.split.last
+    - if @match.result_card_image.attached?
+      = link_to rails_blob_url(@match.result_card_image, disposition: :attachment), class: "download-btn" do
+        | ↓ Скачать картинку

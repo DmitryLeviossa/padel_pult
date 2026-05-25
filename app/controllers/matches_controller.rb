@@ -2,6 +2,7 @@ class MatchesController < ApplicationController
   before_action :set_match
   before_action :authorize_tournament_owner!, except: :result_card
   before_action :ensure_tournament_not_completed!, except: :result_card
+  skip_before_action :authenticate_user!, only: :result_card
 
   def update
     if @match.has_downstream_results?
@@ -27,6 +28,7 @@ class MatchesController < ApplicationController
         end
       end
       broadcast_online_update
+      generate_result_card_image
       redirect_to tournament_path(@match.tournament), notice: "Результат сохранён."
     else
       redirect_to tournament_path(@match.tournament), alert: "Не удалось сохранить результат."
@@ -34,6 +36,10 @@ class MatchesController < ApplicationController
   end
 
   def result_card
+    unless @match.completed? && @match.pair1.present? && @match.pair2.present?
+      raise ActiveRecord::RecordNotFound
+    end
+
     @pair1 = @match.pair1
     @pair2 = @match.pair2
     @match_sets = @match.match_sets.order(:set_number)
@@ -57,6 +63,7 @@ class MatchesController < ApplicationController
         handle_mixed_match_completion
       end
       broadcast_online_update
+      generate_result_card_image
       redirect_to tournament_path(@match.tournament), notice: "Матч завершён."
     else
       redirect_to tournament_path(@match.tournament), alert: "Не удалось завершить матч."
@@ -72,6 +79,17 @@ class MatchesController < ApplicationController
   end
 
   private
+
+  def generate_result_card_image
+    match_id = @match.id
+    Thread.new do
+      ActiveRecord::Base.connection_pool.with_connection do
+        GenerateMatchResultCardJob.perform_now(match_id)
+      end
+    rescue => e
+      Rails.logger.error "GenerateMatchResultCardJob failed for match #{match_id}: #{e.message}"
+    end
+  end
 
   def needs_winner_advance?
     @match.tournament.olympic? || (@match.tournament.mixed? && @match.bracket?)

@@ -36,6 +36,7 @@
 class Match < ApplicationRecord
   belongs_to :tournament
   belongs_to :bracket
+  has_one_attached :result_card_image
   belongs_to :pair1, class_name: "Pair", optional: true
   belongs_to :pair2, class_name: "Pair", optional: true
   belongs_to :winner, class_name: "Pair", optional: true
