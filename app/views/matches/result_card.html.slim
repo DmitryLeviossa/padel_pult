@@ -303,7 +303,7 @@ html lang="ru"
                 .player-initials-box ?
             - elsif pair1.photo.attached?
               = image_tag pair1.photo.variant(resize_to_fill: [540, 400]), class: "pair-photo", alt: ""
-            - else
+            - elsif pair1.player1.user.photo.attached? || pair1.player2.user.photo.attached?
               .players-row
                 - [pair1.player1, pair1.player2].each do |player|
                   - user = player.user
@@ -311,6 +311,8 @@ html lang="ru"
                     = image_tag user.photo.variant(resize_to_fill: [200, 340]), class: "player-thumb", alt: ""
                   - else
                     = image_tag "/default_user_photo.svg", class: "player-thumb", alt: ""
+            - else
+              = image_tag "/default_pair_photo.svg", class: "pair-photo", alt: ""
           .team-info
             - if pair1
               .team-names
@@ -352,7 +354,7 @@ html lang="ru"
                 .player-initials-box ?
             - elsif pair2.photo.attached?
               = image_tag pair2.photo.variant(resize_to_fill: [540, 400]), class: "pair-photo", alt: ""
-            - else
+            - elsif pair2.player1.user.photo.attached? || pair2.player2.user.photo.attached?
               .players-row
                 - [pair2.player1, pair2.player2].each do |player|
                   - user = player.user
@@ -360,6 +362,8 @@ html lang="ru"
                     = image_tag user.photo.variant(resize_to_fill: [200, 340]), class: "player-thumb", alt: ""
                   - else
                     = image_tag "/default_user_photo.svg", class: "player-thumb", alt: ""
+            - else
+              = image_tag "/default_pair_photo.svg", class: "pair-photo", alt: ""
           .team-info
             - if pair2
               .team-names

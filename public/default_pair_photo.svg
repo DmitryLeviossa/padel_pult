@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 270 380">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="0.5" y2="1">
+      <stop offset="0%" stop-color="#0d2244"/>
+      <stop offset="100%" stop-color="#0c1326"/>
+    </linearGradient>
+    <linearGradient id="figL" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#2a3f6a"/>
+      <stop offset="100%" stop-color="#1e3059"/>
+    </linearGradient>
+    <linearGradient id="figR" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#2a3f6a"/>
+      <stop offset="100%" stop-color="#1e3059"/>
+    </linearGradient>
+  </defs>
+
+  <rect width="270" height="380" fill="url(#bg)"/>
+
+  <!-- Left figure -->
+  <circle cx="78" cy="110" r="42" fill="url(#figL)"/>
+  <path d="M-10 420 Q-10 200 78 200 Q166 200 166 420 Z" fill="url(#figL)"/>
+
+  <!-- Right figure -->
+  <circle cx="192" cy="110" r="42" fill="url(#figR)"/>
+  <path d="M104 420 Q104 200 192 200 Q280 200 280 420 Z" fill="url(#figR)"/>
+
+  <!-- Subtle center divider -->
+  <line x1="135" y1="50" x2="135" y2="370" stroke="rgba(255,255,255,0.05)" stroke-width="1"/>
+</svg>

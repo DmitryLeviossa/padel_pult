@@ -23,6 +23,7 @@ css:
   .group-cross-table td.score-win { color: var(--bs-success); }
   .group-cross-table td.score-loss { color: var(--bs-danger); }
   .group-cross-table .enter-score-btn { font-size: 11px; padding: 1px 6px; }
+  .group-cross-table .score-dropdown-btn::after { display: none; }
   .group-cross-table tr.seeded-row > td:first-child,
   .group-cross-table tr.seeded-row > td:nth-child(2) { background-color: rgba(255, 193, 7, 0.08); }
   .group-cross-table th.seeded-col { background-color: rgba(255, 193, 7, 0.08); }
@@ -68,12 +69,19 @@ css:
                       - cell_is_pair2 = match && match.pair2_id == pair.id
                       td.score-cell.text-center class=(win ? "score-win" : "score-loss")
                         - if can_edit
-                          button.btn.btn-link.p-0.border-0.enter-score-btn style="color:inherit;text-decoration:none;cursor:pointer;" data-bs-toggle="modal" data-bs-target="#match-modal-#{match.id}" title="Изменить результат"
-                            - if cell_sets.any?
-                              - cell_sets.each do |set|
-                                span.d-block= cell_is_pair2 ? "#{set.pair2_score}:#{set.pair1_score}" : "#{set.pair1_score}:#{set.pair2_score}"
-                            - else
-                              = "#{score[0]}/#{score[1]}"
+                          .dropdown.d-inline
+                            button.btn.btn-link.p-0.border-0.score-dropdown-btn style="color:inherit;text-decoration:none;cursor:pointer;" data-bs-toggle="dropdown" aria-expanded="false"
+                              - if cell_sets.any?
+                                - cell_sets.each do |set|
+                                  span.d-block= cell_is_pair2 ? "#{set.pair2_score}:#{set.pair1_score}" : "#{set.pair1_score}:#{set.pair2_score}"
+                              - else
+                                = "#{score[0]}/#{score[1]}"
+                            ul.dropdown-menu.dropdown-menu-end
+                              li
+                                button.dropdown-item data-bs-toggle="modal" data-bs-target="#match-modal-#{match.id}"
+                                  | Изменить результат
+                              li
+                                = link_to "Открыть фото результата", result_card_tournament_match_path(tournament, match), target: "_blank", class: "dropdown-item"
                         - else
                           - if match
                             = link_to result_card_tournament_match_path(tournament, match), target: "_blank", style: "color:inherit;text-decoration:none;" do
