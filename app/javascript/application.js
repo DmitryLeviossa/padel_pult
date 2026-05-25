@@ -73,7 +73,7 @@ function initAutoSubmitFilters() {
 
 function initTooltips() {
   document.querySelectorAll("[data-bs-toggle='tooltip']").forEach(el => {
-    new bootstrap.Tooltip(el)
+    new bootstrap.Tooltip(el, { placement: 'top-end' })
   })
 }
 

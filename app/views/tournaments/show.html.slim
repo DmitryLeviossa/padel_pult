@@ -3,18 +3,27 @@
     h1.mb-0= @tournament.name
     .d-flex.gap-2
       - if @tournament.draft? && @tournament.league.owner == current_user
-        = link_to "Редактировать", edit_tournament_path(@tournament), class: "btn btn-outline-primary btn-sm"
-        = button_to "Открыть регистрацию", open_registration_tournament_path(@tournament), method: :post, class: "btn btn-outline-success btn-sm"
-        = button_to "Удалить турнир", tournament_path(@tournament), method: :delete, class: "btn btn-outline-danger btn-sm", form: { data: { turbo_confirm: "Вы уверены, что хотите удалить этот турнир? Это действие необратимо." } }
+        = link_to edit_tournament_path(@tournament), class: "btn btn-outline-primary btn-sm", title: "Редактировать", data: { bs_toggle: "tooltip" } do
+          i.bi.bi-pencil
+        = button_to open_registration_tournament_path(@tournament), method: :post, class: "btn btn-outline-success btn-sm", title: "Открыть регистрацию", data: { bs_toggle: "tooltip" } do
+          i.bi.bi-person-check
+        = button_to tournament_path(@tournament), method: :delete, class: "btn btn-outline-danger btn-sm", title: "Удалить турнир", data: { bs_toggle: "tooltip" }, form: { data: { turbo_confirm: "Вы уверены, что хотите удалить этот турнир? Это действие необратимо." } } do
+          i.bi.bi-trash
       - if @tournament.registration? && @tournament.league.owner == current_user
-        = link_to "Редактировать", edit_tournament_path(@tournament), class: "btn btn-outline-primary btn-sm"
-        = button_to "Активировать турнир", activate_tournament_path(@tournament), method: :post, class: "btn btn-success btn-sm"
-        = button_to "Отменить турнир", cancel_tournament_path(@tournament), method: :post, class: "btn btn-outline-danger btn-sm", form: { data: { turbo_confirm: "Вы уверены, что хотите отменить этот турнир? Все зарегистрированные участники получат уведомление." } }
+        = link_to edit_tournament_path(@tournament), class: "btn btn-outline-primary btn-sm", title: "Редактировать", data: { bs_toggle: "tooltip" } do
+          i.bi.bi-pencil
+        = button_to activate_tournament_path(@tournament), method: :post, class: "btn btn-success btn-sm", title: "Активировать турнир", data: { bs_toggle: "tooltip" } do
+          i.bi.bi-play-fill
+        = button_to cancel_tournament_path(@tournament), method: :post, class: "btn btn-outline-danger btn-sm", title: "Отменить турнир", data: { bs_toggle: "tooltip" }, form: { data: { turbo_confirm: "Вы уверены, что хотите отменить этот турнир? Все зарегистрированные участники получат уведомление." } } do
+          i.bi.bi-x-circle
       - if !@tournament.completed? && @tournament.league.owner == current_user
-        = link_to "Заполнить результаты", fill_results_tournament_path(@tournament), class: "btn btn-primary btn-sm"
+        = link_to fill_results_tournament_path(@tournament), class: "btn btn-primary btn-sm", title: "Заполнить результаты", data: { bs_toggle: "tooltip" } do
+          i.bi.bi-clipboard-check
       - if @tournament.active? || @tournament.completed?
-        = link_to "📺 Онлайн", online_tournament_path(@tournament), class: "btn btn-outline-info btn-sm", target: "_blank"
-      = link_to "← #{@tournament.league.name}", league_path(@tournament.league), class: "btn btn-outline-secondary btn-sm"
+        = link_to online_tournament_path(@tournament), class: "btn btn-outline-info btn-sm", title: "Онлайн трансляция", target: "_blank", data: { bs_toggle: "tooltip" } do
+          i.bi.bi-broadcast
+      = link_to league_path(@tournament.league), class: "btn btn-outline-secondary btn-sm", title: @tournament.league.name, data: { bs_toggle: "tooltip" } do
+        i.bi.bi-arrow-left
 
   .row.mb-4
     .col-md-8
