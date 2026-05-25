@@ -311,7 +311,7 @@ html lang="ru"
                   - if user.photo.attached?
                     = image_tag user.photo.variant(resize_to_fill: [200, 340]), class: "player-thumb", alt: ""
                   - else
-                    .player-initials-box= user.full_name.split.map(&:first).first(2).join.upcase
+                    = image_tag "/default_user_photo.svg", class: "player-thumb", alt: ""
           .team-info
             - if pair1
               .team-names
@@ -360,7 +360,7 @@ html lang="ru"
                   - if user.photo.attached?
                     = image_tag user.photo.variant(resize_to_fill: [200, 340]), class: "player-thumb", alt: ""
                   - else
-                    .player-initials-box= user.full_name.split.map(&:first).first(2).join.upcase
+                    = image_tag "/default_user_photo.svg", class: "player-thumb", alt: ""
           .team-info
             - if pair2
               .team-names

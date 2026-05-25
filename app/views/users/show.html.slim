@@ -9,9 +9,7 @@
         - if @user.photo.attached?
           = image_tag @user.photo.variant(resize_to_fill: [600, 600]), class: "card-img-top", style: "object-fit: cover; aspect-ratio: 1;"
         - else
-          - initials = @user.full_name.split.map(&:first).first(2).join.upcase
-          .d-flex.align-items-center.justify-content-center style="aspect-ratio: 1; background: var(--color-bg-surface); border-bottom: 1px solid var(--color-border); font-size: 4rem; font-weight: 600; color: var(--color-text-muted);"
-            = initials
+          = image_tag "/default_user_photo.svg", class: "card-img-top", style: "object-fit: cover; aspect-ratio: 1;"
         .card-body
           - if @user.gender_male?
             span.badge.badge-gender-male.mb-2 М
