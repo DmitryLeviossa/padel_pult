@@ -1,8 +1,8 @@
 class TournamentsController < ApplicationController
   before_action :set_league, only: [ :new, :create ]
-  before_action :set_tournament, only: [ :show, :edit, :update, :destroy, :open_registration, :activate, :cancel, :fill_results, :complete, :online, :auto_assign_pairs ]
+  before_action :set_tournament, only: [ :show, :edit, :update, :destroy, :open_registration, :activate, :cancel, :fill_results, :complete, :online, :auto_assign_pairs, :seed_bracket ]
   before_action :authorize_owner!, only: [ :new, :create ]
-  before_action :authorize_tournament_owner!, only: [ :edit, :update, :destroy, :open_registration, :activate, :cancel, :fill_results, :complete, :auto_assign_pairs ]
+  before_action :authorize_tournament_owner!, only: [ :edit, :update, :destroy, :open_registration, :activate, :cancel, :fill_results, :complete, :auto_assign_pairs, :seed_bracket ]
   skip_before_action :authenticate_user!, only: [ :online ]
 
   def index
@@ -191,6 +191,13 @@ class TournamentsController < ApplicationController
     end
   end
 
+  def seed_bracket
+    Tournaments::Matches::StartBracketService.new(@tournament).call
+    redirect_to tournament_path(@tournament), notice: "Сетка заполнена."
+  rescue ActiveRecord::RecordNotFound
+    redirect_to tournament_path(@tournament), alert: "Не удалось заполнить сетку: неверная структура турнира."
+  end
+
   def complete
     unless @tournament.active?
       redirect_to tournament_path(@tournament), alert: "Завершить можно только активный турнир."
@@ -283,8 +290,14 @@ class TournamentsController < ApplicationController
       stats_by_id = {}
       pairs_ordered.each do |pair|
         wins       = g_matches.count { |m| m.completed? && m.winner_id == pair.id }
-        games_won  = g_matches.sum { |m| m.pair1_id == pair.id ? m.pair1_score.to_i : (m.pair2_id == pair.id ? m.pair2_score.to_i : 0) }
-        games_lost = g_matches.sum { |m| m.pair1_id == pair.id ? m.pair2_score.to_i : (m.pair2_id == pair.id ? m.pair1_score.to_i : 0) }
+        games_won  = g_matches.sum { |m|
+          next 0 unless m.completed?
+          m.pair1_id == pair.id ? m.match_sets.sum(&:pair1_score) : (m.pair2_id == pair.id ? m.match_sets.sum(&:pair2_score) : 0)
+        }
+        games_lost = g_matches.sum { |m|
+          next 0 unless m.completed?
+          m.pair1_id == pair.id ? m.match_sets.sum(&:pair2_score) : (m.pair2_id == pair.id ? m.match_sets.sum(&:pair1_score) : 0)
+        }
         stats_by_id[pair.id] = { pair: pair, wins: wins, games_diff: games_won - games_lost }
       end
 
@@ -306,6 +319,11 @@ class TournamentsController < ApplicationController
     if @tournament.loser_bracket?
       @loser_bracket_rounds, @loser_third_place_match = extract_bracket_rounds(@matches.select(&:loser_bracket?))
     end
+
+    real_group_matches = @tournament.matches.group_stage.where.not(pair1_id: nil, pair2_id: nil)
+    all_groups_done = real_group_matches.exists? && !real_group_matches.pending.exists?
+    bracket_r1 = @bracket_rounds.first || []
+    @bracket_unseeded = all_groups_done && bracket_r1.any? && bracket_r1.all? { |m| m.pair1_id.nil? }
   end
 
   def extract_bracket_rounds(matches)

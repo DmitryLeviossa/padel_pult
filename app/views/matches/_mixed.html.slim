@@ -106,6 +106,8 @@ css:
     h4.mb-0 Сетка
     - if is_owner && !tournament.completed?
       .d-flex.gap-2
+        - if bracket_unseeded
+          = button_to "Заполнить сетку", seed_bracket_tournament_path(tournament), method: :post, class: "btn btn-primary btn-sm"
         - if tournament.active?
           - all_done = tournament.all_matches_completed?
           = link_to "Завершить турнир", fill_results_tournament_path(tournament), class: "btn btn-success btn-sm#{' disabled' unless all_done}", aria: { disabled: (true unless all_done) }, tabindex: (all_done ? nil : "-1")

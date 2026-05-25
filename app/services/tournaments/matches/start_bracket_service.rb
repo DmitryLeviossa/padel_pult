@@ -20,7 +20,7 @@ module Tournaments
       private
 
       def all_group_matches_completed?
-        group_matches = @tournament.matches.group_stage
+        group_matches = @tournament.matches.group_stage.where.not(pair1_id: nil, pair2_id: nil)
         group_matches.any? && !group_matches.pending.exists?
       end
 

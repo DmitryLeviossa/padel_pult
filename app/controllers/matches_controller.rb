@@ -17,6 +17,7 @@ class MatchesController < ApplicationController
     if @match.update(attrs.merge(status: :completed, winner_id: winner_id))
       if was_completed
         Tournaments::Matches::AdvanceWinnerService.new(@match).call if needs_winner_advance?
+        Tournaments::Matches::StartBracketService.new(@match.tournament).call if @match.tournament.mixed? && @match.group_stage?
       else
         case @match.tournament.type
         when "olympic"

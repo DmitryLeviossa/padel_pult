@@ -48,6 +48,7 @@ Rails.application.routes.draw do
       patch :complete
       get :online
       post :auto_assign_pairs
+      post :seed_bracket
     end
   end
 end

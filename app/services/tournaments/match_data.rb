@@ -71,8 +71,14 @@ module Tournaments
         stats_by_id = {}
         pairs_ordered.each do |pair|
           wins       = g_matches.count { |m| m.completed? && m.winner_id == pair.id }
-          games_won  = g_matches.sum { |m| m.pair1_id == pair.id ? m.pair1_score.to_i : (m.pair2_id == pair.id ? m.pair2_score.to_i : 0) }
-          games_lost = g_matches.sum { |m| m.pair1_id == pair.id ? m.pair2_score.to_i : (m.pair2_id == pair.id ? m.pair1_score.to_i : 0) }
+          games_won  = g_matches.sum { |m|
+            next 0 unless m.completed?
+            m.pair1_id == pair.id ? m.match_sets.sum(&:pair1_score) : (m.pair2_id == pair.id ? m.match_sets.sum(&:pair2_score) : 0)
+          }
+          games_lost = g_matches.sum { |m|
+            next 0 unless m.completed?
+            m.pair1_id == pair.id ? m.match_sets.sum(&:pair2_score) : (m.pair2_id == pair.id ? m.match_sets.sum(&:pair1_score) : 0)
+          }
           stats_by_id[pair.id] = { pair: pair, wins: wins, games_diff: games_won - games_lost }
         end
 
