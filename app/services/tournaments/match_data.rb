@@ -51,7 +51,7 @@ module Tournaments
 
         pairs_ordered = @tournament.pairs
                                    .select { |p| pair_ids.include?(p.id) }
-                                   .sort_by { |p| [ -p.score, p.id ] }
+                                   .sort_by { |p| [ p.seeded? ? 0 : 1, -p.score, p.id ] }
 
         pair_index = {}
         pairs_ordered.each_with_index { |p, i| pair_index[p.id] = i + 1 }

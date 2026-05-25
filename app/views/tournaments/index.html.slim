@@ -54,7 +54,7 @@
                   - if tournament.mixed?
                     .d-flex.align-items-center.gap-3
                       small.text-muted= "Количество групп: #{tournament.groups_count}"
-                      small.text-muted= "Пар в основную сетку: #{tournament.pairs_to_bracket}"
+                      small.text-muted= "Пар в плей-офф из группы: #{tournament.pairs_to_bracket}"
                       - if tournament.loser_bracket?
                         small.text-muted Сетка проигравших
   - else

@@ -10,7 +10,14 @@ export default class extends Controller {
   toggle() {
     const select = this.element.querySelector("select[data-tournament-type-select]")
     const type = select?.value
-    this.mixedConfigTarget.classList.toggle("d-none", type !== "mixed")
-    this.olympicConfigTarget.classList.toggle("d-none", type !== "olympic")
+    this.setVisible(this.mixedConfigTarget, type === "mixed")
+    this.setVisible(this.olympicConfigTarget, type === "olympic")
+  }
+
+  setVisible(target, visible) {
+    target.classList.toggle("d-none", !visible)
+    target.querySelectorAll("input, select, textarea").forEach(el => {
+      el.disabled = !visible
+    })
   }
 }

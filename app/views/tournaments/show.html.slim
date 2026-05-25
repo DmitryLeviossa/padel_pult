@@ -41,7 +41,7 @@
         - elsif @tournament.mixed?
           dt.col-sm-3 Количество групп
           dd.col-sm-9= @tournament.groups_count
-          dt.col-sm-3 Пар в основную сетку
+          dt.col-sm-3 Пар в плей-офф из группы
           dd.col-sm-9= @tournament.pairs_to_bracket
           dt.col-sm-3 Сетка проигравших
           dd.col-sm-9
@@ -116,8 +116,9 @@
           th= sort_link(@tournament, "score", "Очки пары", @sort, @direction)
           th= sort_link(@tournament, "created_at", "Дата подачи заявки", @sort, @direction)
           th Фото пары
-          - if @tournament.registration? && @tournament.league.owner == current_user
+          - if @tournament.registration?
             th Сеяная
+          - if @tournament.registration? && @tournament.league.owner == current_user
             th
       tbody
         - eligible_pairs = @tournament.eligible_pairs
@@ -152,11 +153,18 @@
                       i.bi.bi-camera.text-muted style="font-size:1.2rem;" title="Загрузить фото пары"
               - elsif pair.photo.attached?
                 = image_tag pair.photo.variant(resize_to_fill: [80, 80]), class: "rounded", style: "width:40px;height:40px;object-fit:cover;"
-            - if @tournament.registration? && @tournament.league.owner == current_user
+            - if @tournament.registration?
               td
-                = form_with url: tournament_pair_path(@tournament, pair), method: :patch, class: "d-inline" do |f|
-                  = hidden_field_tag "pair[seeded]", "0"
-                  = check_box_tag "pair[seeded]", "1", pair.seeded, class: "form-check-input", onchange: "this.form.requestSubmit()", style: "width: 1.2em; height: 1.2em; cursor: pointer;"
+                - if @tournament.league.owner == current_user
+                  = form_with url: tournament_pair_path(@tournament, pair), method: :patch, class: "d-inline" do |f|
+                    = hidden_field_tag "pair[seeded]", "0"
+                    = check_box_tag "pair[seeded]", "1", pair.seeded, class: "form-check-input", onchange: "this.form.requestSubmit()", style: "width: 1.2em; height: 1.2em; cursor: pointer;"
+                - else
+                  - if pair.seeded
+                    i.bi.bi-check-circle-fill.text-success
+                  - else
+                    i.bi.bi-x-circle.text-muted
+            - if @tournament.registration? && @tournament.league.owner == current_user
               td= button_to tournament_pair_path(@tournament, pair), method: :delete, class: "btn btn-danger btn-sm", title: "Удалить", form: { data: { turbo_confirm: "Вы уверены, что хотите удалить эту пару?" } } do
                 i.bi.bi-trash
   - else

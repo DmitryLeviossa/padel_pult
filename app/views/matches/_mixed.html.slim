@@ -23,13 +23,16 @@ css:
   .group-cross-table td.score-win { color: var(--bs-success); }
   .group-cross-table td.score-loss { color: var(--bs-danger); }
   .group-cross-table .enter-score-btn { font-size: 11px; padding: 1px 6px; }
+  .group-cross-table tr.seeded-row > td:first-child,
+  .group-cross-table tr.seeded-row > td:nth-child(2) { background-color: rgba(255, 193, 7, 0.08); }
+  .group-cross-table th.seeded-col { background-color: rgba(255, 193, 7, 0.08); }
 
 / ── Group stage ────────────────────────────────────────────────────────────
 .d-flex.justify-content-between.align-items-center.mt-4.mb-3
   h4.mb-0 Групповой этап
   - if is_owner && !tournament.completed?
     - unless any_completed
-      = button_to "Расставить пары автоматически", auto_assign_pairs_tournament_path(tournament), method: :post, class: "btn btn-outline-secondary btn-sm"
+      = button_to "Переставить пары", auto_assign_pairs_tournament_path(tournament), method: :post, class: "btn btn-outline-secondary btn-sm"
 
 .row
   - group_data.each do |gd|
@@ -41,15 +44,15 @@ css:
             tr
               th.text-center №
               th Пара
-              - gd[:pairs_ordered].each_with_index do |_, i|
-                th.text-center= "#{i + 1})"
+              - gd[:pairs_ordered].each_with_index do |col_pair, i|
+                th.text-center(class=(col_pair.seeded? ? "seeded-col" : nil))= "#{i + 1})"
               th.text-center В
               th.text-center Разница
               th.text-center Место
           tbody
             - gd[:pairs_ordered].each_with_index do |pair, row_idx|
               - stat = gd[:stats_by_id][pair.id]
-              tr
+              tr class=(pair.seeded? ? "seeded-row" : nil)
                 td.text-center= row_idx + 1
                 td= pair.player1.full_name + " / " + pair.player2.full_name
                 - gd[:pairs_ordered].each_with_index do |opp, col_idx|

@@ -106,6 +106,11 @@ class Tournament < ApplicationRecord
   end
 
   def pairs_to_bracket_valid_for_groups
+    return unless pairs_to_bracket && groups_count&.positive?
+    total = pairs_to_bracket * groups_count
+    if total > max_pairs
+      errors.add(:pairs_to_bracket, "слишком много: #{total} пар не помещается в #{max_pairs} (#{pairs_to_bracket} × #{groups_count} групп)")
+    end
   end
 
   def end_date_not_before_start_date

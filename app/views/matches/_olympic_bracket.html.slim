@@ -6,7 +6,7 @@
   - if is_owner && !tournament.completed?
     .d-flex.gap-2
       - unless any_completed
-        = button_to "Расставить пары автоматически", auto_assign_pairs_tournament_path(tournament), method: :post, class: "btn btn-outline-secondary btn-sm"
+        = button_to "Переставить пары", auto_assign_pairs_tournament_path(tournament), method: :post, class: "btn btn-outline-secondary btn-sm"
       - if tournament.active?
         - all_done = tournament.all_matches_completed?
         = link_to "Завершить турнир", fill_results_tournament_path(tournament), class: "btn btn-success btn-sm#{' disabled' unless all_done}", aria: { disabled: (true unless all_done) }, tabindex: (all_done ? nil : "-1")

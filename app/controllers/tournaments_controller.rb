@@ -260,7 +260,7 @@ class TournamentsController < ApplicationController
       # Stable ordering: seed (highest score) first, then by id for determinism
       pairs_ordered = @tournament.pairs
                                  .select { |p| pair_ids.include?(p.id) }
-                                 .sort_by { |p| [ -p.score, p.id ] }
+                                 .sort_by { |p| [ p.seeded? ? 0 : 1, -p.score, p.id ] }
 
       # pair_index[pair_id] => 1-based position in stable order (for column headers)
       pair_index = {}

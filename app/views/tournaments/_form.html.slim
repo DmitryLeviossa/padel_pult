@@ -41,12 +41,14 @@
         - if tournament.errors[:groups_count].any?
           .invalid-feedback= tournament.errors[:groups_count].first
       .col-md-4
-        = f.label :pairs_to_bracket, "Пар в плей-офф", class: "form-label"
+        = f.label :pairs_to_bracket, "Пар в плей-офф из группы", class: "form-label"
         = f.number_field :pairs_to_bracket, class: "form-control #{"is-invalid" if tournament.errors[:pairs_to_bracket].any?}", min: 1
         - if tournament.errors[:pairs_to_bracket].any?
           .invalid-feedback= tournament.errors[:pairs_to_bracket].first
+        - elsif tournament.groups_count.to_i > 0 && tournament.pairs_to_bracket.to_i > 0
+          small.form-text.text-muted Итого #{tournament.pairs_to_bracket.to_i * tournament.groups_count.to_i} пар в плей-офф
         - elsif tournament.groups_count.to_i > 0
-          small.form-text.text-muted Должно быть кратно количеству групп (например, #{tournament.groups_count.to_i * 2} при #{tournament.groups_count} группах)
+          small.form-text.text-muted Топ N пар из каждой группы проходят в плей-офф
       .col-md-4.d-flex.align-items-end
         .form-check.mb-2
           = f.check_box :loser_bracket, class: "form-check-input"
