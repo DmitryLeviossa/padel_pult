@@ -52,7 +52,22 @@ module Tournaments
           [pair, wins, games_won]
         end
 
-        stats.sort_by { |_, wins, games| [-wins, -games] }.map(&:first)
+        stats.sort { |a, b| compare_standings(a, b, matches) }.map(&:first)
+      end
+
+      def compare_standings(a, b, matches)
+        pair_a, wins_a, games_a = a
+        pair_b, wins_b, games_b = b
+
+        return wins_b <=> wins_a if wins_a != wins_b
+        return games_b <=> games_a if games_a != games_b
+
+        h2h = matches.find_by(pair1: pair_a, pair2: pair_b) ||
+              matches.find_by(pair1: pair_b, pair2: pair_a)
+
+        return 0 unless h2h&.winner_id
+
+        h2h.winner_id == pair_a.id ? -1 : 1
       end
 
       def seed_stage(groups_data, bracket_type)
