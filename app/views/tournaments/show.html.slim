@@ -171,7 +171,7 @@
                   label style="cursor:pointer;display:block;"
                     = file_field_tag "pair[photo]", accept: "image/*", class: "d-none", onchange: "this.form.submit()"
                     - if pair.photo.attached?
-                      i.bi.bi-check-circle-fill.text-success style="font-size:1.2rem;" title="Фото загружено"
+                      = image_tag pair.photo.variant(resize_to_fill: [80, 80]), class: "rounded", style: "width:40px;height:40px;object-fit:cover;"
                     - else
                       i.bi.bi-camera.text-muted style="font-size:1.2rem;" title="Загрузить фото пары"
               - elsif pair.photo.attached?
