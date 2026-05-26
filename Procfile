@@ -1,2 +1,2 @@
-web: bundle exec thrust bin/rails server
+web: bin/rails server -p $PORT
 worker: bundle exec sidekiq -C config/sidekiq.yml
