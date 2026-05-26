@@ -54,7 +54,10 @@ class GenerateMatchResultCardJob < ApplicationJob
   private
 
   def browser_executable
+    return ENV["BROWSER_PATH"] if ENV["BROWSER_PATH"].present? && File.exist?(ENV["BROWSER_PATH"])
+
     candidates = [
+      "/app/.chrome-for-testing/chrome-linux64/chrome",
       "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome",
       "/usr/bin/google-chrome-stable",
       "/usr/bin/google-chrome",
