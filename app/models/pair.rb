@@ -33,6 +33,8 @@ class Pair < ApplicationRecord
   has_one_attached :photo
 
   before_create :snapshot_player_scores
+  after_create :inherit_photo_from_league_history
+  after_update :inherit_photo_from_league_history, if: :player_ids_changed?
 
   validate :players_must_be_different
   validate :each_player_once_per_tournament
@@ -46,6 +48,28 @@ class Pair < ApplicationRecord
   end
 
   private
+
+  def player_ids_changed?
+    saved_change_to_player1_id? || saved_change_to_player2_id?
+  end
+
+  def inherit_photo_from_league_history
+    return if photo.attached?
+
+    matching_pair = Pair
+      .with_attached_photo
+      .joins(:tournament)
+      .where(tournaments: { league_id: tournament.league_id })
+      .where.not(tournament_id: tournament_id)
+      .where(
+        "(player1_id = :p1 AND player2_id = :p2) OR (player1_id = :p2 AND player2_id = :p1)",
+        p1: player1_id, p2: player2_id
+      )
+      .order(created_at: :desc)
+      .first
+
+    photo.attach(matching_pair.photo.blob) if matching_pair
+  end
 
   def snapshot_player_scores
     self.player1_score = player1.score
