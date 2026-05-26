@@ -71,6 +71,73 @@ RSpec.describe "Pairs", type: :request do
     end
   end
 
+  describe "PATCH /tournaments/:tournament_id/pairs/:id (player change)" do
+    let(:member3) { create(:user) }
+    let(:league_user3) { create(:league_user, league: league, user: member3, score: 42) }
+    let(:pair) { create(:pair, tournament: registration_tournament, player1: league_user1, player2: league_user2) }
+
+    before { league_user3 }
+
+    context "as league owner" do
+      before { sign_in owner }
+
+      it "changes player1 and updates player1_score" do
+        patch tournament_pair_path(registration_tournament, pair),
+              params: { pair: { player1_id: league_user3.id } }
+
+        pair.reload
+        expect(pair.player1).to eq(league_user3)
+        expect(pair.player1_score).to eq(league_user3.score)
+        expect(response).to redirect_to(tournament_path(registration_tournament))
+      end
+
+      it "changes player2 and updates player2_score" do
+        patch tournament_pair_path(registration_tournament, pair),
+              params: { pair: { player2_id: league_user3.id } }
+
+        pair.reload
+        expect(pair.player2).to eq(league_user3)
+        expect(pair.player2_score).to eq(league_user3.score)
+        expect(response).to redirect_to(tournament_path(registration_tournament))
+      end
+
+      it "does not change player when tournament is not in registration" do
+        active_tournament = create(:tournament, league: league, status: :active)
+        active_pair = create(:pair, tournament: active_tournament, player1: league_user1, player2: league_user2)
+
+        patch tournament_pair_path(active_tournament, active_pair),
+              params: { pair: { player1_id: league_user3.id } }
+
+        active_pair.reload
+        expect(active_pair.player1).to eq(league_user1)
+        expect(response).to redirect_to(tournament_path(active_tournament))
+      end
+
+      it "does not change player to one already in another pair" do
+        other_pair = create(:pair, tournament: registration_tournament, player1: league_user3, player2: create(:league_user, league: league))
+
+        patch tournament_pair_path(registration_tournament, pair),
+              params: { pair: { player1_id: other_pair.player1_id } }
+
+        pair.reload
+        expect(pair.player1).to eq(league_user1)
+      end
+    end
+
+    context "as non-owner" do
+      before { sign_in member1 }
+
+      it "does not change player and redirects" do
+        patch tournament_pair_path(registration_tournament, pair),
+              params: { pair: { player1_id: league_user3.id } }
+
+        pair.reload
+        expect(pair.player1).to eq(league_user1)
+        expect(response).to redirect_to(tournament_path(registration_tournament))
+      end
+    end
+  end
+
   describe "DELETE /tournaments/:tournament_id/pairs/:id" do
     let(:pair) { create(:pair, tournament: registration_tournament, player1: league_user1, player2: league_user2) }
 

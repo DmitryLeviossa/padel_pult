@@ -77,6 +77,7 @@ class TournamentsController < ApplicationController
       if @tournament.league.owner == current_user
         occupied_ids = @tournament.pairs.flat_map { |p| [ p.player1_id, p.player2_id ] }
         @owner_available_players = @tournament.league.league_users.includes(:user).where.not(id: occupied_ids)
+        @all_league_users = @tournament.league.league_users.includes(:user).to_a
       end
     end
   end

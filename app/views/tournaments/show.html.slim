@@ -133,6 +133,8 @@
         - eligible_pairs = @tournament.eligible_pairs
         - eligible_pair_ids = eligible_pairs.map(&:id).to_set
         - last_eligible_id = @tournament.pairs.size > @tournament.max_pairs ? eligible_pairs.last&.id : nil
+        - owner_can_edit_players = @tournament.registration? && @tournament.league.owner == current_user && @all_league_users
+        - all_pair_player_ids = owner_can_edit_players ? @pairs.flat_map { |p| [p.player1_id, p.player2_id] }.to_set : nil
         - @pairs.each_with_index do |pair, index|
           - row_style = eligible_pair_ids.include?(pair.id) ? "" : "opacity: 0.45"
           - row_style += "; border-bottom: 2px solid #dc3545 !important" if pair.id == last_eligible_id
@@ -143,11 +145,23 @@
               td= index + 1
             td
               = render "shared/avatar", user: pair.player1.user
-            td= pair.player1.full_name
+            td
+              - if owner_can_edit_players
+                - avail_p1 = @all_league_users.select { |lu| lu.id == pair.player1_id || lu.id == pair.player2_id || !all_pair_player_ids.include?(lu.id) }
+                = form_with url: tournament_pair_path(@tournament, pair), method: :patch, class: "d-inline" do |f|
+                  = select_tag "pair[player1_id]", options_for_select(avail_p1.map { |lu| [lu.full_name, lu.id] }, pair.player1_id), class: "form-select form-select-sm", style: "min-width: 140px;", onchange: "this.form.requestSubmit()"
+              - else
+                = pair.player1.full_name
             td= pair.player1_score
             td
               = render "shared/avatar", user: pair.player2.user
-            td= pair.player2.full_name
+            td
+              - if owner_can_edit_players
+                - avail_p2 = @all_league_users.select { |lu| lu.id == pair.player1_id || lu.id == pair.player2_id || !all_pair_player_ids.include?(lu.id) }
+                = form_with url: tournament_pair_path(@tournament, pair), method: :patch, class: "d-inline" do |f|
+                  = select_tag "pair[player2_id]", options_for_select(avail_p2.map { |lu| [lu.full_name, lu.id] }, pair.player2_id), class: "form-select form-select-sm", style: "min-width: 140px;", onchange: "this.form.requestSubmit()"
+              - else
+                = pair.player2.full_name
             td= pair.player2_score
             td= pair.score
             td= ru_datetime(pair.created_at)
