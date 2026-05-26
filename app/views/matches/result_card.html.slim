@@ -242,6 +242,18 @@ html lang="ru"
         margin-bottom: 10px;
         filter: drop-shadow(0 2px 8px rgba(0,0,0,0.5));
       }
+      .powered-by {
+        margin-top: 22px;
+        font-size: 0.62rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.18em;
+        color: rgba(255,255,255,0.18);
+        text-align: center;
+      }
+      .powered-by span {
+        color: rgba(38,198,218,0.55);
+      }
       @media (max-width: 700px) {
         .result-card { grid-template-columns: 1fr; min-height: unset; }
         .center-panel { order: -1; border-bottom: 1px solid rgba(255,255,255,0.07); }
@@ -344,6 +356,9 @@ html lang="ru"
               span(class=(p1_wins ? "w1" : ""))= @match.pair1_score.to_i
               span.dash —
               span(class=(p2_wins ? "w2" : ""))= @match.pair2_score.to_i
+          .powered-by
+            | Создано в&nbsp;
+            span Padel Pult
 
         / ── Right: Team 2 ──
         .team-panel.team-panel-right class=((p2_wins ? "winner" : (p2_loses ? "loser" : "")))
