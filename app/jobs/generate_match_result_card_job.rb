@@ -20,7 +20,8 @@ class GenerateMatchResultCardJob < ApplicationJob
     browser = Ferrum::Browser.new(
       headless: true,
       window_size: [ 1000, 800 ],
-      browser_path: browser_executable
+      browser_path: browser_executable,
+      browser_options: { "no-sandbox" => nil, "disable-dev-shm-usage" => nil }
     )
 
     begin
