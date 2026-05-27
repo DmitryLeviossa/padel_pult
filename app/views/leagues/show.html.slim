@@ -138,11 +138,54 @@
     - if @league.owner == current_user
       #settings.tab-pane.fade role="tabpanel"
         h5.mb-3 Настройки
-        table.table.table-bordered.w-auto
-          tbody
-            tr
-              td.fw-semibold Квота турниров
-              td= @league.tournaments_quota.presence || "Без ограничений"
+
+        = form_with model: @league, url: league_path(@league), method: :patch do |f|
+          .card.mb-3
+            .card-header Квота турниров
+            .card-body
+              p.mb-0 = @league.tournaments_quota
+
+          .card.mb-4
+            .card-header Telegram чат
+            .card-body
+              .mb-3
+                = f.label :chat_id, "ID чата", class: "form-label"
+                = f.text_field :chat_id, class: "form-control", style: "max-width: 280px;", placeholder: "-100xxxxxxxxxx"
+                .form-text.mt-1
+                  p.fw-bold.mb-1 1. С помощью Telegram-ботов (самый простой способ)
+                  ol.ps-3
+                    li
+                      | Откройте Telegram и введите в строку поиска
+                      code  @getmyid_bot
+                      |  или
+                      code  @userinfobot
+                    li Запустите бота, нажав «Старт» (или /start).
+                    li
+                      strong Для личного чата:
+                      |  бот моментально пришлёт ваш User ID.
+                    li
+                      strong Для группы или канала:
+                      |  перешлите любое сообщение из этого чата или канала в бот. В ответ бот пришлёт Chat ID.
+                  p.fw-bold.mb-1.mt-2 2. Через веб-версию (для каналов и групп)
+                  p.mb-1
+                    | Если у вас есть ссылка на чат (вида
+                    code  t.me/name
+                    | ), можно использовать официальный API:
+                  ol.ps-3
+                    li
+                      | Перейдите по ссылке, заменив данные на свои:
+                      code  https://api.telegram.org/bot&lt;ВАШ_ТОКЕН&gt;/getChat?chat_id=@имя_группы
+                    li
+                      | Ваш токен бота можно получить в
+                      code  @BotFather
+                    li
+                      | В открывшемся окне браузера найдите строку
+                      code  "id":
+                      |  — это и есть нужный идентификатор (для каналов он обычно начинается с
+                      code  -100
+                      | ).
+
+          = f.submit "Сохранить", class: "btn btn-primary"
 
 - if @league.owner == current_user
   #inviteUsersModal.modal.fade aria-hidden="true" aria-labelledby="inviteUsersModalLabel" tabindex="-1"

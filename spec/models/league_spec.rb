@@ -8,6 +8,7 @@
 #  tournaments_quota :integer          default(5), not null
 #  created_at        :datetime         not null
 #  updated_at        :datetime         not null
+#  chat_id           :string
 #  owner_id          :bigint           not null
 #
 # Indexes

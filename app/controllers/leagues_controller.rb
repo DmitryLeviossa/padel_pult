@@ -72,8 +72,10 @@ class LeaguesController < ApplicationController
     @league = League.find(params[:id])
     authorize_owner!
 
+    settings_params = params[:league]&.keys&.any? { |k| %w[tournaments_quota chat_id].include?(k) }
+
     if @league.update(league_params)
-      redirect_to @league, notice: "Лига обновлена."
+      redirect_to settings_params ? league_path(@league, anchor: "settings") : @league, notice: "Лига обновлена."
     else
       @league_members = @league.users.order(:first_name, :last_name)
       render :edit, status: :unprocessable_entity
@@ -99,6 +101,6 @@ class LeaguesController < ApplicationController
   end
 
   def league_params
-    params.require(:league).permit(:name, :description, :logo, :owner_id)
+    params.require(:league).permit(:name, :description, :logo, :owner_id, :tournaments_quota, :chat_id)
   end
 end

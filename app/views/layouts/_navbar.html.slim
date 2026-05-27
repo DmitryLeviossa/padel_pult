@@ -33,6 +33,7 @@ nav.navbar.navbar-expand-lg
                   li
                     = link_to visit_notification_path(notification), class: "dropdown-item py-2 text-wrap"
                       .small= notification.message
+                      .text-muted style="font-size:0.7rem;"= l(notification.created_at, format: :short)
                 li.px-3.py-2.border-top.text-end
                   = button_to "Отметить всё прочитанным", mark_all_read_notifications_path, method: :patch, class: "btn btn-link btn-sm p-0 text-muted border-0 bg-transparent", form: { data: { turbo: false } }
               - else

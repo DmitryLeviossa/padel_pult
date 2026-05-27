@@ -2,7 +2,7 @@ class GenerateMatchResultCardJob < ApplicationJob
   queue_as :default
 
   def perform(match_id)
-    match = Match.includes(:tournament, :pair1, :pair2, :match_sets).find(match_id)
+    match = Match.includes(tournament: :league, pair1: {}, pair2: {}, match_sets: {}).find(match_id)
     return unless match.completed? && match.pair1.present? && match.pair2.present?
 
     host = Rails.env.production? ? ENV.fetch("APP_HOST") : "localhost:3000"
@@ -45,6 +45,9 @@ class GenerateMatchResultCardJob < ApplicationJob
           content_type: "image/png"
         )
       end
+
+      chat_id = match.tournament.league.chat_id
+      TelegramBotService.send_photo(chat_id: chat_id, image_path: tmp_path) if chat_id.present?
     ensure
       browser.quit
       FileUtils.rm_f(tmp_path)

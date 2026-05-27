@@ -33,7 +33,7 @@ class User < ApplicationRecord
 
   has_one_attached :photo
 
-  has_many :league_users
+  has_many :league_users, dependent: :destroy
   has_many :leagues, through: :league_users
   has_many :received_league_invitations, class_name: "LeagueInvitation",
                                          foreign_key: :invited_user_id,
@@ -45,7 +45,7 @@ class User < ApplicationRecord
   end
 
   ransacker :full_name do
-    Arel::Nodes::NamedFunction.new('CONCAT_WS', [Arel::Nodes.build_quoted(' '), arel_table[:first_name], arel_table[:last_name]])
+    Arel::Nodes::NamedFunction.new("CONCAT_WS", [ Arel::Nodes.build_quoted(" "), arel_table[:first_name], arel_table[:last_name] ])
   end
 
   def self.ransackable_attributes(_auth_object = nil)
