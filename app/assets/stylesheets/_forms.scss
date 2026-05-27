@@ -27,6 +27,14 @@
   min-height: calc(1.5em + 0.75rem + 2px);
 }
 
+// Tom Select sm — ts-control hardcodes base padding; override for sm wrappers to match form-control-sm height
+.ts-wrapper.form-select-sm .ts-control,
+.ts-wrapper.form-control-sm .ts-control {
+  padding: 0.25rem 0.5rem;
+  font-size: 0.8203125rem;
+  min-height: 0;
+}
+
 // Native date/time pickers — force browser chrome into dark mode
 input[type="date"],
 input[type="time"],
@@ -137,3 +145,4 @@ input[type="datetime-local"] {
 
 // Make the flatpickr trigger look like a Bootstrap form-control
 .flatpickr-input[readonly] { cursor: pointer; }
+
