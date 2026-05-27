@@ -59,4 +59,11 @@ class User < ApplicationRecord
   def full_name
     "#{first_name} #{last_name}".strip.presence || email
   end
+
+  def short_name
+    return email if first_name.blank? && last_name.blank?
+    return last_name if first_name.blank?
+    return "#{first_name[0]}. #{last_name}".strip if last_name.present?
+    first_name
+  end
 end

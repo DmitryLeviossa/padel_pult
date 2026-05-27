@@ -95,7 +95,7 @@ class Match < ApplicationRecord
 
   def pair_display_name(pair)
     return "Свободен" if pair.nil?
-    "#{pair.player1.full_name} / #{pair.player2.full_name}"
+    "#{pair.player1.short_name} / #{pair.player2.short_name}"
   end
 
   def sets_won_by_pair1
