@@ -2,7 +2,7 @@
 - pairs_options = tournament.pairs.map { |p| [p.player1.short_name + " / " + p.player2.short_name, p.id] }
 
 .d-flex.justify-content-between.align-items-center.mt-4.mb-3
-  h4.mb-0 Сетка
+  h4.mb-0 Основной турнир
   - if is_owner && !tournament.completed?
     .d-flex.gap-2
       - unless any_completed
@@ -22,7 +22,7 @@ css:
   .bracket-round {
     display: flex;
     flex-direction: column;
-    min-width: 240px;
+    min-width: 280px;
     padding: 0 16px;
     position: relative;
   }
@@ -202,7 +202,7 @@ css:
           i.bi.bi-image
 
 - if loser_bracket_rounds&.any?
-  h4.mt-5.mb-3 Утешительная сетка
+  h4.mt-5.mb-3 Доп. турнир
 
   - lb_total_rounds = loser_bracket_rounds.length
   .tournament-bracket

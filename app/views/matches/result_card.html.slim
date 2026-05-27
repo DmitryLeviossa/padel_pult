@@ -321,7 +321,7 @@ html lang="ru"
       - if @match.group_stage?
         - round_label = "Групповой этап"
       - elsif @match.loser_bracket?
-        - round_label = "Утешительная сетка · Раунд #{round_num}"
+        - round_label = "Доп. турнир · Раунд #{round_num}"
       - elsif round_num == total_bracket_rounds
         - round_label = "Финал"
       - elsif round_num == total_bracket_rounds - 1 && total_bracket_rounds > 2
