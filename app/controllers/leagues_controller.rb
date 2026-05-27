@@ -19,6 +19,7 @@ class LeaguesController < ApplicationController
     if @league.owner == current_user
       excluded_ids = @league.user_ids + @league.league_invitations.pending.pluck(:invited_user_id)
       @invitable_users = User.where.not(id: excluded_ids).order(:first_name, :last_name)
+      @league_members = @league.users.order(:first_name, :last_name)
     end
   end
 
@@ -65,19 +66,17 @@ class LeaguesController < ApplicationController
   def edit
     @league = League.find(params[:id])
     authorize_owner!
-    @league_members = @league.users.order(:first_name, :last_name)
   end
 
   def update
     @league = League.find(params[:id])
     authorize_owner!
 
-    settings_params = params[:league]&.keys&.any? { |k| %w[tournaments_quota chat_id].include?(k) }
+    settings_params = params[:league]&.keys&.any? { |k| %w[tournaments_quota chat_id owner_id].include?(k) }
 
     if @league.update(league_params)
       redirect_to settings_params ? league_path(@league, anchor: "settings") : @league, notice: "Лига обновлена."
     else
-      @league_members = @league.users.order(:first_name, :last_name)
       render :edit, status: :unprocessable_entity
     end
   end

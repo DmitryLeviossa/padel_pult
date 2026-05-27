@@ -6,12 +6,16 @@
       h1.mb-0= @league.name
     .d-flex.gap-2
       - if @league.owner == current_user
-        = link_to "Редактировать", edit_league_path(@league), class: "btn btn-outline-primary btn-sm"
+        = link_to edit_league_path(@league), class: "btn btn-outline-primary btn-sm", data: { tooltip: "Редактировать" } do
+          i.bi.bi-pencil-square
       - elsif @league.users.include?(current_user)
-        = button_to "Покинуть лигу", leave_league_path(@league), method: :delete, class: "btn btn-outline-danger btn-sm", data: { turbo_confirm: "Вы уверены, что хотите покинуть лигу?" }
+        = button_to leave_league_path(@league), method: :delete, class: "btn btn-outline-danger btn-sm", data: { turbo_confirm: "Вы уверены, что хотите покинуть лигу?", tooltip: "Покинуть лигу" } do
+          i.bi.bi-box-arrow-right
       - else
-        = button_to "Вступить в лигу", join_league_path(@league), method: :post, class: "btn btn-primary btn-sm"
-      = link_to "← Лиги", leagues_path, class: "btn btn-outline-secondary btn-sm"
+        = button_to join_league_path(@league), method: :post, class: "btn btn-primary btn-sm", data: { tooltip: "Вступить в лигу" } do
+          i.bi.bi-person-plus
+      = link_to leagues_path, class: "btn btn-outline-secondary btn-sm", data: { tooltip: "Все лиги" } do
+        i.bi.bi-arrow-left
 
   - if @league.description.present?
     p.text-muted= @league.description
@@ -37,7 +41,8 @@
       .d-flex.justify-content-between.align-items-center.mb-2
         h5.mb-0 Турниры
         - if @league.owner == current_user
-          = link_to "Новый турнир", new_league_tournament_path(@league), class: "btn btn-primary btn-sm"
+          = link_to new_league_tournament_path(@league), class: "btn btn-primary btn-sm", data: { tooltip: "Новый турнир" } do
+            i.bi.bi-plus-lg
 
       - visible_tournaments = @league.owner == current_user ? @league.tournaments : @league.tournaments.where.not(status: :draft)
       - if visible_tournaments.any?
@@ -70,9 +75,11 @@
         h5.mb-0 Участники
         - if @league.owner == current_user
           .d-flex.gap-2
-            = link_to "Добавить нового участника", new_league_league_user_path(@league), class: "btn btn-outline-secondary btn-sm"
-            button.btn.btn-primary.btn-sm type="button" data-bs-toggle="modal" data-bs-target="#inviteUsersModal"
-              | Пригласить игроков
+            = link_to new_league_league_user_path(@league), class: "btn btn-outline-secondary btn-sm", data: { tooltip: "Добавить участника" } do
+              i.bi.bi-person-add
+            span data-tooltip="Пригласить игроков"
+              button.btn.btn-primary.btn-sm type="button" data-bs-toggle="modal" data-bs-target="#inviteUsersModal"
+                i.bi.bi-envelope-plus
 
       = search_form_for @q_members, url: league_path(@league), as: :q_members, method: :get, html: { data: { turbo: false } } do |f|
         .row.g-2.align-items-end.mb-3
@@ -126,9 +133,9 @@
                   td
                     - if league_user.user.pending_invitation?
                       .d-flex.gap-1
-                        = button_tag type: "button", class: "btn btn-outline-secondary btn-sm", data: { copy_url: invitation_url(league_user.user.invitation_token), bs_toggle: "tooltip", bs_placement: "top", bs_title: "Скопировать ссылку для приглашения" } do
+                        = button_tag type: "button", class: "btn btn-outline-secondary btn-sm", data: { copy_url: invitation_url(league_user.user.invitation_token), tooltip: "Скопировать ссылку" } do
                           i.bi.bi-link-45deg
-                        = link_to edit_league_league_user_path(@league, league_user), class: "btn btn-outline-primary btn-sm", title: "Редактировать имя участника" do
+                        = link_to edit_league_league_user_path(@league, league_user), class: "btn btn-outline-primary btn-sm", data: { tooltip: "Редактировать" } do
                           i.bi.bi-pencil
       - elsif members_tab_active
         p.text-muted Участники не найдены.
@@ -139,12 +146,12 @@
       #settings.tab-pane.fade role="tabpanel"
         h5.mb-3 Настройки
 
-        = form_with model: @league, url: league_path(@league), method: :patch do |f|
-          .card.mb-3
-            .card-header Квота турниров
-            .card-body
-              p.mb-0 = @league.tournaments_quota
+        .card.mb-3
+          .card-header Квота турниров
+          .card-body
+            p.mb-0 = @league.tournaments_quota
 
+        = form_with model: @league, url: league_path(@league), method: :patch do |f|
           .card.mb-4
             .card-header Telegram чат
             .card-body
@@ -184,8 +191,18 @@
                       |  — это и есть нужный идентификатор (для каналов он обычно начинается с
                       code  -100
                       | ).
+            .card-footer
+              = f.submit "Сохранить", class: "btn btn-primary"
 
-          = f.submit "Сохранить", class: "btn btn-primary"
+        = form_with model: @league, url: league_path(@league), method: :patch do |f|
+          .card.mb-4
+            .card-header Передача прав владельца
+            .card-body
+              .mb-3
+                = f.label :owner_id, "Новый владелец", class: "form-label"
+                = f.select :owner_id, @league_members.map { |u| [u.full_name, u.id] }, {}, class: "form-select", style: "max-width: 320px;"
+            .card-footer
+              = f.submit "Сохранить", class: "btn btn-primary"
 
 - if @league.owner == current_user
   #inviteUsersModal.modal.fade aria-hidden="true" aria-labelledby="inviteUsersModalLabel" tabindex="-1"

@@ -19,9 +19,5 @@
           = image_tag @league.logo, class: "rounded", style: "width: 80px; height: 80px; object-fit: cover;"
       = f.file_field :logo, class: "form-control", accept: "image/*"
 
-    .mb-3
-      = f.label :owner_id, "Владелец", class: "form-label"
-      = f.select :owner_id, @league_members.map { |u| [u.full_name, u.id] }, {}, class: "form-select"
-
-    = f.submit "Сохранить", class: "btn btn-primary"
+= f.submit "Сохранить", class: "btn btn-primary"
     = link_to "Отмена", @league, class: "btn btn-secondary ms-2"

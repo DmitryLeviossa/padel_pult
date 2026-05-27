@@ -71,11 +71,6 @@ function initAutoSubmitFilters() {
   })
 }
 
-function initTooltips() {
-  document.querySelectorAll("[data-bs-toggle='tooltip']").forEach(el => {
-    new bootstrap.Tooltip(el, { placement: 'top-end' })
-  })
-}
 
 document.addEventListener("click", (e) => {
   const btn = e.target.closest("[data-copy-url]")
@@ -137,6 +132,6 @@ document.addEventListener("turbo:load", () => {
   sessionStorage.removeItem("scroll_restore_y")
   sessionStorage.removeItem("scroll_restore_from")
 
-  initTomSelects(); initAutoSubmitFilters(); initDateTimePickers(); initTooltips()
+  initTomSelects(); initAutoSubmitFilters(); initDateTimePickers()
 })
-document.addEventListener("turbo:render", () => { initTomSelects(); initAutoSubmitFilters(); initDateTimePickers(); initTooltips() })
+document.addEventListener("turbo:render", () => { initTomSelects(); initAutoSubmitFilters(); initDateTimePickers() })
