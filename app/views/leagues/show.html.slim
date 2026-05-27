@@ -55,6 +55,8 @@
               th Тип
               th Статус
               th Участники
+              - if @league.owner == current_user
+                th
           tbody
             - visible_tournaments.order(start_date: :asc).each do |tournament|
               tr
@@ -67,6 +69,10 @@
                   span.badge class="bg-#{badge_class}"
                     = { "draft" => "Черновик", "registration" => "Регистрация", "active" => "Активный", "completed" => "Завершён", "cancelled" => "Отменён" }.fetch(tournament.status, tournament.status)
                 td= "#{tournament.pairs.count * 2} / #{tournament.max_participants}"
+                - if @league.owner == current_user
+                  td
+                    = link_to copy_tournament_path(tournament), class: "btn btn-outline-secondary btn-sm", title: "Использовать как шаблон", data: { tooltip: "Использовать как шаблон" } do
+                      i.bi.bi-copy
       - else
         p.text-muted Турниров пока нет.
 

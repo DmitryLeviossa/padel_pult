@@ -22,6 +22,9 @@
       - if @tournament.active? || @tournament.completed?
         = link_to online_tournament_path(@tournament), class: "btn btn-outline-info btn-sm", title: "Онлайн трансляция", target: "_blank", data: { bs_toggle: "tooltip" } do
           i.bi.bi-broadcast
+      - if @tournament.league.owner == current_user
+        = link_to copy_tournament_path(@tournament), class: "btn btn-outline-secondary btn-sm", title: "Использовать как шаблон", data: { bs_toggle: "tooltip" } do
+          i.bi.bi-copy
       = link_to league_path(@tournament.league), class: "btn btn-outline-secondary btn-sm", title: @tournament.league.name, data: { bs_toggle: "tooltip" } do
         i.bi.bi-arrow-left
 

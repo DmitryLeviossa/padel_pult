@@ -1,8 +1,8 @@
 class TournamentsController < ApplicationController
   before_action :set_league, only: [ :new, :create ]
-  before_action :set_tournament, only: [ :show, :edit, :update, :destroy, :open_registration, :activate, :cancel, :fill_results, :complete, :online, :auto_assign_pairs, :seed_bracket ]
+  before_action :set_tournament, only: [ :show, :edit, :update, :destroy, :open_registration, :activate, :cancel, :fill_results, :complete, :online, :auto_assign_pairs, :seed_bracket, :copy ]
   before_action :authorize_owner!, only: [ :new, :create ]
-  before_action :authorize_tournament_owner!, only: [ :edit, :update, :destroy, :open_registration, :activate, :cancel, :fill_results, :complete, :auto_assign_pairs, :seed_bracket ]
+  before_action :authorize_tournament_owner!, only: [ :edit, :update, :destroy, :open_registration, :activate, :cancel, :fill_results, :complete, :auto_assign_pairs, :seed_bracket, :copy ]
   skip_before_action :authenticate_user!, only: [ :online ]
 
   def index
@@ -100,6 +100,15 @@ class TournamentsController < ApplicationController
       { "from" => 3, "to" => 3, "points" => nil },
       { "from" => 4, "to" => 7, "points" => nil }
     ]
+  end
+
+  def copy
+    source = @tournament
+    @league = source.league
+    @tournament = @league.tournaments.build(
+      source.attributes.except("id", "league_id", "status", "start_date", "end_date", "created_at", "updated_at")
+    )
+    render :new
   end
 
   def create

@@ -53,6 +53,7 @@ Rails.application.routes.draw do
       get :online
       post :auto_assign_pairs
       post :seed_bracket
+      get :copy
     end
   end
 end
