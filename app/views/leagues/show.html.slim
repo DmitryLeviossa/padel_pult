@@ -51,7 +51,7 @@
             tr
               th Название
               th Даты
-              th Место
+              th Клуб
               th Тип
               th Статус
               th Участники
@@ -62,7 +62,7 @@
               tr
                 td= link_to tournament.name, tournament_path(tournament)
                 td= tournament_date_range(tournament)
-                td= tournament.location.presence || "—"
+                td= tournament.club&.name || "—"
                 td= { "olympic" => "Олимпийский", "round_robin" => "Круговой", "mixed" => "Смешанный" }.fetch(tournament.type, tournament.type)
                 td
                   - badge_class = { "draft" => "secondary", "registration" => "info", "active" => "success", "completed" => "primary", "cancelled" => "danger" }.fetch(tournament.status, "secondary")

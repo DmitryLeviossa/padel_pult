@@ -34,8 +34,8 @@
         p.text-muted= @tournament.description
 
       dl.row
-        dt.col-sm-3 Место
-        dd.col-sm-9= @tournament.location.presence || "—"
+        dt.col-sm-3 Клуб
+        dd.col-sm-9= link_to @tournament.club.name, club_path(@tournament.club)
 
         dt.col-sm-3 Дата
         dd.col-sm-9= tournament_date_range(@tournament)

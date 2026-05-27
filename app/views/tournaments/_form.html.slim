@@ -6,8 +6,8 @@
       .invalid-feedback= tournament.errors[:name].first
 
   .col-md-6
-    = f.label :location, "Локация", class: "form-label"
-    = f.text_field :location, class: "form-control"
+    = f.label :club_id, "Клуб", class: "form-label"
+    = f.select :club_id, Club.all.map { |c| [c.name, c.id] }, { prompt: "— выберите клуб —" }, class: "form-select"
 
   .col-md-3
     label.form-label for="tournament_start_date_picker" Дата и время начала

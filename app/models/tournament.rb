@@ -6,7 +6,6 @@
 #  description      :text
 #  end_date         :datetime         not null
 #  groups_count     :integer
-#  location         :string
 #  loser_bracket    :boolean          default(FALSE), not null
 #  max_participants :integer          default(16), not null
 #  name             :string           not null
@@ -17,20 +16,24 @@
 #  type             :string           default("olympic"), not null
 #  created_at       :datetime         not null
 #  updated_at       :datetime         not null
+#  club_id          :bigint
 #  league_id        :bigint           not null
 #
 # Indexes
 #
+#  index_tournaments_on_club_id    (club_id)
 #  index_tournaments_on_league_id  (league_id)
 #
 # Foreign Keys
 #
+#  fk_rails_...  (club_id => clubs.id)
 #  fk_rails_...  (league_id => leagues.id)
 #
 class Tournament < ApplicationRecord
   self.inheritance_column = nil
 
   belongs_to :league
+  belongs_to :club
   has_many :brackets, dependent: :destroy
   has_many :matches, dependent: :destroy
   has_many :pairs, dependent: :destroy
@@ -74,7 +77,11 @@ class Tournament < ApplicationRecord
   end
 
   def self.ransackable_attributes(_auth_object = nil)
-    %w[name location status type start_date end_date]
+    %w[name status type start_date end_date club_id]
+  end
+
+  def self.ransackable_associations(_auth_object = nil)
+    %w[club]
   end
 
   private

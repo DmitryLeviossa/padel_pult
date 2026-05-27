@@ -1,0 +1,39 @@
+.container.py-4
+  .d-flex.justify-content-between.align-items-center.mb-4
+    .d-flex.align-items-center.gap-3
+      - if @club.logo.attached?
+        = image_tag @club.logo, class: "rounded", style: "width: 64px; height: 64px; object-fit: cover;"
+      div
+        h1.mb-0= @club.name
+        - if @club.address.present?
+          p.text-muted.mb-0.small
+            i.bi.bi-geo-alt.me-1
+            = @club.address
+    = link_to clubs_path, class: "btn btn-outline-secondary btn-sm", data: { tooltip: "Все клубы" } do
+      i.bi.bi-arrow-left
+
+  - if @tournaments.any?
+    h5.mb-3 Турниры
+    table.table.table-hover
+      thead
+        tr
+          th Название
+          th Лига
+          th Даты
+          th Тип
+          th Статус
+          th Участники
+      tbody
+        - @tournaments.each do |tournament|
+          tr
+            td= link_to tournament.name, tournament_path(tournament)
+            td= link_to tournament.league.name, league_path(tournament.league)
+            td= tournament_date_range(tournament)
+            td= { "olympic" => "Олимпийский", "round_robin" => "Круговой", "mixed" => "Смешанный" }.fetch(tournament.type, tournament.type)
+            td
+              - badge_class = { "draft" => "secondary", "registration" => "info", "active" => "success", "completed" => "primary", "cancelled" => "danger" }.fetch(tournament.status, "secondary")
+              span.badge class="bg-#{badge_class}"
+                = { "draft" => "Черновик", "registration" => "Регистрация", "active" => "Активный", "completed" => "Завершён", "cancelled" => "Отменён" }.fetch(tournament.status, tournament.status)
+            td= "#{tournament.pairs.count * 2} / #{tournament.max_participants}"
+  - else
+    p.text-muted Турниров пока нет.

@@ -16,6 +16,8 @@ nav.navbar.navbar-expand-lg
             = link_to "Турниры", tournaments_path, class: "nav-link #{request.path.start_with?('/tournaments') ? 'active' : ''}", aria: { current: (request.path.start_with?('/tournaments') ? 'page' : nil) }
           li.nav-item
             = link_to "Игроки", users_path, class: "nav-link #{request.path.start_with?('/users') ? 'active' : ''}", aria: { current: (request.path.start_with?('/users') ? 'page' : nil) }
+          li.nav-item
+            = link_to "Клубы", clubs_path, class: "nav-link #{request.path.start_with?('/clubs') ? 'active' : ''}", aria: { current: (request.path.start_with?('/clubs') ? 'page' : nil) }
 
       - if user_signed_in?
         ul.navbar-nav.ms-auto.align-items-center.gap-2

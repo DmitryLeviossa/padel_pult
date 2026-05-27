@@ -24,7 +24,7 @@ html lang="ru"
         border-radius: 20px;
         overflow: hidden;
         display: grid;
-        grid-template-columns: 270px 1fr 270px;
+        grid-template-columns: 340px 1fr 340px;
         position: relative;
         box-shadow: 0 24px 80px rgba(0,0,0,0.7);
       }
@@ -156,6 +156,31 @@ html lang="ru"
         text-align: center;
         line-height: 1.15;
         margin-bottom: 4px;
+      }
+      .tournament-dates {
+        font-size: 0.68rem;
+        font-weight: 600;
+        color: rgba(255,255,255,0.4);
+        text-align: center;
+        margin-bottom: 4px;
+      }
+      .tournament-club {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 5px;
+        font-size: 0.68rem;
+        font-weight: 600;
+        color: rgba(255,255,255,0.4);
+        text-align: center;
+        margin-bottom: 4px;
+      }
+      .club-logo {
+        width: 16px;
+        height: 16px;
+        object-fit: contain;
+        border-radius: 3px;
+        filter: drop-shadow(0 1px 3px rgba(0,0,0,0.5));
       }
       .round-label {
         font-size: 0.68rem;
@@ -328,9 +353,11 @@ html lang="ru"
           .team-info
             - if pair1
               .team-names
-                = pair1.player1.full_name.split.last
+                - u1 = pair1.player1.user
+                = "#{u1.first_name.present? ? u1.first_name[0] + '. ' : ''}#{u1.last_name}"
                 br
-                = pair1.player2.full_name.split.last
+                - u2 = pair1.player2.user
+                = "#{u2.first_name.present? ? u2.first_name[0] + '. ' : ''}#{u2.last_name}"
 
         / ── Center ──
         .center-panel
@@ -338,6 +365,12 @@ html lang="ru"
           - if league.logo.attached?
             = image_tag league.logo.variant(resize_to_limit: [120, 80]), class: "league-logo", alt: league.name
           .tournament-name= tournament.name
+          .tournament-dates= tournament_date_range(tournament)
+          - if tournament.club
+            .tournament-club
+              - if tournament.club.logo.attached?
+                = image_tag tournament.club.logo.variant(resize_to_fill: [32, 32]), class: "club-logo", alt: ""
+              = tournament.club.name
           .round-label= round_label
           .match-heading Итоги матча
           .teal-bar
@@ -382,9 +415,11 @@ html lang="ru"
           .team-info
             - if pair2
               .team-names
-                = pair2.player1.full_name.split.last
+                - u3 = pair2.player1.user
+                = "#{u3.first_name.present? ? u3.first_name[0] + '. ' : ''}#{u3.last_name}"
                 br
-                = pair2.player2.full_name.split.last
+                - u4 = pair2.player2.user
+                = "#{u4.first_name.present? ? u4.first_name[0] + '. ' : ''}#{u4.last_name}"
     - if @match.result_card_image.attached?
       = link_to rails_blob_url(@match.result_card_image, disposition: :attachment), class: "download-btn" do
         | ↓ Скачать картинку

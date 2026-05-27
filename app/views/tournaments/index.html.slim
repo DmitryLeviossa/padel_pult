@@ -11,8 +11,8 @@
         label.form-label Название
         = f.search_field :name_cont, class: "form-control", placeholder: "Поиск по названию"
       .col-md-2
-        label.form-label Место
-        = f.search_field :location_cont, class: "form-control", placeholder: "Место"
+        label.form-label Клуб
+        = f.search_field :club_name_cont, class: "form-control", placeholder: "Клуб"
       .col-md-4
         label.form-label Статус
         = f.select :status_in, Tournament.statuses.keys.map { |s| [{ "draft" => "Черновик", "registration" => "Регистрация", "active" => "Активный", "completed" => "Завершён", "cancelled" => "Отменён" }.fetch(s, s), s] }.reject { |_, s| s == "draft" }, {}, class: "form-select", multiple: true
@@ -42,8 +42,8 @@
                 .d-flex.flex-column.gap-1
                   .d-flex.align-items-center.justify-content-between.flex-wrap.gap-2
                     .d-flex.align-items-center.gap-3
-                      - if tournament.location.present?
-                        small.text-muted= tournament.location
+                      - if tournament.club.present?
+                        small.text-muted= tournament.club.name
                       small.text-muted= tournament_date_range(tournament)
                       small.text-muted= { "olympic" => "Олимпийский", "round_robin" => "Круговой", "mixed" => "Смешанный" }.fetch(tournament.type, tournament.type)
                     .d-flex.align-items-center.gap-2

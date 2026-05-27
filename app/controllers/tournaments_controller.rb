@@ -405,7 +405,7 @@ class TournamentsController < ApplicationController
 
   def tournament_params
     base = params.require(:tournament).permit(
-      :name, :start_date, :end_date, :max_participants, :location, :type, :description,
+      :name, :start_date, :end_date, :max_participants, :club_id, :type, :description,
       :groups_count, :pairs_to_bracket, :loser_bracket
     )
 

@@ -1,0 +1,21 @@
+.container.py-4
+  .d-flex.justify-content-between.align-items-center.mb-4
+    h1.mb-0 Клубы
+
+  - if @clubs.any?
+    .row.row-cols-1.row-cols-md-2.row-cols-lg-3.g-4
+      - @clubs.each do |club|
+        .col
+          .card.card-hoverable.h-100
+            - if club.logo.attached?
+              = image_tag club.logo, class: "card-img-top", style: "object-fit: contain; background-color: #111827;"
+            - else
+              = image_tag "/default_league_logo.jpg", class: "card-img-top", style: "object-fit: contain; background-color: #111827;"
+            .card-body
+              h5.card-title.mb-0= link_to club.name, club_path(club), class: "text-decoration-none stretched-link"
+            - if club.address.present?
+              .card-footer.text-muted.small
+                i.bi.bi-geo-alt.me-1
+                = club.address
+  - else
+    p.text-muted Клубов пока нет.

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2026_05_27_073215) do
+ActiveRecord::Schema[8.0].define(version: 2026_05_27_112337) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -52,6 +52,13 @@ ActiveRecord::Schema[8.0].define(version: 2026_05_27_073215) do
     t.integer "pairs_count"
     t.index ["tournament_id", "bracket_type", "group_number"], name: "index_brackets_uniqueness", unique: true
     t.index ["tournament_id"], name: "index_brackets_on_tournament_id"
+  end
+
+  create_table "clubs", force: :cascade do |t|
+    t.string "name", null: false
+    t.string "address"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
   end
 
   create_table "league_invitations", force: :cascade do |t|
@@ -163,7 +170,6 @@ ActiveRecord::Schema[8.0].define(version: 2026_05_27_073215) do
     t.datetime "start_date", null: false
     t.datetime "end_date", null: false
     t.integer "max_participants", default: 16, null: false
-    t.string "location"
     t.string "type", default: "olympic", null: false
     t.string "status", default: "draft", null: false
     t.text "description"
@@ -174,6 +180,8 @@ ActiveRecord::Schema[8.0].define(version: 2026_05_27_073215) do
     t.integer "groups_count"
     t.integer "pairs_to_bracket"
     t.boolean "loser_bracket", default: false, null: false
+    t.bigint "club_id"
+    t.index ["club_id"], name: "index_tournaments_on_club_id"
     t.index ["league_id"], name: "index_tournaments_on_league_id"
   end
 
@@ -213,5 +221,6 @@ ActiveRecord::Schema[8.0].define(version: 2026_05_27_073215) do
   add_foreign_key "pairs", "league_users", column: "player1_id"
   add_foreign_key "pairs", "league_users", column: "player2_id"
   add_foreign_key "pairs", "tournaments"
+  add_foreign_key "tournaments", "clubs"
   add_foreign_key "tournaments", "leagues"
 end
