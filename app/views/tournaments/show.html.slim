@@ -143,7 +143,16 @@
           - row_style += "; border-bottom: 2px solid #dc3545 !important" if pair.id == last_eligible_id
           tr style=row_style
             - if @tournament.completed?
-              td= pair.placement
+              td
+                - case pair.placement
+                - when 1
+                  span style="font-size: 1.8rem; line-height: 1;" 🥇
+                - when 2
+                  span style="font-size: 1.8rem; line-height: 1;" 🥈
+                - when 3
+                  span style="font-size: 1.8rem; line-height: 1;" 🥉
+                - else
+                  = pair.placement
             - else
               td= index + 1
             td
@@ -155,7 +164,13 @@
                   = select_tag "pair[player1_id]", options_for_select(avail_p1.map { |lu| [lu.full_name, lu.id] }, pair.player1_id), class: "form-select form-select-sm", style: "min-width: 140px;", onchange: "this.form.requestSubmit()"
               - else
                 = pair.player1.full_name
-            td= pair.player1_score
+            td
+              = pair.player1_score
+              - if @tournament.completed? && @tournament.placement_points.present? && pair.placement.present?
+                - earned = @tournament.points_for_place(pair.placement)
+                - if earned > 0
+                  = " "
+                  span.text-success= "+#{earned}"
             td
               = render "shared/avatar", user: pair.player2.user
             td
@@ -165,7 +180,13 @@
                   = select_tag "pair[player2_id]", options_for_select(avail_p2.map { |lu| [lu.full_name, lu.id] }, pair.player2_id), class: "form-select form-select-sm", style: "min-width: 140px;", onchange: "this.form.requestSubmit()"
               - else
                 = pair.player2.full_name
-            td= pair.player2_score
+            td
+              = pair.player2_score
+              - if @tournament.completed? && @tournament.placement_points.present? && pair.placement.present?
+                - earned = @tournament.points_for_place(pair.placement)
+                - if earned > 0
+                  = " "
+                  span.text-success= "+#{earned}"
             td= pair.score
             td= ru_datetime(pair.created_at)
             td
