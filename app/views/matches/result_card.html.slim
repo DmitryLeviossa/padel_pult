@@ -318,13 +318,17 @@ html lang="ru"
       - p2_loses = winner_id.present? && !p2_wins
       - total_bracket_rounds = @match.bracket.matches.maximum(:round_number).to_i
       - round_num = @match.round_number.to_i
+      - ru_letters = %w[А Б В Г Д Е Ж З И К Л М Н О П Р С Т У Ф Х Ц Ч Ш Щ Э Ю Я]
       - if @match.group_stage?
-        - round_label = "Групповой этап"
+        - group_letter = ru_letters[@match.bracket.group_number - 1] || @match.bracket.group_number.to_s
+        - round_label = "Групповой этап · Группа #{group_letter}"
       - elsif @match.loser_bracket?
         - round_label = "Доп. турнир · Раунд #{round_num}"
+      - elsif round_num == total_bracket_rounds && @match.position == 2
+        - round_label = "Матч за 3-е место"
       - elsif round_num == total_bracket_rounds
         - round_label = "Финал"
-      - elsif round_num == total_bracket_rounds - 1 && total_bracket_rounds > 2
+      - elsif round_num == total_bracket_rounds - 1 && total_bracket_rounds >= 2
         - round_label = "Полуфинал"
       - else
         - round_label = "Раунд #{round_num}"

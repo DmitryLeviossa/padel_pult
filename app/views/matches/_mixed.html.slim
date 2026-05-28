@@ -1,4 +1,5 @@
 - pairs_options = tournament.pairs.map { |p| [p.player1.short_name + " / " + p.player2.short_name, p.id] }
+- ru_letters = %w[А Б В Г Д Е Ж З И К Л М Н О П Р С Т У Ф Х Ц Ч Ш Щ Э Ю Я]
 
 css:
   .bracket-round { display: flex; flex-direction: column; min-width: 240px; padding: 0 16px; position: relative; }
@@ -38,7 +39,7 @@ css:
 .row
   - group_data.each do |gd|
     .col-md-6
-      h5.mt-3.mb-2= "Группа #{gd[:group_number]}"
+      h5.mt-3.mb-2= "Группа #{ru_letters[gd[:group_number] - 1] || gd[:group_number]}"
       .table-responsive
         table.table.table-bordered.table-sm.group-cross-table
           thead.table-light
