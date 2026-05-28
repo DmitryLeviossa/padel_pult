@@ -1,70 +1,178 @@
 .container.py-4
-  h1.mb-4= "Добро пожаловать, #{current_user.full_name}!"
 
-  .row.g-3.mb-4
-    .col-sm-6.col-lg-3
-      .card
-        .card-body.d-flex.align-items-center.gap-3
-          i.bi.bi-people.fs-2.text-primary
-          div
-            .text-muted.small Мои лиги
-            .fs-4.fw-semibold= @my_leagues.count
-    .col-sm-6.col-lg-3
-      .card
-        .card-body.d-flex.align-items-center.gap-3
-          i.bi.bi-trophy.fs-2.text-primary
-          div
-            .text-muted.small Мои турниры
-            .fs-4.fw-semibold= @my_tournaments.count
+  / ── Hero ────────────────────────────────────────────────────────────────
+  .card.border-0.bg-body-secondary.mb-4
+    .card-body
+      .d-flex.flex-wrap.align-items-center.gap-3
+        - if current_user.photo.attached?
+          = image_tag current_user.photo, class: "rounded-circle flex-shrink-0", width: 64, height: 64, style: "object-fit:cover"
+        - else
+          .rounded-circle.bg-primary.d-flex.align-items-center.justify-content-center.text-white.fw-bold.flex-shrink-0 style="width:64px;height:64px;font-size:1.4rem"
+            = current_user.first_name&.first&.upcase || "?"
+        div
+          h4.mb-1.fw-semibold= current_user.full_name
+          .d-flex.flex-wrap.gap-3.mt-1
+            .text-muted.small
+              i.bi.bi-controller.me-1
+              = "#{@total_matches} #{ru_plural(@total_matches, 'матчей', 'матч', 'матча')}"
+            .text-muted.small
+              i.bi.bi-check2-circle.me-1.text-success
+              = "#{@wins} #{ru_plural(@wins, 'побед', 'победа', 'победы')}"
+            .text-muted.small
+              i.bi.bi-percent.me-1
+              = "#{@win_rate}% побед"
+            - if @best_placement
+              .text-muted.small
+                i.bi.bi-award.me-1.text-warning
+                = "Лучшее место: #{@best_placement}"
+            .text-muted.small
+              i.bi.bi-star.me-1.text-primary
+              = "#{@total_league_points} #{ru_plural(@total_league_points, 'очков', 'очко', 'очка')}"
 
+  / ── Live tournaments ────────────────────────────────────────────────────
+  - @active_tournaments.each do |t|
+    .alert.alert-success.d-flex.flex-wrap.justify-content-between.align-items-center.gap-2.mb-3
+      .d-flex.align-items-center.gap-2
+        span.badge.bg-success LIVE
+        div
+          strong= link_to t.name, tournament_path(t), class: "alert-link text-decoration-none"
+          .small.text-success-emphasis= t.league.name
+      = link_to "Смотреть турнир →", tournament_path(t), class: "btn btn-sm btn-success"
+
+  / ── Upcoming + League rankings ──────────────────────────────────────────
+  .row.g-4.mb-4
+
+    .col-lg-7
+      .card.h-100
+        .card-header.fw-semibold
+          i.bi.bi-calendar-event.me-2
+          | Ближайшие турниры
+        .card-body.p-0
+          - if @upcoming.any? || @open_for_registration.any?
+            ul.list-group.list-group-flush
+              - @upcoming.each do |t|
+                li.list-group-item.px-3.py-2
+                  .d-flex.justify-content-between.align-items-start.gap-2
+                    div
+                      = link_to t.name, tournament_path(t), class: "fw-medium text-decoration-none d-block"
+                      .text-muted.small= t.league.name
+                      .text-muted.small= tournament_date_range(t)
+                    span.badge.bg-success.text-nowrap.mt-1 Зарегистрирован
+              - @open_for_registration.each do |t|
+                li.list-group-item.px-3.py-2
+                  .d-flex.justify-content-between.align-items-start.gap-2
+                    div
+                      = link_to t.name, tournament_path(t), class: "fw-medium text-decoration-none d-block"
+                      .text-muted.small= t.league.name
+                      .text-muted.small= tournament_date_range(t)
+                    = link_to "Регистрация", tournament_path(t), class: "btn btn-sm btn-outline-primary text-nowrap mt-1"
+          - else
+            .p-3.text-muted Предстоящих турниров нет.
+        .card-footer.text-end
+          = link_to "Все турниры", tournaments_path, class: "btn btn-sm btn-outline-secondary"
+
+    .col-lg-5
+      .card.h-100
+        .card-header.fw-semibold
+          i.bi.bi-bar-chart-steps.me-2
+          | Мой рейтинг в лигах
+        .card-body.p-0
+          - if @league_rankings.any?
+            ul.list-group.list-group-flush
+              - @league_rankings.each do |lr|
+                li.list-group-item.px-3.py-2
+                  .d-flex.justify-content-between.align-items-center
+                    div
+                      = link_to lr[:league].name, league_path(lr[:league]), class: "fw-medium text-decoration-none d-block"
+                      .text-muted.small= "#{lr[:score]} очков"
+                    .text-end
+                      span.badge.bg-secondary.fs-6= "#{lr[:rank]}"
+                      .text-muted.small= "из #{lr[:total]}"
+          - else
+            .p-3.text-muted Вы пока не состоите ни в одной лиге.
+        .card-footer.text-end
+          = link_to "Все лиги", leagues_path, class: "btn btn-sm btn-outline-secondary"
+
+  / ── Recent matches ───────────────────────────────────────────────────────
+  .card.mb-4
+    .card-header.fw-semibold
+      i.bi.bi-clock-history.me-2
+      | Последние матчи
+    .card-body.p-0
+      - if @recent_matches.any?
+        ul.list-group.list-group-flush
+          - @recent_matches.each do |match|
+            - my_pair = [match.pair1, match.pair2].compact.find { |p| @my_league_user_ids.include?(p.player1_id) || @my_league_user_ids.include?(p.player2_id) }
+            - opponent = my_pair == match.pair1 ? match.pair2 : match.pair1
+            - won = match.winner_id.present? && match.winner_id == my_pair&.id
+            - my_score  = my_pair == match.pair1 ? match.pair1_score : match.pair2_score
+            - opp_score = my_pair == match.pair1 ? match.pair2_score : match.pair1_score
+            li.list-group-item.px-3.py-2
+              .d-flex.flex-wrap.justify-content-between.align-items-center.gap-2
+                div
+                  .small
+                    = link_to match.tournament.name, tournament_path(match.tournament), class: "text-muted text-decoration-none"
+                    span.text-muted.ms-1= "· #{match.tournament.league.name}"
+                  .d-flex.flex-wrap.align-items-center.gap-1.mt-1
+                    span.fw-medium= match.pair_display_name(my_pair)
+                    span.text-muted.small vs
+                    span.text-muted= match.pair_display_name(opponent)
+                .d-flex.align-items-center.gap-2
+                  span.fw-bold.fs-5= "#{my_score || '?'}:#{opp_score || '?'}"
+                  - if match.winner_id.nil?
+                    span.badge.bg-secondary —
+                  - elsif won
+                    span.badge.bg-success Победа
+                  - else
+                    span.badge.bg-danger Поражение
+      - else
+        .p-3.text-muted Матчей пока нет.
+
+  / ── Notifications + Discover ─────────────────────────────────────────────
   .row.g-4
-    .col-md-6
-      .card.h-100
-        .card-header.fw-semibold Мои лиги
-        .card-body
-          - if @my_leagues.any?
-            ul.list-group.list-group-flush
-              - @my_leagues.each do |league|
-                li.list-group-item.d-flex.justify-content-between.align-items-center
-                  .d-flex.align-items-center.gap-2
-                    = link_to league.name, league_path(league)
-                    - if league.owner_id == current_user.id
-                      span.badge.bg-primary Владелец
-                  span.badge.bg-secondary= league.tournaments.count
-          - else
-            p.text-muted.mb-0 Вы ещё не создали ни одной лиги.
-        .card-footer
-          = link_to "Все лиги", leagues_path, class: "btn btn-sm btn-outline-primary me-2"
-          = link_to "Создать лигу", new_league_path, class: "btn btn-sm btn-primary"
 
     .col-md-6
-      .card.h-100
-        .card-header.fw-semibold Мои турниры
-        .card-body
-          - if @my_tournaments.any?
+      .card
+        .card-header.d-flex.justify-content-between.align-items-center
+          span.fw-semibold
+            i.bi.bi-bell.me-2
+            | Уведомления
+          - unread = @recent_notifications.count { |n| n.read_at.nil? }
+          - if unread > 0
+            span.badge.bg-danger.rounded-pill= unread
+        .card-body.p-0
+          - if @recent_notifications.any?
             ul.list-group.list-group-flush
-              - @my_tournaments.each do |tournament|
-                li.list-group-item.d-flex.justify-content-between.align-items-center
-                  div
-                    = link_to tournament.name, tournament_path(tournament)
-                    span.text-muted.small.ms-2= tournament.league.name
-                  span.badge.bg-secondary= "#{tournament.pairs.size * 2}/#{tournament.max_participants}"
+              - @recent_notifications.each do |n|
+                li.list-group-item.px-3.py-2
+                  .d-flex.justify-content-between.align-items-start.gap-2
+                    div class=(n.read_at ? "text-muted" : "fw-medium")
+                      - if n.url.present?
+                        = link_to n.message, visit_notification_path(n), class: "text-decoration-none text-reset"
+                      - else
+                        = n.message
+                      .text-muted.small.fw-normal= ru_date(n.created_at.to_date)
+                    - unless n.read_at
+                      span.badge.rounded-pill.bg-primary.flex-shrink-0
           - else
-            p.text-muted.mb-0 Турниров пока нет.
-        .card-footer
-          = link_to "Все турниры", tournaments_path, class: "btn btn-sm btn-outline-primary"
+            .p-3.text-muted Уведомлений нет.
 
-  .mt-5
-    h5.mb-3 Последние лиги
-    - if @recent_leagues.any?
-      .row.row-cols-1.row-cols-md-3.g-3
-        - @recent_leagues.each do |league|
-          .col
-            .card.card-hoverable.h-100
-              .card-body
-                h6.card-title= link_to league.name, league_path(league), class: "text-decoration-none stretched-link"
-                p.card-text.text-muted.small= league.description
-              .card-footer.text-muted.small
-                | #{league.owner.full_name} · #{ru_date(league.created_at.to_date)}
-    - else
-      p.text-muted Лиг пока нет.
+    .col-md-6
+      .card
+        .card-header.fw-semibold
+          i.bi.bi-compass.me-2
+          | Найти лигу
+        .card-body.p-0
+          - if @recent_leagues.any?
+            ul.list-group.list-group-flush
+              - @recent_leagues.each do |league|
+                li.list-group-item.px-3.py-2
+                  .d-flex.justify-content-between.align-items-center.gap-2
+                    div
+                      = link_to league.name, league_path(league), class: "fw-medium text-decoration-none d-block"
+                      .text-muted.small= league.owner.full_name
+                    = link_to "Открыть", league_path(league), class: "btn btn-sm btn-outline-secondary text-nowrap"
+          - else
+            .p-3.text-muted Нет доступных лиг.
+        .card-footer.text-end
+          = link_to "Все лиги", leagues_path, class: "btn btn-sm btn-outline-secondary"

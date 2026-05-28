@@ -1,5 +1,6 @@
 css:
-  .bracket-round { display: flex; flex-direction: column; min-width: 240px; padding: 0 16px; position: relative; }
+  .bracket-round { display: flex; flex-direction: column; min-width: 160px; padding: 0 8px; position: relative; }
+  @media (min-width: 576px) { .bracket-round { min-width: 240px; padding: 0 16px; } }
   .bracket-round:not(:last-child)::after { content: ''; position: absolute; right: 0; top: 5%; height: 90%; border-right: 2px dashed var(--bs-border-color); }
   .bracket-round-header { text-align: center; font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.8px; color: var(--bs-secondary-color); margin-bottom: 8px; flex-shrink: 0; }
   .bracket-match-wrapper { display: flex; flex-direction: column; justify-content: center; min-height: 80px; }
@@ -9,7 +10,7 @@ css:
   .bracket-team.winner { font-weight: 700; background-color: rgba(25,135,84,0.2); color: var(--bs-success); }
   .bracket-team.loser { color: var(--bs-secondary-color); }
   .bracket-team.bye-slot, .bracket-team.empty-slot { color: var(--bs-tertiary-color); font-style: italic; }
-  .bracket-name { flex: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .bracket-name { flex: 1; word-break: break-word; min-width: 0; }
   .bracket-score { font-size: 15px; font-weight: 700; min-width: 20px; text-align: right; flex-shrink: 0; }
   .bracket-team.winner .bracket-score { color: var(--bs-success); }
   .bracket-team.loser  .bracket-score { color: var(--bs-secondary-color); }

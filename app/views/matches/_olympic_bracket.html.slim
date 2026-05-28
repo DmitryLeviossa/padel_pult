@@ -22,9 +22,15 @@ css:
   .bracket-round {
     display: flex;
     flex-direction: column;
-    min-width: 280px;
-    padding: 0 16px;
+    min-width: 200px;
+    padding: 0 8px;
     position: relative;
+  }
+  @media (min-width: 576px) {
+    .bracket-round {
+      min-width: 280px;
+      padding: 0 16px;
+    }
   }
   .bracket-round:not(:last-child)::after {
     content: '';
@@ -89,9 +95,8 @@ css:
   }
   .bracket-name {
     flex: 1;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
+    word-break: break-word;
+    min-width: 0;
   }
   .bracket-score {
     font-size: 13px;

@@ -1,5 +1,5 @@
 # Clean slate (order matters due to foreign keys)
-[ Notification, Match, Pair, Tournament, LeagueInvitation, LeagueUser, League ].each(&:destroy_all)
+[ Notification, Match, Pair, Tournament, LeagueInvitation, LeagueUser, League, Club ].each(&:destroy_all)
 
 # Users — idempotent, kept across reruns
 users_data = [
@@ -42,6 +42,16 @@ end
 admin, alexei, boris, vadim, darya, elena, fyodor, galina,
   igor, julia, konstantin, larisa, mikhail, natasha, oleg, polina,
   roman, svetlana, timur, ulyana, viktor, xenia, yuri, zoya = users
+
+# Clubs
+club_moscow_sport    = Club.create!(name: "Московский спортивный центр",    address: "Москва, ул. Спортивная, 1")
+club_luzhniki        = Club.create!(name: "Олимпийский комплекс «Лужники»",  address: "Москва, Лужнецкая наб., 24")
+club_dynamo_moscow   = Club.create!(name: "Спортивный клуб «Динамо»",        address: "Москва, Ленинградский пр-т, 36")
+club_olimpiysky      = Club.create!(name: "Спортивный комплекс «Олимпийский»", address: "Москва, Олимпийский пр-т, 16")
+club_champion        = Club.create!(name: "Спортивный клуб «Чемпион»",       address: "Москва, ул. Победы, 5")
+club_arena           = Club.create!(name: "Спортивный комплекс «Арена»",     address: "Москва, ул. Арена, 10")
+club_olimp           = Club.create!(name: "Теннисный клуб «Олимп»",          address: "Москва, ул. Олимпийская, 3")
+club_piter           = Club.create!(name: "СКК «Петербургский»",             address: "Санкт-Петербург, пр. Юрия Гагарина, 8")
 
 # Leagues
 league1 = League.create!(
@@ -98,7 +108,7 @@ t_completed_1 = Tournament.create!(
   start_date:        Date.new(2026, 3, 1),
   end_date:          Date.new(2026, 3, 3),
   max_participants:  16,
-  location:          "Московский спортивный центр",
+  club:              club_moscow_sport,
   type:              "olympic",
   status:            "completed",
   description:       "Завершённый весенний кубок Московской лиги",
@@ -111,7 +121,7 @@ t_completed_2 = Tournament.create!(
   start_date:        Date.new(2026, 2, 10),
   end_date:          Date.new(2026, 2, 12),
   max_participants:  16,
-  location:          "СКК «Петербургский»",
+  club:              club_piter,
   type:              "olympic",
   status:            "completed",
   description:       "Завершённый зимний кубок Питерской лиги",
@@ -124,7 +134,7 @@ t_active = Tournament.create!(
   start_date:        Date.new(2026, 5, 20),
   end_date:          Date.new(2026, 5, 22),
   max_participants:  16,
-  location:          "Олимпийский комплекс «Лужники»",
+  club:              club_luzhniki,
   type:              "olympic",
   status:            "active",
   description:       "Активный майский турнир Московской лиги",
@@ -137,7 +147,7 @@ t_draft = Tournament.create!(
   start_date:        Date.new(2026, 7, 1),
   end_date:          Date.new(2026, 7, 3),
   max_participants:  16,
-  location:          "Спортивный клуб «Динамо»",
+  club:              club_dynamo_moscow,
   type:              "olympic",
   status:            "draft",
   description:       "Предстоящий летний турнир (черновик)",
@@ -150,7 +160,7 @@ t_registration = Tournament.create!(
   start_date:        Date.new(2026, 6, 10),
   end_date:          Date.new(2026, 6, 12),
   max_participants:  16,
-  location:          "СКК «Петербургский»",
+  club:              club_piter,
   type:              "olympic",
   status:            "registration",
   description:       "Открыта регистрация на главный летний турнир Питерской лиги",
@@ -163,7 +173,7 @@ t_active_olympic_loser = Tournament.create!(
   start_date:        Date.new(2026, 5, 21),
   end_date:          Date.new(2026, 5, 23),
   max_participants:  16,
-  location:          "Спортивный комплекс «Олимпийский»",
+  club:              club_olimpiysky,
   type:              "olympic",
   status:            "active",
   loser_bracket:     true,
@@ -177,7 +187,7 @@ t_active_rr = Tournament.create!(
   start_date:        Date.new(2026, 5, 15),
   end_date:          Date.new(2026, 5, 25),
   max_participants:  16,
-  location:          "Спортивный клуб «Динамо»",
+  club:              club_dynamo_moscow,
   type:              "round_robin",
   status:            "active",
   description:       "Активный круговой турнир Московской лиги",
@@ -190,7 +200,7 @@ t_active_mixed = Tournament.create!(
   start_date:        Date.new(2026, 5, 18),
   end_date:          Date.new(2026, 5, 24),
   max_participants:  16,
-  location:          "Спортивный клуб «Чемпион»",
+  club:              club_champion,
   type:              "mixed",
   status:            "active",
   groups_count:      2,
@@ -206,7 +216,7 @@ t_mixed_registration = Tournament.create!(
   start_date:        Date.new(2026, 6, 15),
   end_date:          Date.new(2026, 6, 20),
   max_participants:  16,
-  location:          "СКК «Петербургский»",
+  club:              club_piter,
   type:              "mixed",
   status:            "registration",
   groups_count:      2,
@@ -222,7 +232,7 @@ t_mixed_loser_bracket = Tournament.create!(
   start_date:        Date.new(2026, 5, 17),
   end_date:          Date.new(2026, 5, 21),
   max_participants:  16,
-  location:          "Спортивный комплекс «Арена»",
+  club:              club_arena,
   type:              "mixed",
   status:            "active",
   groups_count:      2,
@@ -238,7 +248,7 @@ t_mixed_group_stage = Tournament.create!(
   start_date:        Date.new(2026, 5, 19),
   end_date:          Date.new(2026, 5, 23),
   max_participants:  16,
-  location:          "Теннисный клуб «Олимп»",
+  club:              club_olimp,
   type:              "mixed",
   status:            "active",
   groups_count:      2,
@@ -414,4 +424,4 @@ Notification.create!(
   read_at: Time.current
 )
 
-puts "Seeded: #{User.count} users, #{League.count} leagues, #{Tournament.count} tournaments, #{Pair.count} pairs, #{Match.count} matches, #{Notification.count} notifications"
+puts "Seeded: #{User.count} users, #{Club.count} clubs, #{League.count} leagues, #{Tournament.count} tournaments, #{Pair.count} pairs, #{Match.count} matches, #{Notification.count} notifications"
