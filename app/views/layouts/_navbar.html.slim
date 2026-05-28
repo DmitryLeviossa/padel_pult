@@ -46,6 +46,8 @@ nav.navbar.navbar-expand-lg
                 = current_user.full_name.split.map(&:first).first(2).join.upcase
             ul.dropdown-menu.dropdown-menu-end
               li
+                = link_to "Мой профиль", user_path(current_user), class: "dropdown-item"
+              li
                 = link_to "Редактировать аккаунт", edit_user_registration_path, class: "dropdown-item"
               li
                 hr.dropdown-divider

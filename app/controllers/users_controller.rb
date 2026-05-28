@@ -6,12 +6,37 @@ class UsersController < ApplicationController
 
   def show
     @user = User.find(params[:id])
-    league_user_ids = @user.league_users.pluck(:id)
+    league_users = @user.league_users.includes(league: { logo_attachment: :blob })
+    @league_user_ids = league_users.pluck(:id)
+
+    @league_standings = league_users.map do |lu|
+      ranked_ids = LeagueUser.where(league_id: lu.league_id).order(score: :desc).pluck(:id)
+      position = ranked_ids.index(lu.id).to_i + 1
+      { league: lu.league, league_user: lu, position: position, total: ranked_ids.count }
+    end
+
     @tournament_pairs = Pair
       .includes(tournament: :league, player1: :user, player2: :user)
-      .where("player1_id IN (?) OR player2_id IN (?)", league_user_ids, league_user_ids)
+      .where("player1_id IN (?) OR player2_id IN (?)", @league_user_ids, @league_user_ids)
       .joins(:tournament)
       .order("tournaments.start_date DESC")
-    @league_user_ids = league_user_ids
+
+    pair_ids = @tournament_pairs.pluck(:id)
+
+    @match_history = if pair_ids.any?
+      Match
+        .where("pair1_id IN (?) OR pair2_id IN (?)", pair_ids, pair_ids)
+        .where.not(status: "pending")
+        .includes(
+          :tournament, :match_sets,
+          pair1: [{ player1: :user }, { player2: :user }],
+          pair2: [{ player1: :user }, { player2: :user }],
+          result_card_image_attachment: :blob
+        )
+        .joins(:tournament)
+        .order("tournaments.start_date DESC, matches.id DESC")
+    else
+      Match.none
+    end
   end
 end
