@@ -13,6 +13,7 @@ Rails.application.routes.draw do
 
   resources :leagues do
     resources :tournaments, only: [:new, :create]
+    resources :seasons, only: [:new, :create, :show, :edit, :update, :destroy]
     resources :league_users, only: [:new, :create, :edit, :update], module: :leagues
     resources :league_invitations, only: [:create], module: :leagues
     member do

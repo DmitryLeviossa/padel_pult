@@ -1,5 +1,5 @@
 # Clean slate (order matters due to foreign keys)
-[ Notification, Match, Pair, Tournament, LeagueInvitation, LeagueUser, League, Club ].each(&:destroy_all)
+[ Notification, Match, Pair, Tournament, LeagueInvitation, LeagueUser, Season, League, Club ].each(&:destroy_all)
 
 # Users — idempotent, kept across reruns
 users_data = [
@@ -58,7 +58,7 @@ league1 = League.create!(
   name:               "Московская открытая лига",
   description:        "Соревновательная лига по падел-теннису в Москве",
   owner:              admin,
-  tournaments_quota:  10
+  tournaments_quota:  12
 )
 
 league2 = League.create!(
@@ -93,6 +93,23 @@ league2_members = league2_users.map do |user|
   end
 end
 
+# Seasons
+season1 = Season.create!(
+  league:      league1,
+  name:        "Сезон Весна 2026",
+  date_from:   Date.new(2026, 1, 1),
+  date_to:     Date.new(2026, 6, 30),
+  description: "Весенний сезон Московской открытой лиги 2026"
+)
+
+season2 = Season.create!(
+  league:      league2,
+  name:        "Сезон Весна 2026",
+  date_from:   Date.new(2026, 1, 1),
+  date_to:     Date.new(2026, 6, 30),
+  description: "Весенний сезон Питерской летней лиги 2026"
+)
+
 standard_points = [
   { "from" => 1,  "to" => 1,  "points" => 10 },
   { "from" => 2,  "to" => 2,  "points" => 8  },
@@ -125,6 +142,32 @@ t_completed_2 = Tournament.create!(
   type:              "olympic",
   status:            "completed",
   description:       "Завершённый зимний кубок Питерской лиги",
+  placement_points:  standard_points
+)
+
+t_completed_3 = Tournament.create!(
+  name:              "Апрельский кубок 2026",
+  league:            league1,
+  start_date:        Date.new(2026, 4, 5),
+  end_date:          Date.new(2026, 4, 7),
+  max_participants:  16,
+  club:              club_dynamo_moscow,
+  type:              "olympic",
+  status:            "completed",
+  description:       "Завершённый апрельский кубок Московской лиги",
+  placement_points:  standard_points
+)
+
+t_completed_4 = Tournament.create!(
+  name:              "Мартовский турнир Питера 2026",
+  league:            league2,
+  start_date:        Date.new(2026, 3, 15),
+  end_date:          Date.new(2026, 3, 17),
+  max_participants:  16,
+  club:              club_piter,
+  type:              "olympic",
+  status:            "completed",
+  description:       "Завершённый мартовский турнир Питерской лиги",
   placement_points:  standard_points
 )
 
@@ -271,6 +314,16 @@ league2_members.first(18).each_slice(2).with_index do |(p1, p2), i|
   Pair.create!(tournament: t_completed_2, player1: p1, player2: p2, created_at: 100.days.ago + (i * 4).hours)
 end
 
+# completed_3 (league1): 20 players applied = 10 pairs
+league1_members.first(20).each_slice(2).with_index do |(p1, p2), i|
+  Pair.create!(tournament: t_completed_3, player1: p1, player2: p2, created_at: 60.days.ago + (i * 3).hours)
+end
+
+# completed_4 (league2): 16 players applied = 8 pairs
+league2_members.first(16).each_slice(2).with_index do |(p1, p2), i|
+  Pair.create!(tournament: t_completed_4, player1: p1, player2: p2, created_at: 70.days.ago + (i * 3).hours)
+end
+
 # active olympic (league1): 24 players applied = 12 pairs
 league1_members.each_slice(2).with_index do |(p1, p2), i|
   Pair.create!(tournament: t_active, player1: p1, player2: p2, created_at: 20.days.ago + (i * 6).hours)
@@ -316,7 +369,7 @@ league1_members.first(20).each_slice(2).with_index do |(p1, p2), i|
   Pair.create!(tournament: t_mixed_group_stage, player1: p1, player2: p2, created_at: 21.days.ago + (i * 3).hours)
 end
 
-# Matches
+# Helpers
 def complete_match!(match, winner_pair, winner_score, loser_score)
   match.update!(
     pair1_score: match.pair1 == winner_pair ? winner_score : loser_score,
@@ -327,74 +380,135 @@ def complete_match!(match, winner_pair, winner_score, loser_score)
   Tournaments::Matches::AdvanceWinnerService.new(match).call
 end
 
+# Assigns placements and awards points for a fully completed olympic tournament.
+def assign_olympic_placements!(tournament)
+  bracket = tournament.brackets.bracket.first
+  return unless bracket
 
-# Complete all rounds for t_completed_1 (4 pairs → 2 rounds)
-t_completed_1.matches.reload.ordered.group_by(&:round_number).each do |_round, matches|
-  matches.each do |match|
-    next if match.bye? || match.pair1.nil? || match.pair2.nil?
-    complete_match!(match.reload, match.pair1, 6, rand(2..4))
+  max_round = bracket.matches.maximum(:round_number)
+
+  final = bracket.matches.find_by(round_number: max_round, position: 1)
+  if final&.completed?
+    final.winner.update_column(:placement, 1)
+    loser = ([ final.pair1, final.pair2 ].compact - [ final.winner ]).first
+    loser&.update_column(:placement, 2)
+  end
+
+  if max_round >= 2
+    bracket.matches.where(round_number: max_round - 1).order(:position).each_with_index do |match, i|
+      next unless match.completed?
+      loser = ([ match.pair1, match.pair2 ].compact - [ match.winner ]).first
+      loser&.update_column(:placement, 3 + i)
+    end
+  end
+
+  if max_round >= 3
+    current_place = 5
+    bracket.matches.where(round_number: max_round - 2).order(:position).each do |match|
+      next unless match.completed?
+      loser = ([ match.pair1, match.pair2 ].compact - [ match.winner ]).first
+      loser&.update_column(:placement, current_place)
+      current_place += 1
+    end
+  end
+
+  tournament.pairs.reload.where.not(placement: nil).each do |pair|
+    pts = tournament.points_for_place(pair.placement)
+    next if pts.zero?
+    pair.player1.increment!(:score, pts)
+    pair.player2.increment!(:score, pts)
   end
 end
 
-# Complete the single final for t_completed_2 (2 pairs → 1 round)
-t_completed_2.matches.reload.ordered.each do |match|
-  next if match.bye? || match.pair1.nil? || match.pair2.nil?
-  complete_match!(match, match.pair1, 7, 5)
+# Fully completes an olympic tournament: assigns pairs, plays all rounds, sets placements.
+def complete_olympic_tournament!(tournament)
+  Tournaments::Matches::AutoAssignPairsService.new(tournament).call
+
+  bracket = tournament.brackets.bracket.first
+  return unless bracket
+
+  max_round = bracket.matches.maximum(:round_number)
+  (1..max_round).each do |round|
+    bracket.matches.where(round_number: round).order(:position).each do |match|
+      match.reload
+      next if match.pair1.nil? || match.pair2.nil?
+      complete_match!(match, match.pair1, 6, rand(2..4))
+    end
+  end
+
+  assign_olympic_placements!(tournament)
 end
 
-# Complete round 1 for t_active (8 pairs → 3 rounds), leave round 2+ pending
-t_active.matches.reload.where(round_number: 1).ordered.each do |match|
-  next if match.bye? || match.pair1.nil? || match.pair2.nil?
+# Complete all four finished tournaments
+complete_olympic_tournament!(t_completed_1)
+complete_olympic_tournament!(t_completed_2)
+complete_olympic_tournament!(t_completed_3)
+complete_olympic_tournament!(t_completed_4)
+
+# Active tournaments — assign pairs then complete some rounds to simulate in-progress state
+
+Tournaments::Matches::AutoAssignPairsService.new(t_active).call
+t_active.matches.bracket.where(round_number: 1).order(:position).each do |match|
+  match.reload
+  next if match.pair1.nil? || match.pair2.nil?
   complete_match!(match, match.pair1, 6, rand(2..4))
 end
 
-# Complete round 1 for t_active_olympic_loser (main + loser brackets), leave round 2+ pending
-t_active_olympic_loser.matches.reload.where(round_number: 1).ordered.each do |match|
-  next if match.bye? || match.pair1.nil? || match.pair2.nil?
+Tournaments::Matches::AutoAssignPairsService.new(t_active_olympic_loser).call
+t_active_olympic_loser.matches.bracket.where(round_number: 1).order(:position).each do |match|
+  match.reload
+  next if match.pair1.nil? || match.pair2.nil?
   winner = [ match.pair1, match.pair2 ].sample
   complete_match!(match.reload, winner, 6, rand(2..4))
 end
 
-# Complete rounds 1-3 for t_active_rr (6 pairs → 5 rounds), leave rounds 4-5 pending
-t_active_rr.matches.reload.where(round_number: 1..3).ordered.each do |match|
+Tournaments::Matches::AutoAssignPairsService.new(t_active_rr).call
+t_active_rr.matches.bracket.where(round_number: 1..3).order(:position).each do |match|
+  match.reload
   next if match.pair1.nil? || match.pair2.nil?
   winner = [ match.pair1, match.pair2 ].sample
   complete_match!(match, winner, 6, rand(2..5))
 end
 
-# Complete all group-stage matches for t_mixed_loser_bracket, then seed and play round 1 of both brackets
-t_mixed_loser_bracket.matches.reload.group_stage.ordered.each do |match|
+Tournaments::Matches::AutoAssignPairsService.new(t_mixed_loser_bracket).call
+t_mixed_loser_bracket.matches.group_stage.order(:position).each do |match|
+  match.reload
   next if match.pair1.nil? || match.pair2.nil?
   winner = [ match.pair1, match.pair2 ].sample
   complete_match!(match.reload, winner, 6, rand(2..4))
 end
 Tournaments::Matches::StartBracketService.new(t_mixed_loser_bracket.reload).call
-t_mixed_loser_bracket.matches.reload.bracket.where(round_number: 1).ordered.each do |match|
-  next if match.bye? || match.pair1.nil? || match.pair2.nil?
-  complete_match!(match.reload, match.pair1, 6, rand(2..4))
-end
-t_mixed_loser_bracket.matches.reload.loser_bracket.where(round_number: 1).ordered.each do |match|
-  next if match.bye? || match.pair1.nil? || match.pair2.nil?
-  complete_match!(match.reload, match.pair1, 6, rand(2..4))
-end
-
-# Complete round 1 group-stage matches for t_mixed_group_stage, leave rounds 2+ pending
-t_mixed_group_stage.matches.reload.group_stage.where(round_number: 1).ordered.each do |match|
+t_mixed_loser_bracket.matches.bracket.where(round_number: 1).order(:position).each do |match|
+  match.reload
   next if match.pair1.nil? || match.pair2.nil?
-  winner = [ match.pair1, match.pair2 ].sample
-  complete_match!(match.reload, winner, 6, rand(2..4))
+  complete_match!(match.reload, match.pair1, 6, rand(2..4))
+end
+t_mixed_loser_bracket.matches.loser_bracket.where(round_number: 1).order(:position).each do |match|
+  match.reload
+  next if match.pair1.nil? || match.pair2.nil?
+  complete_match!(match.reload, match.pair1, 6, rand(2..4))
 end
 
-# Complete all group-stage matches for t_active_mixed, then seed and play bracket round 1
-t_active_mixed.matches.reload.group_stage.ordered.each do |match|
+Tournaments::Matches::AutoAssignPairsService.new(t_active_mixed).call
+t_active_mixed.matches.group_stage.order(:position).each do |match|
+  match.reload
   next if match.pair1.nil? || match.pair2.nil?
   winner = [ match.pair1, match.pair2 ].sample
   complete_match!(match.reload, winner, 6, rand(2..4))
 end
 Tournaments::Matches::StartBracketService.new(t_active_mixed.reload).call
-t_active_mixed.matches.reload.bracket.where(round_number: 1).ordered.each do |match|
-  next if match.bye? || match.pair1.nil? || match.pair2.nil?
+t_active_mixed.matches.bracket.where(round_number: 1).order(:position).each do |match|
+  match.reload
+  next if match.pair1.nil? || match.pair2.nil?
   complete_match!(match.reload, match.pair1, 6, rand(2..4))
+end
+
+Tournaments::Matches::AutoAssignPairsService.new(t_mixed_group_stage).call
+t_mixed_group_stage.matches.group_stage.where(round_number: 1).order(:position).each do |match|
+  match.reload
+  next if match.pair1.nil? || match.pair2.nil?
+  winner = [ match.pair1, match.pair2 ].sample
+  complete_match!(match.reload, winner, 6, rand(2..4))
 end
 
 # Notifications
@@ -424,4 +538,4 @@ Notification.create!(
   read_at: Time.current
 )
 
-puts "Seeded: #{User.count} users, #{Club.count} clubs, #{League.count} leagues, #{Tournament.count} tournaments, #{Pair.count} pairs, #{Match.count} matches, #{Notification.count} notifications"
+puts "Seeded: #{User.count} users, #{Club.count} clubs, #{League.count} leagues, #{Season.count} seasons, #{Tournament.count} tournaments, #{Pair.count} pairs, #{Match.count} matches, #{Notification.count} notifications"

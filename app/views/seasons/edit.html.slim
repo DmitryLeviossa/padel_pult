@@ -1,0 +1,7 @@
+.container.py-4
+  .d-flex.align-items-center.gap-2.mb-4
+    = link_to league_season_path(@league, @season), class: "btn btn-outline-secondary btn-sm" do
+      i.bi.bi-arrow-left
+    h1.mb-0 Редактировать сезон
+
+  = render "form", season: @season

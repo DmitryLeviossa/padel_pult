@@ -24,10 +24,15 @@
 
   - members_tab_active = params[:q_members].present? || params[:members_status].present?
 
+  - seasons_tab_active = params[:anchor] == "seasons"
+
   ul.nav.nav-tabs.mt-4 role="tablist" data-controller="tabs"
     li.nav-item role="presentation"
-      button.nav-link class=("active" unless members_tab_active) type="button" role="tab" data-bs-toggle="tab" data-bs-target="#tournaments" aria-controls="tournaments" aria-selected="#{!members_tab_active}"
+      button.nav-link class=("active" unless members_tab_active || seasons_tab_active) type="button" role="tab" data-bs-toggle="tab" data-bs-target="#tournaments" aria-controls="tournaments" aria-selected="#{!members_tab_active && !seasons_tab_active}"
         | Турниры
+    li.nav-item role="presentation"
+      button.nav-link class=("active" if seasons_tab_active) type="button" role="tab" data-bs-toggle="tab" data-bs-target="#seasons" aria-controls="seasons" aria-selected="#{seasons_tab_active}"
+        | Сезоны
     li.nav-item role="presentation"
       button.nav-link class=("active" if members_tab_active) type="button" role="tab" data-bs-toggle="tab" data-bs-target="#league-users" aria-controls="league-users" aria-selected="#{members_tab_active}"
         | Участники
@@ -37,7 +42,7 @@
           | Настройки
 
   .tab-content.mt-3
-    #tournaments.tab-pane.fade class=("show active" unless members_tab_active) role="tabpanel"
+    #tournaments.tab-pane.fade class=("show active" unless members_tab_active || seasons_tab_active) role="tabpanel"
       .d-flex.justify-content-between.align-items-center.mb-2
         h5.mb-0 Турниры
         - if @league.owner == current_user
@@ -75,6 +80,38 @@
                       i.bi.bi-copy
       - else
         p.text-muted Турниров пока нет.
+
+    #seasons.tab-pane.fade class=("show active" if seasons_tab_active) role="tabpanel"
+      .d-flex.justify-content-between.align-items-center.mb-3
+        h5.mb-0 Сезоны
+        - if @league.owner == current_user
+          = link_to new_league_season_path(@league), class: "btn btn-primary btn-sm", data: { tooltip: "Новый сезон" } do
+            i.bi.bi-plus-lg
+
+      - seasons = @league.seasons.order(date_from: :desc)
+      - if seasons.any?
+        .row.row-cols-1.row-cols-md-2.row-cols-lg-3.g-3
+          - seasons.each do |season|
+            .col
+              .card.card-hoverable.h-100
+                - if season.logo.attached?
+                  = image_tag season.logo, class: "card-img-top", style: "height: 160px; object-fit: cover;"
+                .card-body
+                  .d-flex.justify-content-between.align-items-start.mb-1
+                    h6.card-title.mb-0= link_to season.name, league_season_path(@league, season), class: "text-decoration-none stretched-link"
+                    - badge = { upcoming: ["info", "Предстоящий"], active: ["success", "Активный"], finished: ["secondary", "Завершён"] }[season.status]
+                    span.badge.position-relative class="bg-#{badge[0]}" = badge[1]
+                  p.card-text.text-muted.small.mb-1= "#{ru_date(season.date_from)} — #{ru_date(season.date_to)}"
+                  - if season.description.present?
+                    p.card-text.text-muted.small.mb-0= season.description
+                - if @league.owner == current_user
+                  .card-footer.d-flex.gap-2.position-relative
+                    = link_to edit_league_season_path(@league, season), class: "btn btn-outline-primary btn-sm", data: { tooltip: "Редактировать" } do
+                      i.bi.bi-pencil
+                    = button_to league_season_path(@league, season), method: :delete, class: "btn btn-outline-danger btn-sm", data: { turbo_confirm: "Удалить сезон?", tooltip: "Удалить" } do
+                      i.bi.bi-trash
+      - else
+        p.text-muted Сезонов пока нет.
 
     #league-users.tab-pane.fade class=("show active" if members_tab_active) role="tabpanel"
       .d-flex.justify-content-between.align-items-center.mb-3
