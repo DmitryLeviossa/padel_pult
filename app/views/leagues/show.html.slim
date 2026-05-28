@@ -5,15 +5,13 @@
         = image_tag @league.logo, class: "rounded", style: "width: 64px; height: 64px; object-fit: cover;"
       h1.mb-0= @league.name
     .d-flex.gap-2
-      - if @league.owner == current_user
-        = link_to edit_league_path(@league), class: "btn btn-outline-primary btn-sm", data: { tooltip: "Редактировать" } do
-          i.bi.bi-pencil-square
-      - elsif @league.users.include?(current_user)
-        = button_to leave_league_path(@league), method: :delete, class: "btn btn-outline-danger btn-sm", data: { turbo_confirm: "Вы уверены, что хотите покинуть лигу?", tooltip: "Покинуть лигу" } do
-          i.bi.bi-box-arrow-right
-      - else
-        = button_to join_league_path(@league), method: :post, class: "btn btn-primary btn-sm", data: { tooltip: "Вступить в лигу" } do
-          i.bi.bi-person-plus
+      - if @league.owner != current_user
+        - if @league.users.include?(current_user)
+          = button_to leave_league_path(@league), method: :delete, class: "btn btn-outline-danger btn-sm", data: { turbo_confirm: "Вы уверены, что хотите покинуть лигу?", tooltip: "Покинуть лигу" } do
+            i.bi.bi-box-arrow-right
+        - else
+          = button_to join_league_path(@league), method: :post, class: "btn btn-primary btn-sm", data: { tooltip: "Вступить в лигу" } do
+            i.bi.bi-person-plus
       = link_to leagues_path, class: "btn btn-outline-secondary btn-sm", data: { tooltip: "Все лиги" } do
         i.bi.bi-arrow-left
 
@@ -26,9 +24,11 @@
 
   - seasons_tab_active = params[:anchor] == "seasons"
 
+  - any_other_tab = members_tab_active || seasons_tab_active || @settings_tab_active
+
   ul.nav.nav-tabs.mt-4 role="tablist" data-controller="tabs"
     li.nav-item role="presentation"
-      button.nav-link class=("active" unless members_tab_active || seasons_tab_active) type="button" role="tab" data-bs-toggle="tab" data-bs-target="#tournaments" aria-controls="tournaments" aria-selected="#{!members_tab_active && !seasons_tab_active}"
+      button.nav-link class=("active" unless any_other_tab) type="button" role="tab" data-bs-toggle="tab" data-bs-target="#tournaments" aria-controls="tournaments" aria-selected="#{!any_other_tab}"
         | Турниры
     li.nav-item role="presentation"
       button.nav-link class=("active" if seasons_tab_active) type="button" role="tab" data-bs-toggle="tab" data-bs-target="#seasons" aria-controls="seasons" aria-selected="#{seasons_tab_active}"
@@ -38,11 +38,11 @@
         | Участники
     - if @league.owner == current_user
       li.nav-item role="presentation"
-        button.nav-link type="button" role="tab" data-bs-toggle="tab" data-bs-target="#settings" aria-controls="settings" aria-selected="false"
+        button.nav-link class=("active" if @settings_tab_active) type="button" role="tab" data-bs-toggle="tab" data-bs-target="#settings" aria-controls="settings" aria-selected="#{@settings_tab_active}"
           | Настройки
 
   .tab-content.mt-3
-    #tournaments.tab-pane.fade class=("show active" unless members_tab_active || seasons_tab_active) role="tabpanel"
+    #tournaments.tab-pane.fade class=("show active" unless any_other_tab) role="tabpanel"
       .d-flex.justify-content-between.align-items-center.mb-2
         h5.mb-0 Турниры
         - if @league.owner == current_user
@@ -94,8 +94,8 @@
           - seasons.each do |season|
             .col
               .card.card-hoverable.h-100
-                - if season.logo.attached?
-                  = image_tag season.logo, class: "card-img-top", style: "height: 160px; object-fit: cover;"
+                - if (logo = season.effective_logo)
+                  = image_tag logo, class: "card-img-top", style: "height: 160px; object-fit: cover;"
                 .card-body
                   .d-flex.justify-content-between.align-items-start.mb-1
                     h6.card-title.mb-0= link_to season.name, league_season_path(@league, season), class: "text-decoration-none stretched-link"
@@ -186,8 +186,45 @@
         p.text-muted Участников пока нет.
 
     - if @league.owner == current_user
-      #settings.tab-pane.fade role="tabpanel"
+      #settings.tab-pane.fade class=("show active" if @settings_tab_active) role="tabpanel"
         h5.mb-3 Настройки
+
+        = form_with model: @league, url: league_path(@league), method: :patch do |f|
+          .card.mb-4
+            .card-header Основная информация
+            .card-body
+              .mb-3
+                = f.label :name, "Название", class: "form-label"
+                = f.text_field :name, class: "form-control", required: true
+                - if @league.errors[:name].any?
+                  .text-danger.small= @league.errors[:name].first
+              .mb-0
+                = f.label :description, "Описание", class: "form-label"
+                = f.text_area :description, class: "form-control", rows: 4
+            .card-footer
+              = f.submit "Сохранить", class: "btn btn-primary"
+
+        = form_with model: @league, url: league_path(@league), method: :patch do |f|
+          .card.mb-4
+            .card-header Логотип
+            .card-body
+              - if @league.logo.attached?
+                .mb-2
+                  = image_tag @league.logo, class: "rounded", style: "width: 80px; height: 80px; object-fit: cover;"
+              = f.file_field :logo, class: "form-control", accept: "image/*"
+            .card-footer
+              = f.submit "Сохранить", class: "btn btn-primary"
+
+        = form_with model: @league, url: league_path(@league), method: :patch do |f|
+          .card.mb-4
+            .card-header Фон онлайн-страницы
+            .card-body
+              - if @league.online_background.attached?
+                .mb-2
+                  = image_tag @league.online_background, class: "rounded", style: "width: 160px; height: 90px; object-fit: cover;"
+              = f.file_field :online_background, class: "form-control", accept: "image/*"
+            .card-footer
+              = f.submit "Сохранить", class: "btn btn-primary"
 
         .card.mb-3
           .card-header Квота турниров

@@ -21,6 +21,8 @@ class LeaguesController < ApplicationController
       @invitable_users = User.where.not(id: excluded_ids).order(:first_name, :last_name)
       @league_members = @league.users.order(:first_name, :last_name)
     end
+
+    @settings_tab_active = params[:anchor] == "settings"
   end
 
   def new
@@ -66,22 +68,33 @@ class LeaguesController < ApplicationController
   def edit
     @league = League.find(params[:id])
     authorize_owner!
+    redirect_to league_path(@league, anchor: "settings")
   end
 
   def update
     @league = League.find(params[:id])
     authorize_owner!
 
-    settings_params = params[:league]&.keys&.any? { |k| %w[tournaments_quota chat_id owner_id].include?(k) }
-
     if @league.update(league_params)
-      redirect_to settings_params ? league_path(@league, anchor: "settings") : @league, notice: "Лига обновлена."
+      redirect_to league_path(@league, anchor: "settings"), notice: "Лига обновлена."
     else
-      render :edit, status: :unprocessable_entity
+      load_show_resources
+      @settings_tab_active = true
+      render :show, status: :unprocessable_entity
     end
   end
 
   private
+
+  def load_show_resources
+    @q_members = @league.league_users.joins(:user).ransack(nil)
+    @league_users = @q_members.result.includes(:user).order(score: :desc)
+    if @league.owner == current_user
+      excluded_ids = @league.user_ids + @league.league_invitations.pending.pluck(:invited_user_id)
+      @invitable_users = User.where.not(id: excluded_ids).order(:first_name, :last_name)
+      @league_members = @league.users.order(:first_name, :last_name)
+    end
+  end
 
   def leagues_scope
     case params[:filter]
@@ -100,6 +113,6 @@ class LeaguesController < ApplicationController
   end
 
   def league_params
-    params.require(:league).permit(:name, :description, :logo, :owner_id, :tournaments_quota, :chat_id)
+    params.require(:league).permit(:name, :description, :logo, :online_background, :owner_id, :tournaments_quota, :chat_id)
   end
 end

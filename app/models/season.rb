@@ -43,6 +43,10 @@ class Season < ApplicationRecord
   def active?   = status == :active
   def finished? = status == :finished
 
+  def effective_logo
+    logo.attached? ? logo : (league.logo.attached? ? league.logo : nil)
+  end
+
   private
 
   def date_to_not_before_date_from

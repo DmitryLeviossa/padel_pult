@@ -1,8 +1,8 @@
 .container.py-4
   .d-flex.justify-content-between.align-items-start.mb-4
     .d-flex.align-items-center.gap-3
-      - if @season.logo.attached?
-        = image_tag @season.logo, class: "rounded", style: "width: 64px; height: 64px; object-fit: cover;"
+      - if (logo = @season.effective_logo)
+        = image_tag logo, class: "rounded", style: "width: 64px; height: 64px; object-fit: cover;"
       div
         h1.mb-1= @season.name
         p.mb-0.text-muted= "#{ru_date(@season.date_from)} — #{ru_date(@season.date_to)} · #{@league.name}"

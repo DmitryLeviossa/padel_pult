@@ -14,11 +14,23 @@ html data-bs-theme="dark"
     = javascript_include_tag "tom-select.min", "data-turbo-track": "reload"
     = javascript_include_tag "flatpickr.min", "data-turbo-track": "reload"
     = javascript_importmap_tags
+    - if @tournament&.league&.online_background&.attached?
+      - bg_url = url_for(@tournament.league.online_background)
+      css:
+        body {
+          overflow-x: hidden;
+          background-image: url('#{bg_url}');
+          background-size: cover;
+          background-position: center;
+          background-attachment: fixed;
+        }
+    - else
+      css:
+        body {
+          overflow-x: hidden;
+          background: radial-gradient(ellipse at 50% 0%, #1a3a5c 0%, #0a0a0a 70%);
+        }
     css:
-      body {
-        overflow-x: hidden;
-        background: radial-gradient(ellipse at 50% 0%, #1a3a5c 0%, #0a0a0a 70%);
-      }
       .tv-header { padding: 1rem 1.5rem; border-bottom: 1px solid rgba(255,255,255,0.1); }
       .tv-title { font-size: 1.8rem; font-weight: 600; margin: 0 0 0.2rem; }
       .tv-meta { font-size: 0.95rem; opacity: 0.65; }

@@ -29,6 +29,7 @@ class League < ApplicationRecord
   has_many :league_invitations
 
   has_one_attached :logo
+  has_one_attached :online_background
 
   after_create :add_owner_as_member
 
