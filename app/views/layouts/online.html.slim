@@ -17,15 +17,35 @@ html data-bs-theme="dark"
     css:
       body { overflow-x: hidden; }
       .tv-header { padding: 1rem 1.5rem; border-bottom: 1px solid rgba(255,255,255,0.1); }
-      .tv-title { font-size: 1.8rem; font-weight: 600; margin: 0; }
-      .tv-meta { font-size: 1rem; opacity: 0.65; }
+      .tv-title { font-size: 1.8rem; font-weight: 600; margin: 0 0 0.2rem; }
+      .tv-meta { font-size: 0.95rem; opacity: 0.65; }
+      .tv-logo { width: 56px; height: 56px; object-fit: contain; border-radius: 8px; }
+      .slide-title { text-align: center; font-size: 2rem; font-weight: 700; min-height: 2.8rem; margin: 0.75rem 0 0.25rem; }
+      .slide-dots { text-align: center; padding: 0.75rem 0 0.25rem; min-height: 2rem; }
+      .slide-dot { display: inline-block; width: 12px; height: 12px; border-radius: 50%; background: rgba(255,255,255,0.3); margin: 0 5px; cursor: pointer; transition: background 0.3s; }
+      .slide-dot.active { background: white; }
+      [data-slide] { display: none; }
 
   body
-    header.tv-header.d-flex.justify-content-between.align-items-center
-      div
+    header.tv-header.d-flex.align-items-center.gap-4
+      / Club (left)
+      - if @tournament.club
+        .d-flex.align-items-center.gap-2.flex-shrink-0
+          - if @tournament.club.logo.attached?
+            = image_tag @tournament.club.logo, class: "tv-logo", alt: @tournament.club.name
+          span.tv-meta= @tournament.club.name
+
+      / Tournament name + dates (center)
+      .flex-grow-1.text-center
         h1.tv-title= @tournament.name
-        span.tv-meta= @tournament.league.name
-      div
+        span.tv-meta= tournament_date_range(@tournament)
+
+      / League + status (right)
+      .d-flex.align-items-center.gap-3.flex-shrink-0
+        .d-flex.align-items-center.gap-2
+          - if @tournament.league.logo.attached?
+            = image_tag @tournament.league.logo, class: "tv-logo", alt: @tournament.league.name
+          span.tv-meta= @tournament.league.name
         - badge_class = { "active" => "success", "completed" => "primary" }.fetch(@tournament.status, "secondary")
         span.badge class="bg-#{badge_class} fs-6"
           = { "active" => "Активный", "completed" => "Завершён" }.fetch(@tournament.status, @tournament.status)

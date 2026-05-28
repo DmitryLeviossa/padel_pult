@@ -83,6 +83,12 @@ class TournamentsController < ApplicationController
   end
 
   def online
+    @tournament = Tournament
+      .includes(:league, :club,
+                league: { logo_attachment: :blob },
+                club: { logo_attachment: :blob },
+                pairs: [ { player1: :user }, { player2: :user } ])
+      .find(@tournament.id)
     @match_data = Tournaments::MatchData.new(@tournament)
     render layout: "online"
   end
