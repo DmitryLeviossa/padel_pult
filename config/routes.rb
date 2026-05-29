@@ -16,6 +16,7 @@ Rails.application.routes.draw do
     resources :seasons, only: [:new, :create, :show, :edit, :update, :destroy]
     resources :league_users, only: [:new, :create, :edit, :update], module: :leagues
     resources :league_invitations, only: [:create], module: :leagues
+    resource :league_telegram_setting, only: [:create, :update], module: :leagues
     member do
       post :join
       delete :leave

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2026_05_28_115541) do
+ActiveRecord::Schema[8.0].define(version: 2026_05_29_160158) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -74,6 +74,16 @@ ActiveRecord::Schema[8.0].define(version: 2026_05_28_115541) do
     t.index ["league_id"], name: "index_league_invitations_on_league_id"
   end
 
+  create_table "league_telegram_settings", force: :cascade do |t|
+    t.bigint "league_id", null: false
+    t.string "match_results_thread_id"
+    t.string "announces_thread_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.string "chat_id"
+    t.index ["league_id"], name: "index_league_telegram_settings_on_league_id", unique: true
+  end
+
   create_table "league_users", force: :cascade do |t|
     t.bigint "league_id", null: false
     t.bigint "user_id", null: false
@@ -92,7 +102,6 @@ ActiveRecord::Schema[8.0].define(version: 2026_05_28_115541) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.integer "tournaments_quota", default: 5, null: false
-    t.string "chat_id"
     t.index ["owner_id"], name: "index_leagues_on_owner_id"
   end
 
@@ -219,6 +228,7 @@ ActiveRecord::Schema[8.0].define(version: 2026_05_28_115541) do
   add_foreign_key "league_invitations", "leagues"
   add_foreign_key "league_invitations", "users", column: "invited_by_id"
   add_foreign_key "league_invitations", "users", column: "invited_user_id"
+  add_foreign_key "league_telegram_settings", "leagues"
   add_foreign_key "league_users", "leagues"
   add_foreign_key "league_users", "users"
   add_foreign_key "leagues", "users", column: "owner_id"

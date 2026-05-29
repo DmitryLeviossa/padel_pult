@@ -231,9 +231,9 @@
           .card-body
             p.mb-0 = @league.tournaments_quota
 
-        = form_with model: @league, url: league_path(@league), method: :patch do |f|
+        = form_with model: @league_telegram_setting, url: league_league_telegram_setting_path(@league), method: @league_telegram_setting.new_record? ? :post : :patch do |f|
           .card.mb-4
-            .card-header Telegram чат
+            .card-header Telegram
             .card-body
               .mb-3
                 = f.label :chat_id, "ID чата", class: "form-label"
@@ -271,6 +271,14 @@
                       |  — это и есть нужный идентификатор (для каналов он обычно начинается с
                       code  -100
                       | ).
+              hr.my-3
+              .row.g-3
+                .col-sm-6
+                  = f.label :match_results_thread_id, "ID ветки результатов матчей", class: "form-label"
+                  = f.text_field :match_results_thread_id, class: "form-control", placeholder: "например, 123"
+                .col-sm-6
+                  = f.label :announces_thread_id, "ID ветки анонсов", class: "form-label"
+                  = f.text_field :announces_thread_id, class: "form-control", placeholder: "например, 456"
             .card-footer
               = f.submit "Сохранить", class: "btn btn-primary"
 

@@ -8,7 +8,6 @@
 #  tournaments_quota :integer          default(5), not null
 #  created_at        :datetime         not null
 #  updated_at        :datetime         not null
-#  chat_id           :string
 #  owner_id          :bigint           not null
 #
 # Indexes
@@ -27,6 +26,7 @@ class League < ApplicationRecord
   has_many :league_users, dependent: :destroy
   has_many :users, through: :league_users
   has_many :league_invitations
+  has_one :league_telegram_setting, dependent: :destroy
 
   has_one_attached :logo
   has_one_attached :online_background

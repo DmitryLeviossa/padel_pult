@@ -46,7 +46,7 @@ class GenerateMatchResultCardJob < ApplicationJob
         )
       end
 
-      chat_id = match.tournament.league.chat_id
+      chat_id = match.tournament.league.league_telegram_setting&.chat_id
       TelegramBotService.send_photo(chat_id: chat_id, image_path: tmp_path) if chat_id.present?
     ensure
       browser.quit

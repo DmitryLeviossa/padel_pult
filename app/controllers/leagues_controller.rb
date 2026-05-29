@@ -20,6 +20,7 @@ class LeaguesController < ApplicationController
       excluded_ids = @league.user_ids + @league.league_invitations.pending.pluck(:invited_user_id)
       @invitable_users = User.where.not(id: excluded_ids).order(:first_name, :last_name)
       @league_members = @league.users.order(:first_name, :last_name)
+      @league_telegram_setting = @league.league_telegram_setting || @league.build_league_telegram_setting
     end
 
     @settings_tab_active = params[:anchor] == "settings"
@@ -93,6 +94,7 @@ class LeaguesController < ApplicationController
       excluded_ids = @league.user_ids + @league.league_invitations.pending.pluck(:invited_user_id)
       @invitable_users = User.where.not(id: excluded_ids).order(:first_name, :last_name)
       @league_members = @league.users.order(:first_name, :last_name)
+      @league_telegram_setting = @league.league_telegram_setting || @league.build_league_telegram_setting
     end
   end
 
@@ -113,6 +115,6 @@ class LeaguesController < ApplicationController
   end
 
   def league_params
-    params.require(:league).permit(:name, :description, :logo, :online_background, :owner_id, :tournaments_quota, :chat_id)
+    params.require(:league).permit(:name, :description, :logo, :online_background, :owner_id, :tournaments_quota)
   end
 end
