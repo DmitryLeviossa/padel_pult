@@ -3,11 +3,9 @@ require "net/http"
 class TelegramBotService
   API_BASE = "https://api.telegram.org"
 
-  def self.send_photo(chat_id:, image_path:)
+  def self.send_photo(chat_id:, image_path:, thread_id: nil)
     token = ENV["TELEGRAM_BOT_TOKEN"]
     return unless token.present? && chat_id.present?
-
-    raw_chat_id, thread_id = chat_id.to_s.split("/")
 
     uri = URI("#{API_BASE}/bot#{token}/sendPhoto")
     boundary = "----RubyBoundary#{SecureRandom.hex(8)}"
@@ -15,7 +13,7 @@ class TelegramBotService
 
     body = "--#{boundary}\r\n" \
            "Content-Disposition: form-data; name=\"chat_id\"\r\n\r\n" \
-           "#{raw_chat_id}\r\n"
+           "#{chat_id}\r\n"
 
     if thread_id.present?
       body += "--#{boundary}\r\n" \
