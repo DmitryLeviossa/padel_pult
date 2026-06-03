@@ -63,7 +63,7 @@
               - if @league.owner == current_user
                 th
           tbody
-            - visible_tournaments.order(start_date: :asc).each do |tournament|
+            - visible_tournaments.order(start_date: :desc).each do |tournament|
               tr
                 td= link_to tournament.name, tournament_path(tournament)
                 td= tournament_date_range(tournament)
