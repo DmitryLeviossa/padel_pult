@@ -26,7 +26,11 @@ class GenerateMatchResultCardJob < ApplicationJob
 
     begin
       browser.go_to(url)
-      browser.network.wait_for_idle(timeout: 30, ignore: %r{/rails/active_storage/})
+      begin
+        browser.network.wait_for_idle(timeout: 30)
+      rescue Ferrum::PendingConnectionsError
+        # Active Storage redirect URLs never settle; page content is already rendered
+      end
 
       rect = browser.evaluate(
         "(() => { const r = document.querySelector('.result-card').getBoundingClientRect(); " \
