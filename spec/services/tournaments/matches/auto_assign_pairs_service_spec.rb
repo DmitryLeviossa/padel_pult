@@ -53,6 +53,26 @@ RSpec.describe Tournaments::Matches::AutoAssignPairsService do
       pair_ids = r1.flat_map { |m| [ m.pair1_id, m.pair2_id ] }.compact
       expect(pair_ids.uniq.length).to eq(pair_ids.length)
     end
+
+    context "when a custom bracket exists alongside the main bracket" do
+      before do
+        Brackets::CreateService.new(tournament, { name: "Кастомная сетка", pairs_count: 4 }).call
+      end
+
+      it "does not assign pairs to custom bracket round-1 matches" do
+        described_class.new(tournament).call
+        custom_bracket = tournament.brackets.bracket.where("group_number > 0").first
+        custom_r1 = custom_bracket.matches.where(round_number: 1)
+        expect(custom_r1.flat_map { |m| [ m.pair1_id, m.pair2_id ] }.compact).to be_empty
+      end
+
+      it "does not duplicate pairs within main bracket round-1 matches" do
+        described_class.new(tournament).call
+        main_bracket = tournament.brackets.bracket.find_by!(group_number: 0)
+        pair_ids = main_bracket.matches.where(round_number: 1).flat_map { |m| [ m.pair1_id, m.pair2_id ] }.compact
+        expect(pair_ids.uniq.length).to eq(pair_ids.length)
+      end
+    end
   end
 
   context "round_robin tournament" do

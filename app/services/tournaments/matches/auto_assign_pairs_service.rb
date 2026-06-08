@@ -34,7 +34,8 @@ module Tournaments
         ordered = pairs.select(&:seeded) + pairs.reject(&:seeded)
         seeded = ordered + ([ nil ] * (n - ordered.length))
 
-        @tournament.matches.bracket.where(round_number: 1).order(:position).each_with_index do |match, i|
+        main_bracket = @tournament.brackets.bracket.find_by!(group_number: 0)
+        main_bracket.matches.where(round_number: 1).order(:position).each_with_index do |match, i|
           match.update!(pair1: seeded[i], pair2: seeded[n - 1 - i])
         end
       end
