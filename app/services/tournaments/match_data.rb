@@ -30,7 +30,7 @@ module Tournaments
 
     def prepare
       if @tournament.olympic?
-        @bracket_rounds, @third_place_match = extract_bracket_rounds(@matches.reject(&:loser_bracket?))
+        @bracket_rounds, @third_place_match = extract_bracket_rounds(@matches.select { |m| m.bracket? && m.group_number == 0 })
 
         if @tournament.loser_bracket?
           @loser_bracket_rounds, @loser_third_place_match = extract_bracket_rounds(@matches.select(&:loser_bracket?))
@@ -95,7 +95,7 @@ module Tournaments
         }
       end
 
-      @bracket_rounds, @third_place_match = extract_bracket_rounds(@matches.select(&:bracket?))
+      @bracket_rounds, @third_place_match = extract_bracket_rounds(@matches.select { |m| m.bracket? && m.group_number == 0 })
 
       if @tournament.loser_bracket?
         @loser_bracket_rounds, @loser_third_place_match = extract_bracket_rounds(@matches.select(&:loser_bracket?))

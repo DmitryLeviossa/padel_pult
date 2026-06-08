@@ -23,7 +23,7 @@ class TournamentsController < ApplicationController
                                     pair2: [ { player1: :user }, { player2: :user } ])
 
     if @tournament.olympic?
-      bracket_matches = @matches.select(&:bracket?)
+      bracket_matches = @matches.select { |m| m.bracket? && m.group_number == 0 }
       grouped = bracket_matches.group_by(&:round_number).sort_by { |r, _| r }.map { |_, m| m }
       final_round = grouped.last || []
       @third_place_match = final_round.find { |m| m.position == 2 }
@@ -330,7 +330,7 @@ class TournamentsController < ApplicationController
       }
     end
 
-    @bracket_rounds, @third_place_match = extract_bracket_rounds(@matches.select(&:bracket?))
+    @bracket_rounds, @third_place_match = extract_bracket_rounds(@matches.select { |m| m.bracket? && m.group_number == 0 })
 
     if @tournament.loser_bracket?
       @loser_bracket_rounds, @loser_third_place_match = extract_bracket_rounds(@matches.select(&:loser_bracket?))
