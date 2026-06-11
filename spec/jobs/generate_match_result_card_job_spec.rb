@@ -64,6 +64,39 @@ RSpec.describe GenerateMatchResultCardJob, type: :job do
         expect(browser).to receive(:quit)
         expect { described_class.new.perform(match.id) }.to raise_error(RuntimeError)
       end
+
+      context 'when league has a telegram setting with chat_id' do
+        let(:league) { match.tournament.league }
+        let!(:tg_setting) do
+          create(:league_telegram_setting, league: league, chat_id: "-100999", match_results_thread_id: "42")
+        end
+
+        it 'sends a photo via TelegramBotService with chat_id and thread_id' do
+          expect(TelegramBotService).to receive(:send_photo).with(
+            chat_id: "-100999",
+            thread_id: "42",
+            image_path: anything
+          )
+          described_class.new.perform(match.id)
+        end
+      end
+
+      context 'when league has no telegram setting' do
+        it 'does not call TelegramBotService' do
+          expect(TelegramBotService).not_to receive(:send_photo)
+          described_class.new.perform(match.id)
+        end
+      end
+
+      context 'when telegram setting has no chat_id' do
+        let(:league) { match.tournament.league }
+        let!(:tg_setting) { create(:league_telegram_setting, league: league, chat_id: nil) }
+
+        it 'does not call TelegramBotService' do
+          expect(TelegramBotService).not_to receive(:send_photo)
+          described_class.new.perform(match.id)
+        end
+      end
     end
   end
 end

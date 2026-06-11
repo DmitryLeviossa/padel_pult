@@ -64,5 +64,10 @@ html data-bs-theme="dark"
         - badge_class = { "active" => "success", "completed" => "primary" }.fetch(@tournament.status, "secondary")
         span.badge class="bg-#{badge_class} fs-6"
           = { "active" => "Активный", "completed" => "Завершён" }.fetch(@tournament.status, @tournament.status)
+
+      / App branding
+      .d-flex.align-items-center.gap-2.flex-shrink-0.ms-2
+        = image_tag "/icon.png", width: 32, height: 32, style: "border-radius: 6px; opacity: 0.85;", alt: "ПАДЕЛ Пульт"
+        span.tv-meta ПАДЕЛ Пульт
     main.py-4
       = yield
