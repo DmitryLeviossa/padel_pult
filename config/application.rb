@@ -18,6 +18,7 @@ module PadelPult
 
     config.active_storage.variant_processor = :mini_magick
     config.active_job.queue_adapter = :sidekiq
+    config.i18n.default_locale = :ru
 
     # Configuration for the application, engines, and railties goes here.
     #
