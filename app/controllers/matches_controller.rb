@@ -71,6 +71,24 @@ class MatchesController < ApplicationController
     end
   end
 
+  def destroy
+    unless @match.third_place?
+      redirect_to tournament_path(@match.tournament), alert: "Можно удалить только матч за 3-е место."
+      return
+    end
+
+    tournament = @match.tournament
+    @match.destroy
+    data = Tournaments::MatchData.new(tournament)
+    Turbo::StreamsChannel.broadcast_update_to(
+      "tournament_#{tournament.id}_online",
+      target: "tournament_matches",
+      partial: "tournaments/online_matches",
+      locals: data.to_locals
+    )
+    redirect_to tournament_path(tournament), notice: "Матч за 3-е место удалён."
+  end
+
   def assign_pairs
     if @match.update(pair_assignment_params)
       redirect_to tournament_path(@match.tournament)

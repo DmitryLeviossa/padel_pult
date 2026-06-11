@@ -36,6 +36,39 @@
 require "rails_helper"
 
 RSpec.describe Match, type: :model do
+  describe "#third_place?" do
+    def setup_third_place_matches(tournament)
+      bracket = tournament.brackets.find_by!(bracket_type: "bracket", group_number: 0)
+      bracket.matches.destroy_all
+      final = bracket.matches.create!(tournament: tournament, round_number: 2, position: 1, status: :pending)
+      third_place = bracket.matches.create!(tournament: tournament, round_number: 2, position: 2, status: :pending)
+      semifinal = bracket.matches.create!(tournament: tournament, round_number: 1, position: 1, status: :pending)
+      { bracket: bracket, final: final, third_place: third_place, semifinal: semifinal }
+    end
+
+    it "returns true for last-round position-2 match in bracket" do
+      matches = setup_third_place_matches(create(:tournament))
+      expect(matches[:third_place].third_place?).to be true
+    end
+
+    it "returns false for final match (position 1)" do
+      matches = setup_third_place_matches(create(:tournament))
+      expect(matches[:final].third_place?).to be false
+    end
+
+    it "returns false when not in last round" do
+      matches = setup_third_place_matches(create(:tournament))
+      expect(matches[:semifinal].third_place?).to be false
+    end
+
+    it "returns false for group stage match" do
+      tournament = create(:tournament)
+      group_bracket = tournament.brackets.find_or_create_by!(bracket_type: "group", group_number: 1)
+      group_match = group_bracket.matches.create!(tournament: tournament, round_number: 1, position: 99, status: :pending)
+      expect(group_match.third_place?).to be false
+    end
+  end
+
   describe "#sets_won_by_pair1" do
     it "counts sets where pair1 scored higher" do
       match = create(:match)

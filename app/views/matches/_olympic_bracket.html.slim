@@ -203,6 +203,8 @@ css:
       - if third_place_match.completed? && third_place_match.pair1.present? && third_place_match.pair2.present?
         = link_to result_card_tournament_match_path(tournament, third_place_match), target: "_blank", class: "btn btn-outline-secondary btn-sm bracket-enter-btn mt-1" do
           i.bi.bi-image
+      - if is_owner && !tournament.completed?
+        = link_to "Удалить матч", tournament_match_path(tournament, third_place_match), data: { turbo_method: :delete, turbo_confirm: "Удалить матч за 3-е место?" }, class: "btn btn-outline-danger btn-sm bracket-enter-btn mt-1"
 
 - if loser_bracket_rounds&.any?
   h4.mt-5.mb-3 Доп. турнир
@@ -289,3 +291,5 @@ css:
         - if loser_third_place_match.completed? && loser_third_place_match.pair1.present? && loser_third_place_match.pair2.present?
           = link_to result_card_tournament_match_path(tournament, loser_third_place_match), target: "_blank", class: "btn btn-outline-secondary btn-sm bracket-enter-btn mt-1" do
             i.bi.bi-image
+        - if is_owner && !tournament.completed?
+          = link_to "Удалить матч", tournament_match_path(tournament, loser_third_place_match), data: { turbo_method: :delete, turbo_confirm: "Удалить матч за 3-е место?" }, class: "btn btn-outline-danger btn-sm bracket-enter-btn mt-1"

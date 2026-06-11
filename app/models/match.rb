@@ -93,6 +93,12 @@ class Match < ApplicationRecord
     false
   end
 
+  def third_place?
+    return false unless bracket?
+    total_rounds = bracket.matches.maximum(:round_number)
+    total_rounds.present? && round_number == total_rounds && position == 2
+  end
+
   def pair_display_name(pair)
     return "Свободен" if pair.nil?
     "#{pair.player1.short_name} / #{pair.player2.short_name}"
