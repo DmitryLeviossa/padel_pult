@@ -2,6 +2,33 @@
 import "@hotwired/turbo-rails"
 import "controllers"
 import "bootstrap"
+
+Turbo.config.forms.confirm = (message) => {
+  return new Promise((resolve) => {
+    const modalEl = document.getElementById("turboConfirmModal")
+    document.getElementById("turboConfirmModalBody").textContent = message
+    const modal = bootstrap.Modal.getOrCreateInstance(modalEl)
+    const confirmBtn = document.getElementById("turboConfirmModalConfirm")
+
+    const onConfirm = () => {
+      cleanup()
+      resolve(true)
+    }
+    const onDismiss = () => {
+      cleanup()
+      resolve(false)
+    }
+    const cleanup = () => {
+      confirmBtn.removeEventListener("click", onConfirm)
+      modalEl.removeEventListener("hide.bs.modal", onDismiss)
+      modal.hide()
+    }
+
+    confirmBtn.addEventListener("click", onConfirm)
+    modalEl.addEventListener("hide.bs.modal", onDismiss, { once: true })
+    modal.show()
+  })
+}
 function initTomSelects() {
   document.querySelectorAll("select.form-select:not(.ts-hidden-accessible)").forEach(el => {
     const isAutoSubmit = !!el.closest("form[data-auto-submit]")
