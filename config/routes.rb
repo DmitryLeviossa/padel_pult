@@ -38,6 +38,10 @@ Rails.application.routes.draw do
 
   resources :clubs, only: [:index, :show]
 
+  namespace :admin do
+    resources :leagues, only: [:index, :update]
+  end
+
   resources :tournaments do
     resources :brackets, only: [ :new, :create, :destroy ]
     resources :pairs, only: [ :create, :destroy, :update ]
