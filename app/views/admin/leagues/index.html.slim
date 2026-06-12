@@ -1,7 +1,11 @@
 - content_for :title, "Админ — Квоты лиг"
 
 .container.py-4
-  h1.mb-4 Квоты турниров по лигам
+  .d-flex.align-items-center.justify-content-between.mb-4
+    h1.mb-0 Квоты турниров по лигам
+    = link_to "/sidekiq", class: "btn btn-outline-secondary btn-sm", target: "_blank" do
+      i.bi.bi-gear.me-1
+      | Sidekiq
 
   .card
     .card-body.p-0
