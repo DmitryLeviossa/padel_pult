@@ -34,7 +34,17 @@
                     span.badge.badge-gender-female Ж
                   - if user.pending_invitation?
                     span.badge.bg-warning.text-dark Ожидает регистрации
-                .d-flex.flex-wrap.gap-2.mt-2
+              - if current_user.id == 1
+                .d-flex.gap-2.mt-2.position-relative style="z-index: 1;"
+                  - if user.pending_invitation?
+                    = button_tag type: "button", class: "btn btn-outline-secondary btn-sm", data: { copy_url: invitation_url(user.invitation_token), tooltip: "Скопировать ссылку" } do
+                      i.bi.bi-link-45deg
+                  - else
+                    = link_to invite_user_path(user), method: :post, class: "btn btn-outline-primary btn-sm", data: { turbo_method: :post, turbo_confirm: "Создать приглашение для #{user.full_name}?" } do
+                      i.bi.bi-envelope
+                  = link_to user_path(user), class: "btn btn-outline-danger btn-sm", data: { turbo_method: :delete, turbo_confirm: "Удалить пользователя #{user.full_name}? Это действие нельзя отменить." } do
+                    i.bi.bi-trash
+              .d-flex.flex-wrap.gap-2.mt-2
                   - user.leagues.each do |league|
                     = link_to league_path(league), class: "position-relative d-inline-block text-decoration-none", title: league.name do
                       - if league.logo.attached?

@@ -9,7 +9,11 @@ Rails.application.routes.draw do
 
   root to: "dashboard#index"
 
-  resources :users, only: [:index, :show]
+  resources :users, only: [:index, :show, :destroy] do
+    member do
+      post :invite
+    end
+  end
 
   resources :leagues do
     resources :tournaments, only: [:new, :create]

@@ -1,11 +1,13 @@
 class UsersController < ApplicationController
+  before_action :set_user, only: [:show, :destroy, :invite]
+  before_action :require_admin!, only: [:destroy, :invite]
+
   def index
     @q = User.ransack(params[:q])
     @users = @q.result.includes(leagues: { logo_attachment: :blob }).order(:last_name, :first_name, :email)
   end
 
   def show
-    @user = User.find(params[:id])
     league_users = @user.league_users.includes(league: { logo_attachment: :blob })
     @league_user_ids = league_users.pluck(:id)
 
@@ -38,5 +40,29 @@ class UsersController < ApplicationController
     else
       Match.none
     end
+  end
+
+  def destroy
+    @user.destroy
+    redirect_to users_path, notice: "Пользователь удалён."
+  end
+
+  def invite
+    if @user.pending_invitation?
+      redirect_to users_path, alert: "Пользователь уже приглашён."
+    else
+      @user.update!(invitation_token: SecureRandom.urlsafe_base64(32))
+      redirect_to users_path, notice: "Приглашение создано. Скопируйте ссылку из карточки пользователя."
+    end
+  end
+
+  private
+
+  def set_user
+    @user = User.find(params[:id])
+  end
+
+  def require_admin!
+    redirect_to root_path, alert: "Нет доступа." unless current_user.id == 1
   end
 end
