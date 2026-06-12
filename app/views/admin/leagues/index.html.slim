@@ -24,7 +24,7 @@
                 td= link_to league.name, league_path(league)
                 td= league.owner.full_name
                 td.text-center
-                  = form_with url: admin_league_path(league), method: :patch,
+                  = form_with url: admin_league_path(league), method: :patch, scope: :league,
                       data: { controller: "admin-quota", turbo: true } do |f|
                     = f.number_field :tournaments_quota,
                         value: league.tournaments_quota,
