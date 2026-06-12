@@ -31,6 +31,8 @@ class League < ApplicationRecord
   has_one_attached :logo
   has_one_attached :online_background
 
+  validates :tournaments_quota, presence: true, numericality: { only_integer: true, greater_than_or_equal_to: 0 }
+
   after_create :add_owner_as_member
 
   private
