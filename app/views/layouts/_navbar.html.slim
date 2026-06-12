@@ -11,16 +11,26 @@ nav.navbar.navbar-expand-lg
       ul.navbar-nav.me-auto.mb-2.mb-lg-0
         - if user_signed_in?
           li.nav-item
-            = link_to "Лиги", leagues_path, class: "nav-link #{request.path.start_with?('/leagues') ? 'active' : ''}", aria: { current: (request.path.start_with?('/leagues') ? 'page' : nil) }
+            = link_to leagues_path, class: "nav-link #{request.path.start_with?('/leagues') ? 'active' : ''}", aria: { current: (request.path.start_with?('/leagues') ? 'page' : nil) } do
+              i.bi.bi-trophy.me-1
+              | Лиги
           li.nav-item
-            = link_to "Турниры", tournaments_path, class: "nav-link #{request.path.start_with?('/tournaments') ? 'active' : ''}", aria: { current: (request.path.start_with?('/tournaments') ? 'page' : nil) }
+            = link_to tournaments_path, class: "nav-link #{request.path.start_with?('/tournaments') ? 'active' : ''}", aria: { current: (request.path.start_with?('/tournaments') ? 'page' : nil) } do
+              i.bi.bi-calendar-event.me-1
+              | Турниры
           li.nav-item
-            = link_to "Игроки", users_path, class: "nav-link #{request.path.start_with?('/users') ? 'active' : ''}", aria: { current: (request.path.start_with?('/users') ? 'page' : nil) }
+            = link_to users_path, class: "nav-link #{request.path.start_with?('/users') ? 'active' : ''}", aria: { current: (request.path.start_with?('/users') ? 'page' : nil) } do
+              i.bi.bi-people.me-1
+              | Игроки
           li.nav-item
-            = link_to "Клубы", clubs_path, class: "nav-link #{request.path.start_with?('/clubs') ? 'active' : ''}", aria: { current: (request.path.start_with?('/clubs') ? 'page' : nil) }
+            = link_to clubs_path, class: "nav-link #{request.path.start_with?('/clubs') ? 'active' : ''}", aria: { current: (request.path.start_with?('/clubs') ? 'page' : nil) } do
+              i.bi.bi-geo-alt.me-1
+              | Клубы
           - if current_user.id == 1
             li.nav-item
-              = link_to "Админ", admin_leagues_path, class: "nav-link #{request.path.start_with?('/admin') ? 'active' : ''}", aria: { current: (request.path.start_with?('/admin') ? 'page' : nil) }
+              = link_to admin_leagues_path, class: "nav-link #{request.path.start_with?('/admin') ? 'active' : ''}", aria: { current: (request.path.start_with?('/admin') ? 'page' : nil) } do
+                i.bi.bi-shield-lock.me-1
+                | Админ
 
       - if user_signed_in?
         ul.navbar-nav.ms-auto.align-items-center.gap-2
@@ -59,6 +69,10 @@ nav.navbar.navbar-expand-lg
       - else
         ul.navbar-nav.ms-auto
           li.nav-item
-            = link_to "Войти", new_user_session_path, class: "nav-link"
+            = link_to new_user_session_path, class: "nav-link" do
+              i.bi.bi-box-arrow-in-right.me-1
+              | Войти
           li.nav-item
-            = link_to "Регистрация", new_user_registration_path, class: "btn btn-primary btn-sm ms-2"
+            = link_to new_user_registration_path, class: "btn btn-primary btn-sm ms-2" do
+              i.bi.bi-person-plus.me-1
+              | Регистрация

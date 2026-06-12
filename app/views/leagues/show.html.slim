@@ -1,3 +1,11 @@
+- if @league.owner == current_user && @league.tournaments_quota <= 3
+  .alert.alert-warning.rounded-0.mb-0 role="alert"
+    .container
+      i.bi.bi-exclamation-triangle-fill.me-2
+      | Квота турниров для вашей лиги составляет #{@league.tournaments_quota}. Для продолжения работы пополните квоту в
+      = link_to " настройках лиги", league_path(@league, anchor: "settings"), class: "alert-link"
+      | .
+
 .container.py-4
   .d-flex.justify-content-between.align-items-center.mb-4
     .d-flex.align-items-center.gap-3
@@ -189,6 +197,17 @@
       #settings.tab-pane.fade class=("show active" if @settings_tab_active) role="tabpanel"
         h5.mb-3 Настройки
 
+        .card.mb-4
+          .card-header Квота турниров
+          .card-body
+            .d-flex.align-items-center.gap-3
+              .fs-3.fw-bold= @league.tournaments_quota
+              .text-muted.small= "турниров доступно"
+            - used = @league.tournaments.count
+            .text-muted.small.mt-1= "Использовано: #{used}"
+            hr.my-2
+            .text-muted.small 1 турнир — 500 ₽. Для пополнения квоты обратитесь к администратору.
+
         = form_with model: @league, url: league_path(@league), method: :patch do |f|
           .card.mb-4
             .card-header Основная информация
@@ -225,11 +244,6 @@
               = f.file_field :online_background, class: "form-control", accept: "image/*"
             .card-footer
               = f.submit "Сохранить", class: "btn btn-primary"
-
-        .card.mb-3
-          .card-header Квота турниров
-          .card-body
-            p.mb-0 = @league.tournaments_quota
 
         = form_with model: @league_telegram_setting, url: league_league_telegram_setting_path(@league), method: @league_telegram_setting.new_record? ? :post : :patch do |f|
           .card.mb-4
