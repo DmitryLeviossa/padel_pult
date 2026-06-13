@@ -33,7 +33,7 @@ class Leagues::LeagueTelegramSettingsController < ApplicationController
     when "match_results" then @setting.match_results_thread_id
     end
 
-    response = TelegramBotService.send_message(chat_id: @setting.chat_id, text: "👋 Тестовое сообщение от Pult", thread_id: thread_id)
+    response = TelegramBotService.send_message(chat_id: @setting.chat_id, text: "👋 Тестовое сообщение от ПАДЕЛ Пульт", thread_id: thread_id)
 
     if response&.is_a?(Net::HTTPSuccess)
       redirect_to league_path(@league, tab: "settings", anchor: "settings"), notice: "Тестовое сообщение отправлено."
