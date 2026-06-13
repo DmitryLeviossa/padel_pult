@@ -84,7 +84,7 @@ class TournamentsController < ApplicationController
 
   def online
     @tournament = Tournament
-      .includes(:league, :club,
+      .includes(:league, :club, :brackets,
                 league: { logo_attachment: :blob },
                 club: { logo_attachment: :blob },
                 pairs: [ { player1: :user }, { player2: :user } ])

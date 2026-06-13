@@ -12,6 +12,9 @@
       = render partial: "tournaments/tv_bracket_slide", locals: { bracket_rounds: bracket_rounds, third_place_match: third_place_match, slide_title: "Основной турнир" }
     - if loser_bracket_rounds&.any?
       = render partial: "tournaments/tv_bracket_slide", locals: { bracket_rounds: loser_bracket_rounds, third_place_match: loser_third_place_match, slide_title: "Доп. турнир" }
+  - custom_bracket_data&.each do |data|
+    - if data[:rounds].any?
+      = render partial: "tournaments/tv_bracket_slide", locals: { bracket_rounds: data[:rounds], third_place_match: data[:third_place], slide_title: data[:bracket].name }
 - else
   .text-center.py-5
     p.text-muted.fs-5 Матчи ещё не начались

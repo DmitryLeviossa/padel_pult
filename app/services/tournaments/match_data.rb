@@ -2,7 +2,8 @@ module Tournaments
   class MatchData
     attr_reader :tournament, :matches,
                 :bracket_rounds, :third_place_match,
-                :group_data, :loser_bracket_rounds, :loser_third_place_match
+                :group_data, :loser_bracket_rounds, :loser_third_place_match,
+                :custom_bracket_data
 
     def initialize(tournament)
       @tournament = tournament
@@ -22,7 +23,8 @@ module Tournaments
         third_place_match: @third_place_match,
         group_data: @group_data,
         loser_bracket_rounds: @loser_bracket_rounds,
-        loser_third_place_match: @loser_third_place_match
+        loser_third_place_match: @loser_third_place_match,
+        custom_bracket_data: @custom_bracket_data
       }
     end
 
@@ -38,6 +40,8 @@ module Tournaments
       elsif @tournament.mixed?
         prepare_mixed
       end
+
+      prepare_custom_brackets
     end
 
     def prepare_mixed
@@ -99,6 +103,17 @@ module Tournaments
 
       if @tournament.loser_bracket?
         @loser_bracket_rounds, @loser_third_place_match = extract_bracket_rounds(@matches.select(&:loser_bracket?))
+      end
+    end
+
+    def prepare_custom_brackets
+      manual_brackets = @tournament.brackets
+                                   .select { |b| b.bracket? && b.group_number > 0 }
+                                   .sort_by(&:group_number)
+      @custom_bracket_data = manual_brackets.map do |bracket|
+        bracket_matches = @matches.select { |m| m.bracket_id == bracket.id }
+        rounds, third_place = extract_bracket_rounds(bracket_matches)
+        { bracket: bracket, rounds: rounds, third_place: third_place }
       end
     end
 
