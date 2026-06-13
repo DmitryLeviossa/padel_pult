@@ -292,7 +292,10 @@
               .row.g-3
                 .col-sm-6
                   = f.label :match_results_thread_id, "ID ветки результатов матчей", class: "form-label"
-                  = f.text_field :match_results_thread_id, class: "form-control", placeholder: "например, 123"
+                  .d-flex.align-items-center.gap-2
+                    = f.text_field :match_results_thread_id, class: "form-control", placeholder: "например, 123"
+                    - unless @league_telegram_setting.new_record?
+                      = button_to "👋 Тест", send_test_league_league_telegram_setting_path(@league, thread: :match_results), method: :post, class: "btn btn-outline-secondary btn-sm", style: "white-space: nowrap;"
                 .col-sm-6
                   = f.label :announces_thread_id, "ID ветки анонсов", class: "form-label"
                   = f.text_field :announces_thread_id, class: "form-control", placeholder: "например, 456"
