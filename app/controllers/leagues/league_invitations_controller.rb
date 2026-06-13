@@ -14,20 +14,10 @@ class Leagues::LeagueInvitationsController < ApplicationController
     user_ids.each do |user_id|
       user = User.find_by(id: user_id)
       next unless user
+      next unless user.pending_invitation?
 
-      if user.pending_invitation?
-        @league.league_users.create(user: user)
-        invited_count += 1
-      else
-        invitation = @league.league_invitations.build(
-          invited_user_id: user_id,
-          invited_by: current_user
-        )
-        if invitation.save
-          invited_count += 1
-          create_invitation_notification(invitation)
-        end
-      end
+      @league.league_users.create(user: user)
+      invited_count += 1
     end
 
     redirect_to league_path(@league, anchor: "league-users"),
@@ -38,15 +28,6 @@ class Leagues::LeagueInvitationsController < ApplicationController
 
   def set_league
     @league = League.find(params[:league_id])
-  end
-
-  def create_invitation_notification(invitation)
-    Notification.create!(
-      user: invitation.invited_user,
-      notification_type: :league_invitation,
-      message: "#{current_user.full_name} пригласил(а) вас в лигу «#{@league.name}»",
-      url: league_path(@league)
-    )
   end
 
   def authorize_owner!

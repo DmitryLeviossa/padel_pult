@@ -18,7 +18,7 @@ class LeaguesController < ApplicationController
 
     if @league.owner == current_user
       excluded_ids = @league.user_ids + @league.league_invitations.pending.pluck(:invited_user_id)
-      @invitable_users = User.where.not(id: excluded_ids).order(:first_name, :last_name)
+      @invitable_users = User.where.not(id: excluded_ids).where.not(invitation_token: nil).order(:first_name, :last_name)
       @league_members = @league.users.order(:first_name, :last_name)
       @league_telegram_setting = @league.league_telegram_setting || @league.build_league_telegram_setting
     end
@@ -92,7 +92,7 @@ class LeaguesController < ApplicationController
     @league_users = @q_members.result.includes(:user).order(score: :desc)
     if @league.owner == current_user
       excluded_ids = @league.user_ids + @league.league_invitations.pending.pluck(:invited_user_id)
-      @invitable_users = User.where.not(id: excluded_ids).order(:first_name, :last_name)
+      @invitable_users = User.where.not(id: excluded_ids).where.not(invitation_token: nil).order(:first_name, :last_name)
       @league_members = @league.users.order(:first_name, :last_name)
       @league_telegram_setting = @league.league_telegram_setting || @league.build_league_telegram_setting
     end
