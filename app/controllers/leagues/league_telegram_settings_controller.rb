@@ -22,6 +22,21 @@ class Leagues::LeagueTelegramSettingsController < ApplicationController
     end
   end
 
+  def send_test
+    @setting = @league.league_telegram_setting
+
+    if @setting&.chat_id.present?
+      response = TelegramBotService.send_message(chat_id: @setting.chat_id, text: "👋 ПАДЕЛ Пульт интегрирован в чат")
+      if response&.is_a?(Net::HTTPSuccess)
+        redirect_to league_path(@league, tab: "settings", anchor: "settings"), notice: "Тестовое сообщение отправлено."
+      else
+        redirect_to league_path(@league, tab: "settings", anchor: "settings"), alert: "Не удалось отправить сообщение. Проверьте ID чата и токен бота."
+      end
+    else
+      redirect_to league_path(@league, tab: "settings", anchor: "settings"), alert: "Сначала укажите ID чата."
+    end
+  end
+
   private
 
   def set_league

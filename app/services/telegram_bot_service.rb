@@ -3,6 +3,22 @@ require "net/http"
 class TelegramBotService
   API_BASE = "https://api.telegram.org"
 
+  def self.send_message(chat_id:, text:, thread_id: nil)
+    token = ENV["TELEGRAM_BOT_TOKEN"]
+    return unless token.present? && chat_id.present?
+
+    uri = URI("#{API_BASE}/bot#{token}/sendMessage")
+    params = { chat_id: chat_id, text: text }
+    params[:message_thread_id] = thread_id if thread_id.present?
+
+    Net::HTTP.start(uri.host, uri.port, use_ssl: true) do |http|
+      request = Net::HTTP::Post.new(uri)
+      request.content_type = "application/json"
+      request.body = params.to_json
+      http.request(request)
+    end
+  end
+
   def self.send_photo(chat_id:, image_path:, thread_id: nil)
     token = ENV["TELEGRAM_BOT_TOKEN"]
     return unless token.present? && chat_id.present?
