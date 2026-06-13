@@ -12,13 +12,21 @@ class Leagues::LeagueInvitationsController < ApplicationController
 
     invited_count = 0
     user_ids.each do |user_id|
-      invitation = @league.league_invitations.build(
-        invited_user_id: user_id,
-        invited_by: current_user
-      )
-      if invitation.save
+      user = User.find_by(id: user_id)
+      next unless user
+
+      if user.pending_invitation?
+        @league.league_users.create(user: user)
         invited_count += 1
-        create_invitation_notification(invitation)
+      else
+        invitation = @league.league_invitations.build(
+          invited_user_id: user_id,
+          invited_by: current_user
+        )
+        if invitation.save
+          invited_count += 1
+          create_invitation_notification(invitation)
+        end
       end
     end
 

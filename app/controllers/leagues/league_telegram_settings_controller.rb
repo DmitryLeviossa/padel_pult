@@ -6,9 +6,9 @@ class Leagues::LeagueTelegramSettingsController < ApplicationController
     @setting = @league.build_league_telegram_setting(setting_params)
 
     if @setting.save
-      redirect_to league_path(@league, anchor: "settings"), notice: "Настройки Telegram сохранены."
+      redirect_to league_path(@league, tab: "settings", anchor: "settings"), notice: "Настройки Telegram сохранены."
     else
-      redirect_to league_path(@league, anchor: "settings"), alert: "Не удалось сохранить настройки."
+      redirect_to league_path(@league, tab: "settings", anchor: "settings"), alert: "Не удалось сохранить настройки."
     end
   end
 
@@ -16,9 +16,9 @@ class Leagues::LeagueTelegramSettingsController < ApplicationController
     @setting = @league.league_telegram_setting
 
     if @setting.update(setting_params)
-      redirect_to league_path(@league, anchor: "settings"), notice: "Настройки Telegram сохранены."
+      redirect_to league_path(@league, tab: "settings", anchor: "settings"), notice: "Настройки Telegram сохранены."
     else
-      redirect_to league_path(@league, anchor: "settings"), alert: "Не удалось сохранить настройки."
+      redirect_to league_path(@league, tab: "settings", anchor: "settings"), alert: "Не удалось сохранить настройки."
     end
   end
 

@@ -39,6 +39,18 @@ RSpec.describe "LeagueInvitations", type: :request do
         }.not_to change(LeagueInvitation, :count)
       end
 
+      it "adds awaiting-registration user directly as member without invitation" do
+        pending_user = create(:user, :invited)
+        league # ensure league (and owner LeagueUser) are created before counting
+        expect {
+          post league_league_invitations_path(league), params: {
+            league_invitation: { invited_user_ids: [pending_user.id] }
+          }
+        }.to change(LeagueUser, :count).by(1)
+        expect(LeagueInvitation.count).to eq(0)
+        expect(league.users.reload).to include(pending_user)
+      end
+
       it "silently skips existing league members" do
         member = create(:user)
         league.league_users.create!(user: member)

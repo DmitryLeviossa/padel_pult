@@ -3,7 +3,7 @@
     .container
       i.bi.bi-exclamation-triangle-fill.me-2
       | Квота турниров для вашей лиги составляет #{@league.tournaments_quota}. Для продолжения работы пополните квоту в
-      = link_to " настройках лиги", league_path(@league, anchor: "settings"), class: "alert-link"
+      = link_to " настройках лиги", league_path(@league, tab: "settings", anchor: "settings"), class: "alert-link"
       | .
 
 .container.py-4

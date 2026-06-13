@@ -23,7 +23,7 @@ class LeaguesController < ApplicationController
       @league_telegram_setting = @league.league_telegram_setting || @league.build_league_telegram_setting
     end
 
-    @settings_tab_active = params[:anchor] == "settings"
+    @settings_tab_active = params[:tab] == "settings"
   end
 
   def new
@@ -69,7 +69,7 @@ class LeaguesController < ApplicationController
   def edit
     @league = League.find(params[:id])
     authorize_owner!
-    redirect_to league_path(@league, anchor: "settings")
+    redirect_to league_path(@league, tab: "settings", anchor: "settings")
   end
 
   def update
@@ -77,7 +77,7 @@ class LeaguesController < ApplicationController
     authorize_owner!
 
     if @league.update(league_params)
-      redirect_to league_path(@league, anchor: "settings"), notice: "Лига обновлена."
+      redirect_to league_path(@league, tab: "settings", anchor: "settings"), notice: "Лига обновлена."
     else
       load_show_resources
       @settings_tab_active = true
