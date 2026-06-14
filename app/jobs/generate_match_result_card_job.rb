@@ -50,6 +50,8 @@ class GenerateMatchResultCardJob < ApplicationJob
         )
       end
 
+      broadcast_online_update(match.tournament)
+
       tg = match.tournament.league.league_telegram_setting
       if tg&.chat_id.present?
         TelegramBotService.send_photo(chat_id: tg.chat_id, thread_id: tg.match_results_thread_id, image_path: tmp_path)
@@ -61,6 +63,16 @@ class GenerateMatchResultCardJob < ApplicationJob
   end
 
   private
+
+  def broadcast_online_update(tournament)
+    data = Tournaments::MatchData.new(tournament)
+    Turbo::StreamsChannel.broadcast_update_to(
+      "tournament_#{tournament.id}_online",
+      target: "tournament_matches",
+      partial: "tournaments/online_matches",
+      locals: data.to_locals
+    )
+  end
 
   def browser_executable
     return ENV["BROWSER_PATH"] if ENV["BROWSER_PATH"].present? && File.exist?(ENV["BROWSER_PATH"])

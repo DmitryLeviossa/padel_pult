@@ -1,0 +1,5 @@
+div data-slide="" data-slide-title="Результаты матчей"
+  .row.g-2.h-100
+    - matches.each do |match|
+      .col-6.d-flex.align-items-center.justify-content-center
+        = image_tag url_for(match.result_card_image), class: "img-fluid rounded shadow-sm w-100"

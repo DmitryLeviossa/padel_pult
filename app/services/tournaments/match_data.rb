@@ -3,7 +3,7 @@ module Tournaments
     attr_reader :tournament, :matches,
                 :bracket_rounds, :third_place_match,
                 :group_data, :loser_bracket_rounds, :loser_third_place_match,
-                :custom_bracket_data
+                :custom_bracket_data, :result_card_matches
 
     def initialize(tournament)
       @tournament = tournament
@@ -24,13 +24,20 @@ module Tournaments
         group_data: @group_data,
         loser_bracket_rounds: @loser_bracket_rounds,
         loser_third_place_match: @loser_third_place_match,
-        custom_bracket_data: @custom_bracket_data
+        custom_bracket_data: @custom_bracket_data,
+        result_card_matches: @result_card_matches
       }
     end
 
     private
 
     def prepare
+      @result_card_matches = @tournament.matches
+                                        .completed
+                                        .joins(:result_card_image_attachment)
+                                        .with_attached_result_card_image
+                                        .order(updated_at: :desc)
+
       if @tournament.olympic?
         @bracket_rounds, @third_place_match = extract_bracket_rounds(@matches.select { |m| m.bracket? && m.group_number == 0 })
 
