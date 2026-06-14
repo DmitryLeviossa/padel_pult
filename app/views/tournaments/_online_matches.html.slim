@@ -15,7 +15,7 @@
   - custom_bracket_data&.each do |data|
     - if data[:rounds].any?
       = render partial: "tournaments/tv_bracket_slide", locals: { bracket_rounds: data[:rounds], third_place_match: data[:third_place], slide_title: data[:bracket].name }
-  - result_card_matches&.each_slice(2) do |group|
+  - result_card_matches&.each_slice(4) do |group|
     = render partial: "tournaments/tv_results_slide", locals: { matches: group }
 - else
   .text-center.py-5
