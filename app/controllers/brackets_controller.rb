@@ -4,22 +4,33 @@ class BracketsController < ApplicationController
   before_action :set_bracket, only: [:destroy]
 
   def new
-    @bracket = Bracket.new
+    type = params[:bracket_type] == "group_stage" ? :group_stage : :bracket
+    @bracket = Bracket.new(bracket_type: type)
+    @available_pairs = @tournament.pairs.includes({ player1: :user }, { player2: :user }) if type == :group_stage
   end
 
   def create
-    @bracket = Brackets::CreateService.new(@tournament, bracket_params).call
+    service = if bracket_params[:bracket_type] == "group_stage"
+      Brackets::CreateGroupService.new(@tournament, bracket_params)
+    else
+      Brackets::CreateService.new(@tournament, bracket_params)
+    end
+
+    @bracket = service.call
 
     if @bracket.persisted?
-      redirect_to tournament_path(@tournament, anchor: "bracket-#{@bracket.id}"), notice: "Сетка создана."
+      notice = @bracket.group_stage? ? "Группа создана." : "Сетка создана."
+      redirect_to tournament_path(@tournament, anchor: "bracket-#{@bracket.id}"), notice: notice
     else
-      render :new, status: :unprocessable_entity
+      @available_pairs = @tournament.pairs.includes({ player1: :user }, { player2: :user }) if @bracket.group_stage?
+    render :new, status: :unprocessable_entity
     end
   end
 
   def destroy
+    notice = @bracket.group_stage? ? "Группа удалена." : "Сетка удалена."
     @bracket.destroy!
-    redirect_to tournament_path(@tournament), notice: "Сетка удалена."
+    redirect_to tournament_path(@tournament), notice: notice
   end
 
   private
@@ -37,6 +48,6 @@ class BracketsController < ApplicationController
   end
 
   def bracket_params
-    params.require(:bracket).permit(:name, :pairs_count)
+    params.require(:bracket).permit(:name, :pairs_count, :bracket_type, pair_ids: [])
   end
 end

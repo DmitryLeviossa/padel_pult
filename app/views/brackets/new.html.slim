@@ -1,9 +1,11 @@
+- is_group = @bracket.group_stage?
+
 .container.py-4
   .row.justify-content-center
     .col-md-6
       .d-flex.align-items-center.gap-2.mb-4
         = link_to "←", tournament_path(@tournament), class: "btn btn-outline-secondary btn-sm"
-        h1.mb-0 Новая сетка
+        h1.mb-0= is_group ? "Новая группа" : "Новая сетка"
 
       = form_with model: @bracket, url: tournament_brackets_path(@tournament), method: :post do |f|
         - if @bracket.errors.any?
@@ -12,15 +14,28 @@
               - @bracket.errors.full_messages.each do |msg|
                 li= msg
 
-        .mb-3
-          = f.label :name, "Название сетки", class: "form-label"
-          = f.text_field :name, class: "form-control", placeholder: "например, Основная сетка"
+        = f.hidden_field :bracket_type
 
         .mb-3
-          = f.label :pairs_count, "Количество пар", class: "form-label"
-          = f.number_field :pairs_count, class: "form-control", min: 2, max: 64, placeholder: "2–64"
-          .form-text Размер сетки будет округлён до ближайшей степени двойки.
+          = f.label :name, is_group ? "Название группы" : "Название сетки", class: "form-label"
+          = f.text_field :name, class: "form-control", placeholder: is_group ? "например, Группа А" : "например, Основная сетка"
+
+        - if is_group
+          .mb-3
+            label.form-label Пары в группе
+            - if @available_pairs.any?
+              - @available_pairs.each do |pair|
+                .form-check
+                  = check_box_tag "bracket[pair_ids][]", pair.id, false, class: "form-check-input", id: "pair_#{pair.id}"
+                  = label_tag "pair_#{pair.id}", "#{pair.player1.short_name} / #{pair.player2.short_name}", class: "form-check-label"
+            - else
+              p.text-muted.mb-0 Нет доступных пар.
+        - else
+          .mb-3
+            = f.label :pairs_count, "Количество пар", class: "form-label"
+            = f.number_field :pairs_count, class: "form-control", min: 2, max: 64, placeholder: "2–64"
+            .form-text Размер сетки будет округлён до ближайшей степени двойки.
 
         .d-flex.gap-2
-          = f.submit "Создать сетку", class: "btn btn-primary"
+          = f.submit is_group ? "Создать группу" : "Создать сетку", class: "btn btn-primary"
           = link_to "Отмена", tournament_path(@tournament), class: "btn btn-outline-secondary"

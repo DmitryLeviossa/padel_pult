@@ -1,0 +1,83 @@
+- gd = group_data
+
+css:
+  .group-cross-table td.diagonal { background-color: var(--bs-secondary-bg); }
+  .group-cross-table td.score-cell { font-size: 13px; font-weight: 600; white-space: nowrap; }
+  .group-cross-table td.score-win { color: var(--bs-success); }
+  .group-cross-table td.score-loss { color: var(--bs-danger); }
+  .group-cross-table .enter-score-btn { font-size: 11px; padding: 1px 6px; }
+  .group-cross-table .score-dropdown-btn::after { display: none; }
+  .group-cross-table tr.seeded-row > td:first-child,
+  .group-cross-table tr.seeded-row > td:nth-child(2) { background-color: rgba(255, 193, 7, 0.08); }
+  .group-cross-table th.seeded-col { background-color: rgba(255, 193, 7, 0.08); }
+
+.d-flex.justify-content-between.align-items-center.mt-5.mb-3 id="bracket-#{bracket.id}"
+  h4.mb-0= bracket.name
+  .d-flex.align-items-center.gap-3
+    small.text-muted= "#{bracket.pairs_count} пар"
+    - if is_owner && !tournament.completed?
+      = link_to tournament_bracket_path(tournament, bracket), data: { turbo_method: :delete, turbo_confirm: "Удалить группу «#{bracket.name}»? Все матчи в ней будут удалены." }, class: "btn btn-outline-danger btn-sm" do
+        i.bi.bi-trash
+
+.table-responsive
+  table.table.table-bordered.table-sm.group-cross-table
+    thead.table-light
+      tr
+        th.text-center №
+        th Пара
+        - gd[:pairs_ordered].each_with_index do |col_pair, i|
+          th.text-center(class=(col_pair.seeded? ? "seeded-col" : nil))= "#{i + 1})"
+        th.text-center В
+        th.text-center Разница
+        th.text-center Место
+    tbody
+      - gd[:pairs_ordered].each_with_index do |pair, row_idx|
+        - stat = gd[:stats_by_id][pair.id]
+        tr class=(pair.seeded? ? "seeded-row" : nil)
+          td.text-center= row_idx + 1
+          td= pair.player1.short_name + " / " + pair.player2.short_name
+          - gd[:pairs_ordered].each_with_index do |opp, col_idx|
+            - if row_idx == col_idx
+              td.diagonal.text-center
+            - else
+              - score = gd[:scores][pair.id][opp.id]
+              - match = gd[:match_for][pair.id][opp.id]
+              - can_edit = is_owner && match && !match.has_downstream_results? && !tournament.completed?
+              - if score
+                - win = score[0] > score[1]
+                - cell_sets = match&.match_sets || []
+                - cell_is_pair2 = match && match.pair2_id == pair.id
+                td.score-cell.text-center class=(win ? "score-win" : "score-loss")
+                  - if can_edit
+                    .dropdown.d-inline
+                      button.btn.btn-link.p-0.border-0.score-dropdown-btn style="color:inherit;text-decoration:none;cursor:pointer;" data-bs-toggle="dropdown" aria-expanded="false"
+                        - if cell_sets.any?
+                          - cell_sets.each do |set|
+                            span.d-block= cell_is_pair2 ? "#{set.pair2_score}:#{set.pair1_score}" : "#{set.pair1_score}:#{set.pair2_score}"
+                        - else
+                          = "#{score[0]}/#{score[1]}"
+                      ul.dropdown-menu.dropdown-menu-end
+                        li
+                          button.dropdown-item data-bs-toggle="modal" data-bs-target="#match-modal-#{match.id}"
+                            | Изменить результат
+                        li
+                          = link_to "Открыть фото результата", result_card_tournament_match_path(tournament, match), target: "_blank", class: "dropdown-item"
+                  - else
+                    - if match
+                      = link_to result_card_tournament_match_path(tournament, match), target: "_blank", style: "color:inherit;text-decoration:none;" do
+                        - if cell_sets.any?
+                          - cell_sets.each do |set|
+                            span.d-block= cell_is_pair2 ? "#{set.pair2_score}:#{set.pair1_score}" : "#{set.pair1_score}:#{set.pair2_score}"
+                        - else
+                          = "#{score[0]}/#{score[1]}"
+              - elsif match && can_edit && !match.completed?
+                td.text-center
+                  button.btn.btn-outline-secondary.btn-sm.enter-score-btn data-bs-toggle="modal" data-bs-target="#match-modal-#{match.id}"
+                    | —
+              - else
+                td.text-center.text-muted —
+          td.text-center= stat[:wins]
+          td.text-center
+            - diff = stat[:games_diff]
+            = diff > 0 ? "+#{diff}" : diff.to_s
+          td.text-center.fw-semibold= stat[:place]

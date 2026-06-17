@@ -32,6 +32,6 @@ class Bracket < ApplicationRecord
                           if: :manual?
 
   def manual?
-    bracket? && group_number > 0
+    (bracket? || group_stage?) && group_number > 0
   end
 end

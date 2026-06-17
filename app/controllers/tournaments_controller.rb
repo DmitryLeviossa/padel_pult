@@ -43,6 +43,13 @@ class TournamentsController < ApplicationController
       { bracket: bracket, rounds: rounds, third_place: third_place }
     end
 
+    min_group_number = @tournament.groups_count.to_i + 1
+    manual_groups = @tournament.brackets.where(bracket_type: :group_stage).where("group_number >= ?", min_group_number).order(:group_number)
+    @custom_group_data = manual_groups.map do |bracket|
+      group_matches = @matches.select { |m| m.bracket_id == bracket.id }
+      { bracket: bracket, group_data: build_custom_group_data(group_matches) }
+    end
+
     default_sort = @tournament.completed? ? "placement" : "score"
     default_dir  = @tournament.completed? ? "asc" : "desc"
     @sort = params[:sort].presence_in(%w[score player1 player2 player1_score player2_score created_at placement]) || default_sort
@@ -349,6 +356,54 @@ class TournamentsController < ApplicationController
     third_place = grouped.last&.find { |m| m.position == 2 }
     rounds = grouped[0..-2] + [ grouped.last.reject { |m| m.position == 2 } ]
     [ rounds, third_place ]
+  end
+
+  def build_custom_group_data(group_matches)
+    pair_ids = group_matches.flat_map { |m| [ m.pair1_id, m.pair2_id ] }.compact.uniq
+    pairs_ordered = @tournament.pairs
+                               .select { |p| pair_ids.include?(p.id) }
+                               .sort_by { |p| [ p.seeded? ? 0 : 1, -p.score, p.id ] }
+
+    pair_index = {}
+    pairs_ordered.each_with_index { |p, i| pair_index[p.id] = i + 1 }
+
+    scores    = Hash.new { |h, k| h[k] = {} }
+    match_for = Hash.new { |h, k| h[k] = {} }
+
+    group_matches.each do |match|
+      next unless match.pair1_id && match.pair2_id
+      match_for[match.pair1_id][match.pair2_id] = match
+      match_for[match.pair2_id][match.pair1_id] = match
+      next unless match.completed?
+      scores[match.pair1_id][match.pair2_id] = [ match.pair1_score, match.pair2_score ]
+      scores[match.pair2_id][match.pair1_id] = [ match.pair2_score, match.pair1_score ]
+    end
+
+    stats_by_id = {}
+    pairs_ordered.each do |pair|
+      wins = group_matches.count { |m| m.completed? && m.winner_id == pair.id }
+      games_won = group_matches.sum { |m|
+        next 0 unless m.completed?
+        m.pair1_id == pair.id ? m.match_sets.sum(&:pair1_score) : (m.pair2_id == pair.id ? m.match_sets.sum(&:pair2_score) : 0)
+      }
+      games_lost = group_matches.sum { |m|
+        next 0 unless m.completed?
+        m.pair1_id == pair.id ? m.match_sets.sum(&:pair2_score) : (m.pair2_id == pair.id ? m.match_sets.sum(&:pair1_score) : 0)
+      }
+      stats_by_id[pair.id] = { pair: pair, wins: wins, games_diff: games_won - games_lost }
+    end
+
+    sorted_stats = stats_by_id.values.sort_by { |s| [ -s[:wins], -s[:games_diff] ] }
+    sorted_stats.each_with_index { |s, i| s[:place] = i + 1 }
+
+    {
+      pairs_ordered: pairs_ordered,
+      pair_index:    pair_index,
+      stats_by_id:   stats_by_id,
+      scores:        scores,
+      match_for:     match_for,
+      all_matches:   group_matches
+    }
   end
 
   def compute_suggested_placements

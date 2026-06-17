@@ -233,9 +233,14 @@
     - @custom_bracket_data.each do |data|
       = render "brackets/custom_bracket", bracket: data[:bracket], bracket_rounds: data[:rounds], third_place_match: data[:third_place], tournament: @tournament, is_owner: is_owner
 
+  - if @custom_group_data.any?
+    - @custom_group_data.each do |data|
+      = render "brackets/custom_group", bracket: data[:bracket], group_data: data[:group_data], tournament: @tournament, is_owner: is_owner
+
   - if is_owner && !@tournament.completed?
-    .mt-4
+    .mt-4.d-flex.gap-2
       = link_to "Добавить сетку", new_tournament_bracket_path(@tournament), class: "btn btn-outline-primary btn-sm"
+      = link_to "Добавить группу", new_tournament_bracket_path(@tournament, bracket_type: "group_stage"), class: "btn btn-outline-secondary btn-sm"
 
   - if is_owner
     = render "matches/result_modal", matches: @matches, tournament: @tournament
