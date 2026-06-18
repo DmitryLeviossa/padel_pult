@@ -18,6 +18,7 @@ class MatchesController < ApplicationController
       if was_completed
         Tournaments::Matches::AdvanceWinnerService.new(@match).call if needs_winner_advance?
         Tournaments::Matches::StartBracketService.new(@match.tournament).call if @match.tournament.mixed? && @match.group_stage?
+        recalculate_americano_scores if @match.tournament.americano?
       else
         case @match.tournament.type
         when "olympic"
@@ -26,6 +27,8 @@ class MatchesController < ApplicationController
           Tournaments::Matches::AdvanceOlympicLoserService.new(@match).call
         when "mixed"
           handle_mixed_match_completion
+        when "americano"
+          Tournaments::Matches::AmericanoScoreService.new(@match).call
         end
       end
       broadcast_online_update
@@ -134,6 +137,14 @@ class MatchesController < ApplicationController
     end
   end
 
+  def recalculate_americano_scores
+    tournament = @match.tournament
+    tournament.tournament_participants.update_all(total_score: 0)
+    tournament.matches.completed.each do |m|
+      Tournaments::Matches::AmericanoScoreService.new(m).call
+    end
+  end
+
   def set_match
     @match = Match.includes(:tournament).find(params[:id])
   end
@@ -152,10 +163,19 @@ class MatchesController < ApplicationController
 
   def build_match_attrs
     sets = match_params[:match_sets_attributes]&.values || []
-    pair1_sets = sets.count { |s| s[:pair1_score].to_i > s[:pair2_score].to_i }
-    pair2_sets = sets.count { |s| s[:pair2_score].to_i > s[:pair1_score].to_i }
-    winner_id = pair1_sets >= pair2_sets ? @match.pair1_id : @match.pair2_id
-    attrs = match_params.merge(pair1_score: pair1_sets, pair2_score: pair2_sets)
+
+    if @match.tournament.americano?
+      pair1_total = sets.sum { |s| s[:pair1_score].to_i }
+      pair2_total = sets.sum { |s| s[:pair2_score].to_i }
+      winner_id = pair1_total >= pair2_total ? @match.pair1_id : @match.pair2_id
+      attrs = match_params.merge(pair1_score: pair1_total, pair2_score: pair2_total)
+    else
+      pair1_sets = sets.count { |s| s[:pair1_score].to_i > s[:pair2_score].to_i }
+      pair2_sets = sets.count { |s| s[:pair2_score].to_i > s[:pair1_score].to_i }
+      winner_id = pair1_sets >= pair2_sets ? @match.pair1_id : @match.pair2_id
+      attrs = match_params.merge(pair1_score: pair1_sets, pair2_score: pair2_sets)
+    end
+
     [ attrs, winner_id ]
   end
 

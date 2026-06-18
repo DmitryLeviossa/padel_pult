@@ -11,6 +11,7 @@ module Tournaments
         when "olympic"     then generate_olympic
         when "round_robin" then generate_round_robin
         when "mixed"       then generate_mixed
+        when "americano"   then nil  # structure generated on activation with actual participants
         end
       end
 

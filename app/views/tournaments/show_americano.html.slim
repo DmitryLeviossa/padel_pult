@@ -1,0 +1,174 @@
+.container.py-4
+  .d-flex.justify-content-between.align-items-center.mb-4
+    h1.mb-0= @tournament.name
+    .d-flex.gap-2
+      - if @tournament.draft? && @tournament.league.owner == current_user
+        = link_to edit_tournament_path(@tournament), class: "btn btn-outline-primary btn-sm", title: "Редактировать", data: { bs_toggle: "tooltip" } do
+          i.bi.bi-pencil
+        = button_to open_registration_tournament_path(@tournament), method: :post, class: "btn btn-outline-success btn-sm", title: "Открыть регистрацию", data: { bs_toggle: "tooltip" } do
+          i.bi.bi-person-check
+        = button_to tournament_path(@tournament), method: :delete, class: "btn btn-outline-danger btn-sm", title: "Удалить турнир", data: { bs_toggle: "tooltip" }, form: { data: { turbo_confirm: "Вы уверены, что хотите удалить этот турнир? Это действие необратимо." } } do
+          i.bi.bi-trash
+      - if @tournament.registration? && @tournament.league.owner == current_user
+        = link_to edit_tournament_path(@tournament), class: "btn btn-outline-primary btn-sm", title: "Редактировать", data: { bs_toggle: "tooltip" } do
+          i.bi.bi-pencil
+        = button_to activate_tournament_path(@tournament), method: :post, class: "btn btn-success btn-sm", title: "Активировать турнир", data: { bs_toggle: "tooltip" } do
+          i.bi.bi-play-fill
+        = button_to cancel_tournament_path(@tournament), method: :post, class: "btn btn-outline-danger btn-sm", title: "Отменить турнир", data: { bs_toggle: "tooltip" }, form: { data: { turbo_confirm: "Вы уверены, что хотите отменить этот турнир? Все зарегистрированные участники получат уведомление." } } do
+          i.bi.bi-x-circle
+      - if !@tournament.completed? && @tournament.league.owner == current_user
+        = link_to fill_results_tournament_path(@tournament), class: "btn btn-primary btn-sm", title: "Завершить турнир", data: { bs_toggle: "tooltip" } do
+          i.bi.bi-clipboard-check
+      - if @tournament.active? || @tournament.completed?
+        = link_to online_tournament_path(@tournament), class: "btn btn-outline-info btn-sm", title: "Онлайн трансляция", target: "_blank", data: { bs_toggle: "tooltip" } do
+          i.bi.bi-broadcast
+      - if @tournament.league.owner == current_user
+        = link_to copy_tournament_path(@tournament), class: "btn btn-outline-secondary btn-sm", title: "Использовать как шаблон", data: { bs_toggle: "tooltip" } do
+          i.bi.bi-copy
+      = link_to league_path(@tournament.league), class: "btn btn-outline-secondary btn-sm", title: @tournament.league.name, data: { bs_toggle: "tooltip" } do
+        i.bi.bi-arrow-left
+
+  .row.mb-4
+    .col-md-8
+      - if @tournament.description.present?
+        p.text-muted= @tournament.description
+
+      dl.row
+        dt.col-sm-3 Клуб
+        dd.col-sm-9= link_to @tournament.club.name, club_path(@tournament.club)
+        dt.col-sm-3 Дата
+        dd.col-sm-9= tournament_date_range(@tournament)
+        dt.col-sm-3 Тип
+        dd.col-sm-9 Американо
+        dt.col-sm-3 Раундов
+        dd.col-sm-9= @tournament.rounds_count
+        dt.col-sm-3 Макс. участников
+        dd.col-sm-9= @tournament.max_participants
+        dt.col-sm-3 Статус
+        dd.col-sm-9
+          - badge_class = { "draft" => "secondary", "registration" => "info", "active" => "success", "completed" => "primary", "cancelled" => "danger" }.fetch(@tournament.status, "secondary")
+          span.badge class="bg-#{badge_class}"
+            = { "draft" => "Черновик", "registration" => "Регистрация", "active" => "Активный", "completed" => "Завершён", "cancelled" => "Отменён" }.fetch(@tournament.status, @tournament.status)
+
+    - if @tournament.placement_points.present?
+      .col-md-4
+        h5.mb-3 Очки за места
+        table.table.table-sm.table-bordered
+          thead.table-light
+            tr
+              th Место
+              th Очки
+          tbody
+            - @tournament.placement_points.each do |rule|
+              tr
+                - from = rule["from"].to_i
+                - to = rule["to"].to_i
+                td= from == to ? from.to_s : "#{from} - #{to}"
+                td= rule["points"]
+
+  h4.mt-4.mb-3 Участники
+
+  - is_owner = @tournament.league.owner == current_user
+
+  - if @can_register
+    = form_with url: tournament_tournament_participants_path(@tournament), method: :post, scope: :tournament_participant, class: "mb-3" do |f|
+      = f.submit "Зарегистрироваться", class: "btn btn-success btn-sm"
+  - elsif @current_league_user && @tournament.registration?
+    - registered = @tournament.tournament_participants.exists?(league_user: @current_league_user)
+    - if registered
+      .alert.alert-info.mb-3 Вы уже зарегистрированы на этот турнир.
+
+  - if @owner_available_players&.any?
+    = form_with url: tournament_tournament_participants_path(@tournament), method: :post, scope: :tournament_participant, class: "d-flex align-items-center gap-2 mb-3" do |f|
+      = f.select :league_user_id,
+          @owner_available_players.map { |lu| [lu.full_name, lu.id] },
+          { prompt: "— выберите игрока —" },
+          class: "form-select form-select-sm w-auto"
+      = f.submit "Добавить участника", class: "btn btn-primary btn-sm"
+
+  - if @americano_participants.any?
+    table.table.table-hover
+      thead
+        tr
+          - if @tournament.completed?
+            th= sort_link(@tournament, "placement", "Место", params[:sort], params[:direction])
+          - else
+            th #
+          th Фото
+          th= sort_link(@tournament, "name", "Игрок", params[:sort], params[:direction])
+          th= sort_link(@tournament, "total_score", "Очки турнира", params[:sort], params[:direction])
+          - if @tournament.registration? && is_owner
+            th
+      tbody
+        - @americano_participants.each_with_index do |participant, index|
+          tr
+            - if @tournament.completed?
+              td
+                - case participant.placement
+                - when 1
+                  span style="font-size: 1.8rem; line-height: 1;" 🥇
+                - when 2
+                  span style="font-size: 1.8rem; line-height: 1;" 🥈
+                - when 3
+                  span style="font-size: 1.8rem; line-height: 1;" 🥉
+                - else
+                  = participant.placement
+            - else
+              td= index + 1
+            td= render "shared/avatar", user: participant.league_user.user
+            td= participant.league_user.full_name
+            td
+              = participant.total_score
+              - if @tournament.completed? && @tournament.placement_points.present? && participant.placement.present?
+                - earned = @tournament.points_for_place(participant.placement)
+                - if earned > 0
+                  = " "
+                  span.text-success= "+#{earned}"
+            - if @tournament.registration? && is_owner
+              td= button_to tournament_tournament_participant_path(@tournament, participant), method: :delete, class: "btn btn-danger btn-sm", title: "Удалить", form: { data: { turbo_confirm: "Вы уверены?" } } do
+                i.bi.bi-trash
+  - else
+    p.text-muted Участников пока нет.
+
+  - if @americano_rounds.any?
+    h4.mt-4.mb-3 Расписание
+    - all_done = @matches.any?(&:completed?) && !@matches.any?(&:pending?)
+    - if is_owner && @tournament.active?
+      .mb-3
+        = link_to "Завершить турнир", fill_results_tournament_path(@tournament), class: "btn btn-success btn-sm#{' disabled' unless all_done}", aria: { disabled: (true unless all_done) }, tabindex: (all_done ? nil : "-1")
+
+    - @americano_rounds.each do |round_data|
+      h6.mt-3.mb-2= "Раунд #{round_data[:round]}"
+      table.table.table-hover.table-sm.mb-4
+        thead.table-light
+          tr
+            th Пара 1
+            th.text-center Счёт
+            th Пара 2
+            th.text-center Статус
+            th
+        tbody
+          - round_data[:matches].each do |match|
+            tr
+              td= match.pair_display_name(match.pair1)
+              td.text-center
+                - if match.completed?
+                  strong= "#{match.pair1_score} : #{match.pair2_score}"
+                - else
+                  span.text-muted —
+              td= match.pair_display_name(match.pair2)
+              td.text-center
+                - if match.completed?
+                  span.badge.bg-success Завершён
+                - else
+                  span.badge.bg-secondary Не сыгран
+              td
+                - if is_owner && match.pair1.present? && match.pair2.present? && !@tournament.completed?
+                  - btn_label = match.completed? ? "Изменить" : "Ввести результат"
+                  button.btn.btn-outline-primary.btn-sm data-bs-toggle="modal" data-bs-target="#match-modal-#{match.id}"
+                    = btn_label
+                - if match.completed? && match.pair1.present? && match.pair2.present?
+                  = link_to result_card_tournament_match_path(@tournament, match), target: "_blank", class: "btn btn-outline-secondary btn-sm" do
+                    i.bi.bi-image
+
+  = render "matches/result_modal", matches: @matches, tournament: @tournament

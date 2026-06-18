@@ -29,7 +29,19 @@
 
   .col-md-3
     = f.label :type, "Тип", class: "form-label"
-    = f.select :type, Tournament.types.keys.map { |tp| [{ "olympic" => "Олимпийский", "round_robin" => "Круговой", "mixed" => "Смешанный" }.fetch(tp, tp), tp] }, {}, class: "form-select", data: { tournament_type_select: true, action: "change->tournament-type#toggle" }
+    = f.select :type, Tournament.types.keys.map { |tp| [{ "olympic" => "Олимпийский", "round_robin" => "Круговой", "mixed" => "Смешанный", "americano" => "Американо" }.fetch(tp, tp), tp] }, {}, class: "form-select", data: { tournament_type_select: true, action: "change->tournament-type#toggle" }
+
+  .col-12(data-tournament-type-target="americanoConfig" class=("d-none" unless tournament.americano?))
+    hr
+    h5.mb-3 Настройки американо
+    .row.g-3
+      .col-md-4
+        = f.label :rounds_count, "Количество раундов", class: "form-label"
+        = f.number_field :rounds_count, class: "form-control #{"is-invalid" if tournament.errors[:rounds_count].any?}", min: 1
+        - if tournament.errors[:rounds_count].any?
+          .invalid-feedback= tournament.errors[:rounds_count].first
+        - else
+          small.form-text.text-muted Сколько раундов сыграет каждый игрок
 
   .col-12(data-tournament-type-target="mixedConfig" class=("d-none" unless tournament.mixed?))
     hr

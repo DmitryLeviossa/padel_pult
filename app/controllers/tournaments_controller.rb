@@ -22,6 +22,11 @@ class TournamentsController < ApplicationController
                                     pair1: [ { player1: :user }, { player2: :user } ],
                                     pair2: [ { player1: :user }, { player2: :user } ])
 
+    if @tournament.americano?
+      prepare_americano_data
+      return
+    end
+
     if @tournament.olympic?
       bracket_matches = @matches.select { |m| m.bracket? && m.group_number == 0 }
       grouped = bracket_matches.group_by(&:round_number).sort_by { |r, _| r }.map { |_, m| m }
@@ -200,6 +205,14 @@ class TournamentsController < ApplicationController
 
   def fill_results
     redirect_to(tournament_path(@tournament), alert: "Заполнить результаты можно только для активного турнира.") and return unless @tournament.active?
+
+    if @tournament.americano?
+      @americano_standings = @tournament.tournament_participants
+                                        .includes(league_user: :user)
+                                        .order(total_score: :desc, created_at: :asc)
+      return
+    end
+
     @suggested_placements = compute_suggested_placements
     @pairs = @tournament.pairs
                         .includes({ player1: :user }, { player2: :user })
@@ -256,8 +269,12 @@ class TournamentsController < ApplicationController
   end
 
   def notify_registered_players_about_cancellation
-    registered_users = @tournament.pairs.includes(player1: :user, player2: :user).flat_map do |pair|
-      [ pair.player1.user, pair.player2.user ]
+    registered_users = if @tournament.americano?
+      @tournament.tournament_participants.includes(league_user: :user).map { |p| p.league_user.user }
+    else
+      @tournament.pairs.includes(player1: :user, player2: :user).flat_map do |pair|
+        [ pair.player1.user, pair.player2.user ]
+      end
     end.uniq
 
     registered_users.each do |user|
@@ -276,6 +293,46 @@ class TournamentsController < ApplicationController
 
   def authorize_tournament_owner!
     redirect_to league_path(@tournament.league), alert: "Нет доступа." unless @tournament.league.owner == current_user
+  end
+
+  def prepare_americano_data
+    is_owner = @tournament.league.owner == current_user
+    @current_league_user = @tournament.league.league_users.find_by(user: current_user)
+
+    if @tournament.registration?
+      registered_ids = @tournament.tournament_participants.pluck(:league_user_id).to_set
+      already_registered = @current_league_user && registered_ids.include?(@current_league_user.id)
+
+      unless already_registered || @current_league_user.nil?
+        @can_register = true
+      end
+
+      if is_owner
+        @owner_available_players = @tournament.league.league_users
+                                              .includes(:user)
+                                              .where.not(id: registered_ids.to_a)
+      end
+    end
+
+    sort_field = params[:sort].presence_in(%w[name total_score placement created_at]) ||
+                 (@tournament.completed? ? "placement" : "total_score")
+    sort_dir = params[:direction].presence_in(%w[asc desc]) ||
+               (@tournament.completed? ? "asc" : "desc")
+
+    participants = @tournament.tournament_participants.includes(league_user: :user).to_a
+    sorted = participants.sort_by do |p|
+      case sort_field
+      when "name"       then [ p.league_user.full_name, p.created_at ]
+      when "placement"  then [ p.placement || Float::INFINITY, p.created_at ]
+      when "created_at" then [ p.created_at ]
+      else                   [ p.total_score, p.created_at ]
+      end
+    end
+    @americano_participants = sort_dir == "desc" ? sorted.reverse : sorted
+
+    @americano_rounds = @matches.group_by(&:round_number).sort_by { |r, _| r }.map { |r, ms| { round: r, matches: ms } }
+
+    render :show_americano
   end
 
   def prepare_mixed_data
@@ -467,7 +524,7 @@ class TournamentsController < ApplicationController
   def tournament_params
     base = params.require(:tournament).permit(
       :name, :start_date, :end_date, :max_participants, :club_id, :type, :description,
-      :groups_count, :pairs_to_bracket, :loser_bracket
+      :groups_count, :pairs_to_bracket, :loser_bracket, :rounds_count
     )
 
     raw_pp = params.dig(:tournament, :placement_points)

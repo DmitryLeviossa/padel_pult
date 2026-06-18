@@ -82,6 +82,7 @@ class Pair < ApplicationRecord
 
   def each_player_once_per_tournament
     return unless tournament_id.present?
+    return if tournament&.americano?
 
     occupied = Pair.where(tournament_id: tournament_id)
                    .where.not(id: id)

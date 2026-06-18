@@ -11,6 +11,7 @@
 #  name             :string           not null
 #  pairs_to_bracket :integer
 #  placement_points :jsonb            not null
+#  rounds_count     :integer
 #  start_date       :datetime         not null
 #  status           :string           default("draft"), not null
 #  type             :string           default("olympic"), not null

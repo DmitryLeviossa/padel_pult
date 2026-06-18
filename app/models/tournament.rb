@@ -11,6 +11,7 @@
 #  name             :string           not null
 #  pairs_to_bracket :integer
 #  placement_points :jsonb            not null
+#  rounds_count     :integer
 #  start_date       :datetime         not null
 #  status           :string           default("draft"), not null
 #  type             :string           default("olympic"), not null
@@ -37,14 +38,16 @@ class Tournament < ApplicationRecord
   has_many :brackets, dependent: :destroy
   has_many :matches, dependent: :destroy
   has_many :pairs, dependent: :destroy
+  has_many :tournament_participants, dependent: :destroy
 
   enum :status, { draft: "draft", registration: "registration", active: "active", completed: "completed", cancelled: "cancelled" }
-  enum :type, { olympic: "olympic", round_robin: "round_robin", mixed: "mixed" }
+  enum :type, { olympic: "olympic", round_robin: "round_robin", mixed: "mixed", americano: "americano" }
 
   validates :start_date, presence: true
   validates :end_date, presence: true
   validates :groups_count, numericality: { only_integer: true, greater_than: 0 }, allow_nil: true
   validates :pairs_to_bracket, numericality: { only_integer: true, greater_than: 0 }, allow_nil: true
+  validates :rounds_count, numericality: { only_integer: true, greater_than: 0 }, if: :americano?
   validate :end_date_not_before_start_date
   validate :placement_points_valid
   validate :mixed_config_present, if: :mixed?

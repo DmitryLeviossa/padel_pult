@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2026_05_29_160158) do
+ActiveRecord::Schema[8.0].define(version: 2026_06_18_093809) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -185,6 +185,18 @@ ActiveRecord::Schema[8.0].define(version: 2026_05_29_160158) do
     t.index ["created_at"], name: "index_solid_cable_messages_on_created_at"
   end
 
+  create_table "tournament_participants", force: :cascade do |t|
+    t.bigint "tournament_id", null: false
+    t.bigint "league_user_id", null: false
+    t.integer "total_score", default: 0, null: false
+    t.integer "placement"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["league_user_id"], name: "index_tournament_participants_on_league_user_id"
+    t.index ["tournament_id", "league_user_id"], name: "index_tournament_participants_uniqueness", unique: true
+    t.index ["tournament_id"], name: "index_tournament_participants_on_tournament_id"
+  end
+
   create_table "tournaments", force: :cascade do |t|
     t.string "name", null: false
     t.datetime "start_date", null: false
@@ -201,6 +213,7 @@ ActiveRecord::Schema[8.0].define(version: 2026_05_29_160158) do
     t.integer "pairs_to_bracket"
     t.boolean "loser_bracket", default: false, null: false
     t.bigint "club_id"
+    t.integer "rounds_count"
     t.index ["club_id"], name: "index_tournaments_on_club_id"
     t.index ["league_id"], name: "index_tournaments_on_league_id"
   end
@@ -243,6 +256,8 @@ ActiveRecord::Schema[8.0].define(version: 2026_05_29_160158) do
   add_foreign_key "pairs", "league_users", column: "player2_id"
   add_foreign_key "pairs", "tournaments"
   add_foreign_key "seasons", "leagues"
+  add_foreign_key "tournament_participants", "league_users"
+  add_foreign_key "tournament_participants", "tournaments"
   add_foreign_key "tournaments", "clubs"
   add_foreign_key "tournaments", "leagues"
 end

@@ -3,7 +3,25 @@
     h1.mb-0= "Результаты: #{@tournament.name}"
     = link_to "← #{@tournament.name}", tournament_path(@tournament), class: "btn btn-outline-secondary btn-sm"
 
-  - if @pairs.any?
+  - if @tournament.americano?
+    - if @americano_standings.any?
+      p.text-muted Рейтинг рассчитывается автоматически по набранным очкам. Нажмите «Завершить турнир» для подтверждения.
+      table.table.table-hover.mb-4
+        thead
+          tr
+            th Место
+            th Игрок
+            th.text-center Очки турнира
+        tbody
+          - @americano_standings.each_with_index do |participant, i|
+            tr
+              td= i + 1
+              td= participant.league_user.full_name
+              td.text-center= participant.total_score
+      = button_to "Завершить турнир", complete_tournament_path(@tournament), method: :patch, class: "btn btn-success"
+    - else
+      p.text-muted Участников пока нет.
+  - elsif @pairs.any?
     = form_with url: complete_tournament_path(@tournament), method: :patch do |f|
       table.table.table-hover
         thead
