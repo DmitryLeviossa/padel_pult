@@ -2,7 +2,7 @@
   .alert.alert-warning.rounded-0.mb-0 role="alert"
     .container
       i.bi.bi-exclamation-triangle-fill.me-2
-      | Квота турниров для вашей лиги составляет #{@league.tournaments_quota}. Для продолжения работы пополните квоту в
+      | Баланс турниров для вашей лиги составляет #{@league.tournaments_quota}. Для продолжения работы пополните баланс в
       = link_to " настройках лиги", league_path(@league, tab: "settings", anchor: "settings"), class: "alert-link"
       | .
 
@@ -198,7 +198,7 @@
         h5.mb-3 Настройки
 
         .card.mb-4
-          .card-header Квота турниров
+          .card-header Баланс турниров
           .card-body
             .d-flex.align-items-center.gap-3
               .fs-3.fw-bold= @league.tournaments_quota
@@ -206,7 +206,7 @@
             - used = @league.tournaments.count
             .text-muted.small.mt-1= "Использовано: #{used}"
             hr.my-2
-            .text-muted.small 1 турнир — 500 ₽. Для пополнения квоты обратитесь к администратору.
+            .text-muted.small 1 турнир — 1000 ₽. Для пополнения баланса обратитесь к администратору.
 
         = form_with model: @league, url: league_path(@league), method: :patch do |f|
           .card.mb-4
