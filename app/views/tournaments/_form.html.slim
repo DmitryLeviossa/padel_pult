@@ -1,4 +1,11 @@
 = form_with model: form_model, class: "row g-3", data: { controller: "tournament-type" } do |f|
+  - base_errors = tournament.errors[:base]
+  - if base_errors.any?
+    .col-12
+      .alert.alert-danger
+        - base_errors.each do |msg|
+          div= msg
+
   .col-md-6
     = f.label :name, "Название", class: "form-label"
     = f.text_field :name, class: "form-control #{"is-invalid" if tournament.errors[:name].any?}"

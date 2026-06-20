@@ -32,6 +32,12 @@ class Bracket < ApplicationRecord
                           if: :manual?
 
   def manual?
-    (bracket? || group_stage?) && group_number > 0
+    if group_stage?
+      group_number > tournament.groups_count.to_i
+    elsif bracket?
+      group_number > 0
+    else
+      false
+    end
   end
 end

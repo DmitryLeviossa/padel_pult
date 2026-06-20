@@ -34,7 +34,7 @@ class Tournament < ApplicationRecord
   self.inheritance_column = nil
 
   belongs_to :league
-  belongs_to :club
+  belongs_to :club, optional: true
   has_many :brackets, dependent: :destroy
   has_many :matches, dependent: :destroy
   has_many :pairs, dependent: :destroy
