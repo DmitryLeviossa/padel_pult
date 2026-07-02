@@ -53,6 +53,6 @@ class Leagues::LeagueUsersController < ApplicationController
   end
 
   def user_params
-    params.require(:user).permit(:first_name, :last_name, :gender)
+    params.require(:user).permit(:first_name, :last_name, :gender, :photo)
   end
 end

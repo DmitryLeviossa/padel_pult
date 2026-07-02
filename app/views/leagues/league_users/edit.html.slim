@@ -3,7 +3,7 @@
     .col-md-6
       h1.mb-4 Редактировать участника
 
-      = form_with model: @league_user.user, url: league_league_user_path(@league, @league_user), method: :patch, data: { turbo: false } do |f|
+      = form_with model: @league_user.user, url: league_league_user_path(@league, @league_user), method: :patch, multipart: true, data: { turbo: false } do |f|
         = render "devise/shared/error_messages", resource: @league_user.user
 
         .mb-3
@@ -13,6 +13,16 @@
         .mb-3
           = f.label :last_name, "Фамилия", class: "form-label"
           = f.text_field :last_name, class: "form-control"
+
+        .mb-3
+          = f.label :gender, "Пол", class: "form-label"
+          = f.select :gender, options_for_select(User.genders.keys.map { |g| [{ "male" => "Мужской", "female" => "Женский" }.fetch(g, g), g] }, f.object.gender), { include_blank: "— Пол —" }, class: "form-select"
+
+        .mb-3
+          = f.label :photo, "Фото", class: "form-label d-block"
+          - if f.object.photo.attached?
+            = image_tag f.object.photo.variant(resize_to_fill: [80, 80]), class: "rounded-circle mb-2", style: "width: 80px; height: 80px; object-fit: cover;"
+          = f.file_field :photo, accept: "image/*", class: "form-control"
 
         .d-flex.gap-2
           = f.submit "Сохранить", class: "btn btn-primary"
