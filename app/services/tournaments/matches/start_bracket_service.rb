@@ -7,6 +7,7 @@ module Tournaments
 
       def call
         return unless all_group_matches_completed?
+        return if bracket_already_seeded?
 
         qualified_by_group, consolation_by_group = determine_pairs
         seed_stage(qualified_by_group, :bracket)
@@ -22,6 +23,13 @@ module Tournaments
       def all_group_matches_completed?
         group_matches = @tournament.matches.group_stage.where.not(pair1_id: nil, pair2_id: nil)
         group_matches.any? && !group_matches.pending.exists?
+      end
+
+      def bracket_already_seeded?
+        target = @tournament.brackets.find_by(bracket_type: :bracket, group_number: 0)
+        return false unless target
+
+        target.matches.where.not(pair1_id: nil).exists?
       end
 
       def determine_pairs

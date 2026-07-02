@@ -59,7 +59,8 @@ class Tournament < ApplicationRecord
   after_update :regenerate_match_structure, if: :structure_params_changed?
 
   def all_matches_completed?
-    matches.any? && !matches.pending.exists?
+    real = matches.where.not(pair1_id: nil, pair2_id: nil)
+    real.any? && !real.pending.exists?
   end
 
   def max_pairs
