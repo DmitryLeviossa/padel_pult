@@ -62,7 +62,7 @@ RSpec.describe Match, type: :model do
     end
 
     it "returns false for group stage match" do
-      tournament = create(:tournament)
+      tournament = create(:tournament, groups_count: 1)
       group_bracket = tournament.brackets.find_or_create_by!(bracket_type: "group", group_number: 1)
       group_match = group_bracket.matches.create!(tournament: tournament, round_number: 1, position: 99, status: :pending)
       expect(group_match.third_place?).to be false

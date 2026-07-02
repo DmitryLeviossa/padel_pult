@@ -22,7 +22,7 @@ RSpec.describe "Leagues::LeagueTelegramSettings", type: :request do
         expect(setting.chat_id).to eq("-100999")
         expect(setting.match_results_thread_id).to eq("10")
         expect(setting.announces_thread_id).to eq("20")
-        expect(response).to redirect_to(league_path(league, anchor: "settings"))
+        expect(response).to redirect_to(league_path(league, tab: "settings", anchor: "settings"))
       end
     end
 
@@ -50,7 +50,7 @@ RSpec.describe "Leagues::LeagueTelegramSettings", type: :request do
 
         expect(setting.reload.chat_id).to eq("-100new")
         expect(setting.reload.match_results_thread_id).to eq("42")
-        expect(response).to redirect_to(league_path(league, anchor: "settings"))
+        expect(response).to redirect_to(league_path(league, tab: "settings", anchor: "settings"))
       end
     end
 
