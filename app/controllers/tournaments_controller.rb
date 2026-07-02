@@ -495,6 +495,7 @@ class TournamentsController < ApplicationController
         end
       end
     elsif @tournament.round_robin?
+      wins_count   = Hash.new(0)
       wins_score   = Hash.new(0)
       losses_score = Hash.new(0)
       head_to_head = {}
@@ -506,30 +507,29 @@ class TournamentsController < ApplicationController
         winner_score = match.pair1_id == match.winner_id ? match.pair1_score.to_i : match.pair2_score.to_i
         loser_score  = match.pair1_id == match.winner_id ? match.pair2_score.to_i : match.pair1_score.to_i
 
+        wins_count[match.winner_id]   += 1
         wins_score[match.winner_id]   += winner_score
         losses_score[loser_id]        += loser_score
         head_to_head[[ match.winner_id, loser_id ]] = match.winner_id
         head_to_head[[ loser_id, match.winner_id ]] = match.winner_id
       end
 
-      pair_nets = @tournament.pairs.map { |pair| [ pair.id, wins_score[pair.id] - losses_score[pair.id] ] }
+      pair_stats = @tournament.pairs.map do |pair|
+        net = wins_score[pair.id] - losses_score[pair.id]
+        [ pair.id, wins_count[pair.id], net ]
+      end
 
-      sorted = pair_nets.sort do |(id_a, net_a), (id_b, net_b)|
-        if net_a != net_b
-          net_b <=> net_a
+      sorted = pair_stats.sort do |(id_a, wins_a, net_a), (id_b, wins_b, net_b)|
+        h2h = head_to_head[[ id_a, id_b ]]
+        h2h_cmp = h2h == id_a ? -1 : (h2h == id_b ? 1 : 0)
+        if @tournament.by_wins?
+          wins_a != wins_b ? wins_b <=> wins_a : (net_a != net_b ? net_b <=> net_a : h2h_cmp)
         else
-          h2h = head_to_head[[ id_a, id_b ]]
-          if h2h == id_a
-            -1
-          elsif h2h == id_b
-            1
-          else
-            0
-          end
+          net_a != net_b ? net_b <=> net_a : h2h_cmp
         end
       end
 
-      sorted.each_with_index do |(pair_id, _), idx|
+      sorted.each_with_index do |(pair_id, _, _), idx|
         placements[pair_id] = idx + 1
       end
     end
@@ -540,7 +540,7 @@ class TournamentsController < ApplicationController
   def tournament_params
     base = params.require(:tournament).permit(
       :name, :start_date, :end_date, :max_participants, :club_id, :type, :description,
-      :groups_count, :pairs_to_bracket, :loser_bracket, :rounds_count
+      :groups_count, :pairs_to_bracket, :loser_bracket, :rounds_count, :ranking_method
     )
 
     raw_pp = params.dig(:tournament, :placement_points)

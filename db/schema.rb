@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2026_06_18_093809) do
+ActiveRecord::Schema[8.0].define(version: 2026_07_02_172149) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -214,6 +214,7 @@ ActiveRecord::Schema[8.0].define(version: 2026_06_18_093809) do
     t.boolean "loser_bracket", default: false, null: false
     t.bigint "club_id"
     t.integer "rounds_count"
+    t.string "ranking_method", default: "score_delta", null: false
     t.index ["club_id"], name: "index_tournaments_on_club_id"
     t.index ["league_id"], name: "index_tournaments_on_league_id"
   end

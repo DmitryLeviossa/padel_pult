@@ -1,7 +1,7 @@
 import { Controller } from "@hotwired/stimulus"
 
 export default class extends Controller {
-  static targets = ["mixedConfig", "olympicConfig", "americanoConfig"]
+  static targets = ["mixedConfig", "olympicConfig", "americanoConfig", "roundRobinConfig"]
 
   connect() {
     this.toggle()
@@ -13,6 +13,7 @@ export default class extends Controller {
     this.setVisible(this.mixedConfigTarget, type === "mixed")
     this.setVisible(this.olympicConfigTarget, type === "olympic")
     this.setVisible(this.americanoConfigTarget, type === "americano")
+    this.setVisible(this.roundRobinConfigTarget, type === "round_robin")
   }
 
   setVisible(target, visible) {

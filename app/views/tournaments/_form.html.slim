@@ -50,6 +50,16 @@
         - else
           small.form-text.text-muted Сколько раундов сыграет каждый игрок
 
+  .col-12(data-tournament-type-target="roundRobinConfig" class=("d-none" unless tournament.round_robin?))
+    hr
+    h5.mb-3 Настройки кругового турнира
+    .row.g-3
+      .col-md-6
+        = f.label :ranking_method, "Определение победителя", class: "form-label"
+        = f.select :ranking_method, [["По разнице очков", "score_delta"], ["По количеству побед", "by_wins"]], {}, class: "form-select"
+        small.form-text.text-muted
+          | По разнице очков — суммарные очки за - против. По победам — кто выиграл больше матчей.
+
   .col-12(data-tournament-type-target="mixedConfig" class=("d-none" unless tournament.mixed?))
     hr
     h5.mb-3 Настройки группового этапа

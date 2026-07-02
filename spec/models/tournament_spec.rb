@@ -11,6 +11,7 @@
 #  name             :string           not null
 #  pairs_to_bracket :integer
 #  placement_points :jsonb            not null
+#  ranking_method   :string           default("score_delta"), not null
 #  rounds_count     :integer
 #  start_date       :datetime         not null
 #  status           :string           default("draft"), not null
@@ -33,6 +34,19 @@
 require "rails_helper"
 
 RSpec.describe Tournament, type: :model do
+  describe "ranking_method" do
+    it "defaults to score_delta" do
+      tournament = build(:tournament)
+      expect(tournament.ranking_method).to eq("score_delta")
+    end
+
+    it "recognizes by_wins" do
+      tournament = build(:tournament, ranking_method: :by_wins)
+      expect(tournament).to be_by_wins
+      expect(tournament).not_to be_score_delta
+    end
+  end
+
   describe "tournaments_quota enforcement" do
     context "when league has quota remaining" do
       let(:league) { create(:league, tournaments_quota: 3) }
