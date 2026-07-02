@@ -16,9 +16,9 @@ namespace :users do
     puts "=== Merge duplicate users (#{dry_run ? 'DRY RUN' : 'LIVE'}) ==="
 
     duplicate_groups = User
-      .group(:first_name, :last_name)
+      .group("TRIM(first_name)", "TRIM(last_name)")
       .having("COUNT(*) > 1")
-      .pluck(:first_name, :last_name)
+      .pluck("TRIM(first_name)", "TRIM(last_name)")
 
     if duplicate_groups.empty?
       puts "No duplicate users found."
@@ -30,7 +30,7 @@ namespace :users do
     errors = 0
 
     duplicate_groups.each do |first_name, last_name|
-      users = User.where(first_name: first_name, last_name: last_name).order(:created_at)
+      users = User.where("TRIM(first_name) = ? AND TRIM(last_name) = ?", first_name, last_name).order(:created_at)
 
       primary = users.min_by do |u|
         [

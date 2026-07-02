@@ -29,6 +29,8 @@ class User < ApplicationRecord
 
   enum :gender, { male: 0, female: 1 }, prefix: true
 
+  before_save -> { self.first_name = first_name&.strip; self.last_name = last_name&.strip }
+
   validates :gender, presence: true
 
   has_one_attached :photo
