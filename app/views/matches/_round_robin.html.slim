@@ -3,6 +3,7 @@
 - completed_matches = matches.select { |m| m.completed? && m.pair1_id.present? && m.pair2_id.present? }
 - if completed_matches.any?
   - standings = {}
+  - head_to_head = {}
   - tournament.pairs.each { |pair| standings[pair.id] = { pair: pair, wins: 0, losses: 0, pts_for: 0, pts_against: 0 } }
   - completed_matches.each do |match|
     - next unless standings.key?(match.pair1_id) && standings.key?(match.pair2_id)
@@ -19,10 +20,14 @@
     - if match.winner_id == match.pair1_id
       - standings[match.pair1_id][:wins] += 1
       - standings[match.pair2_id][:losses] += 1
+      - head_to_head[[match.pair1_id, match.pair2_id]] = match.pair1_id
+      - head_to_head[[match.pair2_id, match.pair1_id]] = match.pair1_id
     - elsif match.winner_id == match.pair2_id
       - standings[match.pair2_id][:wins] += 1
       - standings[match.pair1_id][:losses] += 1
-  - sorted_standings = standings.values.sort_by { |s| -(s[:pts_for] - s[:pts_against]) }
+      - head_to_head[[match.pair2_id, match.pair1_id]] = match.pair2_id
+      - head_to_head[[match.pair1_id, match.pair2_id]] = match.pair2_id
+  - sorted_standings = standings.values.sort { |a, b| net_a = a[:pts_for] - a[:pts_against]; net_b = b[:pts_for] - b[:pts_against]; net_a != net_b ? net_b <=> net_a : (head_to_head[[a[:pair].id, b[:pair].id]] == a[:pair].id ? -1 : (head_to_head[[a[:pair].id, b[:pair].id]] == b[:pair].id ? 1 : 0)) }
 
   h4.mt-4.mb-3 Таблица результатов
   .table-responsive

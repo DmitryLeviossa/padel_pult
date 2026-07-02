@@ -495,8 +495,9 @@ class TournamentsController < ApplicationController
         end
       end
     elsif @tournament.round_robin?
-      wins_score  = Hash.new(0)
+      wins_score   = Hash.new(0)
       losses_score = Hash.new(0)
+      head_to_head = {}
 
       matches.where(status: :completed).each do |match|
         next unless match.winner_id.present?
@@ -505,13 +506,28 @@ class TournamentsController < ApplicationController
         winner_score = match.pair1_id == match.winner_id ? match.pair1_score.to_i : match.pair2_score.to_i
         loser_score  = match.pair1_id == match.winner_id ? match.pair2_score.to_i : match.pair1_score.to_i
 
-        wins_score[match.winner_id] += winner_score
-        losses_score[loser_id] += loser_score
+        wins_score[match.winner_id]   += winner_score
+        losses_score[loser_id]        += loser_score
+        head_to_head[[ match.winner_id, loser_id ]] = match.winner_id
+        head_to_head[[ loser_id, match.winner_id ]] = match.winner_id
       end
 
-      sorted = @tournament.pairs
-                          .map { |pair| [ pair.id, wins_score[pair.id] - losses_score[pair.id] ] }
-                          .sort_by { |_, net| -net }
+      pair_nets = @tournament.pairs.map { |pair| [ pair.id, wins_score[pair.id] - losses_score[pair.id] ] }
+
+      sorted = pair_nets.sort do |(id_a, net_a), (id_b, net_b)|
+        if net_a != net_b
+          net_b <=> net_a
+        else
+          h2h = head_to_head[[ id_a, id_b ]]
+          if h2h == id_a
+            -1
+          elsif h2h == id_b
+            1
+          else
+            0
+          end
+        end
+      end
 
       sorted.each_with_index do |(pair_id, _), idx|
         placements[pair_id] = idx + 1
