@@ -22,7 +22,7 @@
     - elsif match.winner_id == match.pair2_id
       - standings[match.pair2_id][:wins] += 1
       - standings[match.pair1_id][:losses] += 1
-  - sorted_standings = standings.values.sort_by { |s| [-s[:wins], -(s[:pts_for] - s[:pts_against])] }
+  - sorted_standings = standings.values.sort_by { |s| -(s[:pts_for] - s[:pts_against]) }
 
   h4.mt-4.mb-3 Таблица результатов
   .table-responsive
