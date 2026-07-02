@@ -1,5 +1,54 @@
 - pairs_options = tournament.pairs.map { |p| [p.player1.full_name + " / " + p.player2.full_name, p.id] }
 
+- completed_matches = matches.select { |m| m.completed? && m.pair1_id.present? && m.pair2_id.present? }
+- if completed_matches.any?
+  - standings = {}
+  - tournament.pairs.each { |pair| standings[pair.id] = { pair: pair, wins: 0, losses: 0, pts_for: 0, pts_against: 0 } }
+  - completed_matches.each do |match|
+    - next unless standings.key?(match.pair1_id) && standings.key?(match.pair2_id)
+    - if match.match_sets.any?
+      - p1_pts = match.match_sets.sum(&:pair1_score)
+      - p2_pts = match.match_sets.sum(&:pair2_score)
+    - else
+      - p1_pts = match.pair1_score.to_i
+      - p2_pts = match.pair2_score.to_i
+    - standings[match.pair1_id][:pts_for] += p1_pts
+    - standings[match.pair1_id][:pts_against] += p2_pts
+    - standings[match.pair2_id][:pts_for] += p2_pts
+    - standings[match.pair2_id][:pts_against] += p1_pts
+    - if match.winner_id == match.pair1_id
+      - standings[match.pair1_id][:wins] += 1
+      - standings[match.pair2_id][:losses] += 1
+    - elsif match.winner_id == match.pair2_id
+      - standings[match.pair2_id][:wins] += 1
+      - standings[match.pair1_id][:losses] += 1
+  - sorted_standings = standings.values.sort_by { |s| [-s[:wins], -(s[:pts_for] - s[:pts_against])] }
+
+  h4.mt-4.mb-3 Таблица результатов
+  .table-responsive
+    table.table.table-hover.table-sm.mb-4
+      thead.table-light
+        tr
+          th #
+          th Пара
+          th.text-center В
+          th.text-center П
+          th.text-center.text-success Очки +
+          th.text-center.text-danger Очки -
+          th.text-center Разница
+      tbody
+        - sorted_standings.each_with_index do |stat, idx|
+          tr
+            td= idx + 1
+            td= stat[:pair].player1.full_name + " / " + stat[:pair].player2.full_name
+            td.text-center= stat[:wins]
+            td.text-center= stat[:losses]
+            td.text-center.text-success= stat[:pts_for]
+            td.text-center.text-danger= stat[:pts_against]
+            - net = stat[:pts_for] - stat[:pts_against]
+            td.text-center class=(net > 0 ? "text-success fw-semibold" : (net < 0 ? "text-danger" : ""))
+              = net >= 0 ? "+#{net}" : net.to_s
+
 .d-flex.justify-content-between.align-items-center.mt-4.mb-3
   h4.mb-0 Расписание
   - if is_owner && !tournament.completed?
