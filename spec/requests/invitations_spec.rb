@@ -8,6 +8,8 @@ RSpec.describe "Invitations", type: :request do
     it "renders the completion form for a valid token" do
       get invitation_path(token)
       expect(response).to have_http_status(:ok)
+      expect(response.body).to include("Завершите регистрацию")
+      expect(response.body).to include(invited_user.full_name)
     end
 
     it "redirects for an invalid token" do

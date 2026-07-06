@@ -9,9 +9,16 @@ RSpec.describe "Seasons", type: :request do
   describe "GET /leagues/:league_id/seasons/:id" do
     before { sign_in owner }
 
-    it "returns 200" do
+    it "renders the season name and tournaments section" do
       get league_season_path(league, season)
       expect(response).to have_http_status(:ok)
+      expect(response.body).to include(season.name)
+      expect(response.body).to include("Турниры сезона")
+    end
+
+    it "shows empty state when no tournaments in season" do
+      get league_season_path(league, season)
+      expect(response.body).to include("В этом сезоне турниров не запланировано.")
     end
   end
 
@@ -19,9 +26,10 @@ RSpec.describe "Seasons", type: :request do
     context "as owner" do
       before { sign_in owner }
 
-      it "returns 200" do
+      it "renders the new season form" do
         get new_league_season_path(league)
         expect(response).to have_http_status(:ok)
+        expect(response.body).to include("Новый сезон")
       end
     end
 
@@ -60,6 +68,7 @@ RSpec.describe "Seasons", type: :request do
       it "renders new with invalid params" do
         post league_seasons_path(league), params: { season: { name: "" } }
         expect(response).to have_http_status(:unprocessable_entity)
+        expect(response.body).to include("Новый сезон")
       end
     end
 
@@ -88,6 +97,7 @@ RSpec.describe "Seasons", type: :request do
       it "renders edit with invalid params" do
         patch league_season_path(league, season), params: { season: { name: "" } }
         expect(response).to have_http_status(:unprocessable_entity)
+        expect(response.body).to include("Редактировать сезон")
       end
     end
 

@@ -10,9 +10,10 @@ RSpec.describe "Brackets", type: :request do
     context "as owner" do
       before { sign_in owner }
 
-      it "returns 200" do
+      it "renders the new bracket form" do
         get new_tournament_bracket_path(tournament)
         expect(response).to have_http_status(:ok)
+        expect(response.body).to include("Новая сетка")
       end
     end
 
@@ -66,6 +67,7 @@ RSpec.describe "Brackets", type: :request do
       it "re-renders new with errors on invalid params" do
         post tournament_brackets_path(tournament), params: invalid_params
         expect(response).to have_http_status(:unprocessable_entity)
+        expect(response.body).to include("Новая сетка")
       end
     end
 

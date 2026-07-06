@@ -12,6 +12,7 @@ RSpec.describe "Leagues::LeagueUsers", type: :request do
       it "renders the new form" do
         get new_league_league_user_path(league)
         expect(response).to have_http_status(:ok)
+        expect(response.body).to include("Добавить нового участника")
       end
     end
 
@@ -35,6 +36,8 @@ RSpec.describe "Leagues::LeagueUsers", type: :request do
       it "renders the edit form for a pending user" do
         get edit_league_league_user_path(league, league_user)
         expect(response).to have_http_status(:ok)
+        expect(response.body).to include("Редактировать участника")
+        expect(response.body).to include(pending_user.first_name)
       end
 
       it "redirects away for a registered user" do
@@ -106,6 +109,7 @@ RSpec.describe "Leagues::LeagueUsers", type: :request do
       it "renders new with errors given invalid params" do
         post league_league_users_path(league), params: { user: { first_name: "", last_name: "", gender: nil } }
         expect(response).to have_http_status(:unprocessable_entity)
+        expect(response.body).to include("Добавить нового участника")
       end
     end
 

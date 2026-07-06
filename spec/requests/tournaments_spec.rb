@@ -7,6 +7,40 @@ RSpec.describe "Tournaments", type: :request do
   let(:draft_tournament) { create(:tournament, league: league) }
   let(:active_tournament) { create(:tournament, :active, league: league) }
 
+  describe "GET /tournaments/:id" do
+    context "as owner" do
+      before { sign_in owner }
+
+      it "renders the tournament name and status" do
+        get tournament_path(draft_tournament)
+        expect(response).to have_http_status(:ok)
+        expect(response.body).to include(draft_tournament.name)
+        expect(response.body).to include("Черновик")
+      end
+
+      it "shows empty pairs message when no pairs registered" do
+        get tournament_path(draft_tournament)
+        expect(response.body).to include("Пар пока нет.")
+      end
+    end
+
+    context "as non-owner" do
+      before { sign_in other_user }
+
+      it "returns 200" do
+        get tournament_path(draft_tournament)
+        expect(response).to have_http_status(:ok)
+      end
+    end
+
+    context "unauthenticated" do
+      it "redirects to sign in" do
+        get tournament_path(draft_tournament)
+        expect(response).to redirect_to(new_user_session_path)
+      end
+    end
+  end
+
   describe "DELETE /tournaments/:id" do
     context "as owner" do
       before { sign_in owner }
@@ -50,6 +84,8 @@ RSpec.describe "Tournaments", type: :request do
       it "returns 200 for active tournament" do
         get fill_results_tournament_path(active_tournament)
         expect(response).to have_http_status(:ok)
+        expect(response.body).to include("Результаты:")
+        expect(response.body).to include(active_tournament.name)
       end
 
       it "redirects to tournament for non-active tournament" do
@@ -180,6 +216,8 @@ RSpec.describe "Tournaments", type: :request do
       it "returns 200 for draft tournament" do
         get edit_tournament_path(draft_tournament)
         expect(response).to have_http_status(:ok)
+        expect(response.body).to include("Редактировать турнир")
+        expect(response.body).to include(draft_tournament.name)
       end
 
       it "redirects to tournament for non-draft tournament" do
@@ -227,6 +265,7 @@ RSpec.describe "Tournaments", type: :request do
           tournament: { placement_points: [ { from: 0, to: 0, points: 0 } ] }
         }
         expect(response).to have_http_status(:unprocessable_entity)
+        expect(response.body).to include("Редактировать турнир")
       end
 
       it "persists ranking_method for round_robin tournament" do

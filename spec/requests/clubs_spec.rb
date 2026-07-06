@@ -20,9 +20,15 @@ RSpec.describe "Clubs", type: :request do
   end
 
   describe "GET /clubs/:id" do
-    it "returns 200 for an existing club" do
+    it "returns 200 and shows the club name" do
       get club_path(club1)
       expect(response).to have_http_status(:ok)
+      expect(response.body).to include(club1.name)
+    end
+
+    it "shows empty tournaments message when club has no tournaments" do
+      get club_path(club1)
+      expect(response.body).to include("Турниров пока нет.")
     end
 
     it "returns 404 for a missing club" do
