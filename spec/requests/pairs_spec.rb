@@ -154,6 +154,15 @@ RSpec.describe "Pairs", type: :request do
         expect(response).to redirect_to(tournament_path(registration_tournament))
       end
 
+      it "also destroys matches referencing the pair" do
+        bracket = create(:bracket, tournament: registration_tournament)
+        create(:match, :bye, tournament: registration_tournament, bracket: bracket, pair1: pair)
+
+        expect {
+          delete tournament_pair_path(registration_tournament, pair)
+        }.to change(Match, :count).by(-1)
+      end
+
       it "does not delete pair when tournament is not in registration" do
         draft_pair = create(:pair, tournament: draft_tournament, player1: league_user1, player2: league_user2)
 

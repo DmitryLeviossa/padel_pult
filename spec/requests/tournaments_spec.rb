@@ -51,6 +51,18 @@ RSpec.describe "Tournaments", type: :request do
         expect(Tournament.exists?(draft_tournament.id)).to be false
       end
 
+      it "also destroys associated pairs and brackets" do
+        lu1 = create(:league_user, league: league)
+        lu2 = create(:league_user, league: league)
+        create(:pair, tournament: draft_tournament, player1: lu1, player2: lu2)
+        create(:bracket, tournament: draft_tournament)
+
+        expect {
+          delete tournament_path(draft_tournament)
+        }.to change(Pair, :count).by(-1)
+          .and change(Bracket, :count).by(-1)
+      end
+
       it "does not delete non-draft tournament" do
         delete tournament_path(active_tournament)
         expect(response).to redirect_to(tournament_path(active_tournament))

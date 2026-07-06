@@ -91,4 +91,55 @@ RSpec.describe "Brackets", type: :request do
       end
     end
   end
+
+  describe "DELETE /tournaments/:tournament_id/brackets/:id" do
+    let(:bracket) { create(:bracket, tournament: tournament) }
+
+    context "as owner" do
+      before { sign_in owner }
+
+      it "deletes the bracket and redirects to tournament" do
+        bracket
+
+        expect {
+          delete tournament_bracket_path(tournament, bracket)
+        }.to change(Bracket, :count).by(-1)
+
+        expect(response).to redirect_to(tournament_path(tournament))
+      end
+
+      it "also destroys matches within the bracket" do
+        create(:match, :bye, tournament: tournament, bracket: bracket)
+
+        expect { delete tournament_bracket_path(tournament, bracket) }
+          .to change { Match.where(bracket_id: bracket.id).count }.to(0)
+      end
+    end
+
+    context "as non-owner" do
+      before { sign_in other_user }
+
+      it "does not delete the bracket and redirects" do
+        bracket
+
+        expect {
+          delete tournament_bracket_path(tournament, bracket)
+        }.not_to change(Bracket, :count)
+
+        expect(response).to redirect_to(tournament_path(tournament))
+      end
+    end
+
+    context "unauthenticated" do
+      it "redirects to sign in" do
+        bracket
+
+        expect {
+          delete tournament_bracket_path(tournament, bracket)
+        }.not_to change(Bracket, :count)
+
+        expect(response).to redirect_to(new_user_session_path)
+      end
+    end
+  end
 end

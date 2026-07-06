@@ -155,6 +155,14 @@ RSpec.describe "Matches", type: :request do
       }.to change(Match, :count).by(-1)
       expect(response).to redirect_to(tournament_path(tournament))
     end
+
+    it "also destroys associated match_sets" do
+      create(:match_set, match: match)
+
+      expect {
+        delete tournament_match_path(tournament, match)
+      }.to change(MatchSet, :count).by(-1)
+    end
   end
 
   describe "PATCH /tournaments/:tournament_id/matches/:id/assign_pairs" do
