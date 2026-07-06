@@ -30,6 +30,10 @@ class Pair < ApplicationRecord
   belongs_to :player2, class_name: "LeagueUser"
   belongs_to :tournament
 
+  has_many :matches_as_pair1, class_name: "Match", foreign_key: :pair1_id, dependent: :destroy
+  has_many :matches_as_pair2, class_name: "Match", foreign_key: :pair2_id, dependent: :destroy
+  has_many :won_matches, class_name: "Match", foreign_key: :winner_id, dependent: :nullify
+
   has_one_attached :photo
 
   before_create :snapshot_player_scores
