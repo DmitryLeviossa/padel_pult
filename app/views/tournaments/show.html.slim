@@ -226,7 +226,7 @@
     - elsif @tournament.olympic?
       = render "matches/olympic_bracket", bracket_rounds: @bracket_rounds, third_place_match: @third_place_match, loser_bracket_rounds: @loser_bracket_rounds, loser_third_place_match: @loser_third_place_match, tournament: @tournament, is_owner: is_owner, any_completed: any_completed
     - elsif @tournament.mixed?
-      = render "matches/mixed", group_data: @group_data, bracket_rounds: @bracket_rounds, third_place_match: @third_place_match, loser_bracket_rounds: @loser_bracket_rounds, loser_third_place_match: @loser_third_place_match, tournament: @tournament, is_owner: is_owner, any_completed: any_completed, bracket_unseeded: @bracket_unseeded
+      = render "matches/mixed", group_data: @group_data, bracket_rounds: @bracket_rounds, third_place_match: @third_place_match, loser_bracket_rounds: @loser_bracket_rounds, loser_third_place_match: @loser_third_place_match, tournament: @tournament, is_owner: is_owner, any_completed: any_completed, bracket_unseeded: @bracket_unseeded, bracket_slot_labels: @bracket_slot_labels
 
   - if @custom_bracket_data.any?
     - any_completed ||= false

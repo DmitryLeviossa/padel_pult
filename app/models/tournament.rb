@@ -82,6 +82,39 @@ class Tournament < ApplicationRecord
     0
   end
 
+  def bracket_slot_labels
+    return {} unless pairs_to_bracket && groups_count
+
+    total = pairs_to_bracket * groups_count
+    return {} if total < 4
+
+    n = 2**Math.log2(total).ceil
+    ru = %w[А Б В Г Д Е Ж З И К Л М Н О П Р С Т У Ф Х Ц Ч Ш Щ Э Ю Я]
+    sf1 = []
+    sf2 = []
+    groups_count.times do |g_idx|
+      pairs_to_bracket.times do |rank_idx|
+        label = "#{ru[g_idx]}#{rank_idx + 1}"
+        ((g_idx + rank_idx).even? ? sf1 : sf2) << label
+      end
+    end
+
+    slots = Array.new(n, nil)
+    fill = ->(labels, indices) {
+      half = indices.length / 2
+      labels.each_with_index do |label, i|
+        idx = i < half ? indices[i] : indices[indices.length - 1 - (i - half)]
+        slots[idx] = label if idx
+      end
+    }
+    fill.(sf1, (0...n / 4).to_a + (3 * n / 4...n).to_a.reverse)
+    fill.(sf2, (n / 4...n / 2).to_a + (n / 2...3 * n / 4).to_a.reverse)
+
+    (n / 2).times.each_with_object({}) do |i, map|
+      map[i + 1] = { pair1: slots[i], pair2: slots[n - 1 - i] }
+    end
+  end
+
   def self.ransackable_attributes(_auth_object = nil)
     %w[name status type start_date end_date club_id]
   end

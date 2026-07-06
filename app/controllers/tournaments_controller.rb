@@ -404,6 +404,7 @@ class TournamentsController < ApplicationController
     all_groups_done = real_group_matches.exists? && !real_group_matches.pending.exists?
     bracket_r1 = @bracket_rounds.first || []
     @bracket_unseeded = all_groups_done && bracket_r1.any? && bracket_r1.all? { |m| m.pair1_id.nil? }
+    @bracket_slot_labels = @tournament.bracket_slot_labels
   end
 
   def extract_bracket_rounds(matches)

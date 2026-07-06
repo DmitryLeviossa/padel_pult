@@ -142,14 +142,15 @@ css:
                 - is_winner = match.winner_id.present? && match.winner_id == pair_id
                 - is_loser  = match.winner_id.present? && pair_id.present? && match.winner_id != pair_id
                 - css_class = pair.nil? ? "empty-slot" : (is_winner ? "winner" : (is_loser ? "loser" : ""))
+                - slot_label = pair.nil? && match.round_number == 1 && bracket_slot_labels&.dig(match.position, slot_idx == 0 ? :pair1 : :pair2)
                 .bracket-team class=css_class
                   - if can_edit_pairs
                     select.bracket-pair-select form="pairs-form-#{match.id}" name="match[#{field_name}]" onchange="document.getElementById('pairs-form-#{match.id}').requestSubmit()"
-                      option value="" selected=(pair_id.nil?) — …
+                      option value="" selected=(pair_id.nil?) = slot_label ? "— #{slot_label}" : "— …"
                       - pairs_options.each do |label, id|
                         option value=id selected=(pair_id == id) = label
                   - else
-                    span.bracket-name= pair ? match.pair_display_name(pair) : "…"
+                    span.bracket-name= pair ? match.pair_display_name(pair) : (slot_label || "…")
                   - if sets.any?
                     .d-flex.gap-1
                       - sets.each do |set|

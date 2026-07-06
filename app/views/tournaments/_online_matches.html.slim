@@ -9,7 +9,7 @@
   - elsif tournament.mixed?
     = render partial: "tournaments/tv_group_slide", locals: { groups: group_data, tournament: tournament }
     - if bracket_rounds.any?
-      = render partial: "tournaments/tv_bracket_slide", locals: { bracket_rounds: bracket_rounds, third_place_match: third_place_match, slide_title: "Основной турнир" }
+      = render partial: "tournaments/tv_bracket_slide", locals: { bracket_rounds: bracket_rounds, third_place_match: third_place_match, slide_title: "Основной турнир", bracket_slot_labels: bracket_slot_labels }
     - if loser_bracket_rounds&.any?
       = render partial: "tournaments/tv_bracket_slide", locals: { bracket_rounds: loser_bracket_rounds, third_place_match: loser_third_place_match, slide_title: "Доп. турнир" }
   - custom_bracket_data&.each do |data|

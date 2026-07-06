@@ -34,8 +34,9 @@ div data-slide="" data-slide-title=slide_title
                 - is_winner = match.winner_id.present? && match.winner_id == pair_id
                 - is_loser  = match.winner_id.present? && pair_id.present? && match.winner_id != pair_id
                 - css_class = pair.nil? ? (match.bye? ? "bye-slot" : "empty-slot") : (is_winner ? "winner" : (is_loser ? "loser" : ""))
+                - slot_label = pair.nil? && !match.bye? && match.round_number == 1 && defined?(bracket_slot_labels) && bracket_slot_labels&.dig(match.position, slot_idx == 0 ? :pair1 : :pair2)
                 .bracket-team class=css_class
-                  span.bracket-name= pair ? match.pair_display_name(pair) : (match.bye? ? "Свободен" : "…")
+                  span.bracket-name= pair ? match.pair_display_name(pair) : (match.bye? ? "Свободен" : (slot_label || "…"))
                   - if sets.any?
                     .d-flex.gap-2
                       - sets.each do |set|
