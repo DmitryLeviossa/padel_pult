@@ -96,8 +96,11 @@ module Tournaments
             pair2 = list[n - 1 - i]
             next if pair1.nil? || pair2.nil?
 
-            match = bracket.matches.find_by(round_number: round_idx + 1, position: i + 1)
-            match&.update!(pair1: pair1, pair2: pair2)
+            match = bracket.matches.find_or_create_by!(round_number: round_idx + 1, position: i + 1) do |m|
+              m.tournament = @tournament
+              m.status = :pending
+            end
+            match.update!(pair1: pair1, pair2: pair2)
           end
 
           list = [ list[0] ] + [ list[-1] ] + list[1...-1]
