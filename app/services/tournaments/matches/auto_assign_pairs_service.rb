@@ -77,7 +77,10 @@ module Tournaments
         seeds = seeded.first(count)
         remaining = (seeded.drop(count) + non_seeded).shuffle
         seeds.each_with_index { |seed, i| groups[i] << seed }
-        remaining.each_with_index { |pair, i| groups[i % count] << pair }
+        # Start round-robin after seeded groups so seeded groups don't receive
+        # an extra pair from the first pass, which would exceed the pre-created slot count.
+        offset = seeds.length
+        remaining.each_with_index { |pair, i| groups[(i + offset) % count] << pair }
         groups
       end
 

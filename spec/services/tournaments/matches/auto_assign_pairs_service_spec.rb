@@ -140,4 +140,38 @@ RSpec.describe Tournaments::Matches::AutoAssignPairsService do
       expect(all_pair_ids).to include(seeded1.id, seeded2.id)
     end
   end
+
+  context "mixed tournament with a single seeded pair (overflow regression)" do
+    # Regression: with 1 seed in 2 groups and max_pairs=8 registered, group[0] was receiving
+    # 5 pairs but StructureGenerator only pre-creates 6 slots (for n=4). The 5th pair caused
+    # round-4/5 matches that had no pre-created slot → silently dropped via match&.update!.
+    let(:tournament) do
+      create(:tournament, :registration, type: :mixed, league: league,
+             max_participants: 16, groups_count: 2, pairs_to_bracket: 2)
+    end
+
+    before do
+      make_pair(tournament, seeded: true)
+      7.times { make_pair(tournament) }
+    end
+
+    it "assigns every eligible pair to at least one group match" do
+      described_class.new(tournament).call
+      assigned_ids = tournament.matches.group_stage
+                               .flat_map { |m| [ m.pair1_id, m.pair2_id ] }.compact.uniq
+      expect(assigned_ids).to match_array(tournament.eligible_pairs.map(&:id))
+    end
+
+    it "no group exceeds the pre-created slot count" do
+      described_class.new(tournament).call
+      tournament.brackets.group_stage.each do |bracket|
+        group_pair_count = bracket.matches
+                                  .flat_map { |m| [ m.pair1_id, m.pair2_id ] }
+                                  .compact.uniq.size
+        pairs_per_group = (tournament.max_pairs.to_f / tournament.groups_count).ceil
+        n = pairs_per_group.odd? ? pairs_per_group + 1 : pairs_per_group
+        expect(group_pair_count).to be <= n
+      end
+    end
+  end
 end
