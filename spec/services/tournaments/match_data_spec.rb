@@ -18,7 +18,8 @@ RSpec.describe Tournaments::MatchData do
         :tournament, :matches, :bracket_rounds,
         :third_place_match, :group_data,
         :loser_bracket_rounds, :loser_third_place_match,
-        :custom_bracket_data, :custom_group_data, :result_card_matches
+        :custom_bracket_data, :custom_group_data, :result_card_matches,
+        :bracket_slot_labels
       )
     end
   end

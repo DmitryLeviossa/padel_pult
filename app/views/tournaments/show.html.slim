@@ -140,15 +140,10 @@
           - if @tournament.registration? && @tournament.league.owner == current_user
             th
       tbody
-        - eligible_pairs = @tournament.eligible_pairs
-        - eligible_pair_ids = eligible_pairs.map(&:id).to_set
-        - last_eligible_id = @tournament.pairs.size > @tournament.max_pairs ? eligible_pairs.last&.id : nil
         - owner_can_edit_players = (@tournament.registration? || @tournament.active?) && @tournament.league.owner == current_user && @all_league_users
         - all_pair_player_ids = owner_can_edit_players ? @pairs.flat_map { |p| [p.player1_id, p.player2_id] }.to_set : nil
         - @pairs.each_with_index do |pair, index|
-          - row_style = eligible_pair_ids.include?(pair.id) ? "" : "opacity: 0.45"
-          - row_style += "; border-bottom: 2px solid #dc3545 !important" if pair.id == last_eligible_id
-          tr style=row_style
+          tr
             - if @tournament.completed?
               td
                 - case pair.placement

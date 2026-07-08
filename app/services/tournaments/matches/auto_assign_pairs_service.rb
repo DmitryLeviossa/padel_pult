@@ -27,7 +27,7 @@ module Tournaments
       private
 
       def assign_olympic
-        pairs = @tournament.eligible_pairs
+        pairs = @tournament.pairs.to_a
         return if pairs.empty?
 
         n = next_power_of_two(@tournament.max_pairs)
@@ -41,7 +41,7 @@ module Tournaments
       end
 
       def assign_round_robin
-        pairs = @tournament.eligible_pairs
+        pairs = @tournament.pairs.to_a
         return if pairs.empty?
 
         teams = pairs.dup
@@ -63,7 +63,7 @@ module Tournaments
       end
 
       def assign_mixed
-        pairs = @tournament.eligible_pairs
+        pairs = @tournament.pairs.to_a
         return if pairs.empty?
 
         distribute_to_groups(pairs).each_with_index { |group_pairs, i| assign_group_matches(group_pairs, i + 1) }

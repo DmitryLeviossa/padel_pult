@@ -144,7 +144,7 @@ class TournamentsController < ApplicationController
   end
 
   def destroy
-    unless @tournament.draft? || @tournament.league.owner == current_user
+    unless @tournament.draft?
       redirect_to tournament_path(@tournament), alert: "Удалить можно только черновик."
       return
     end

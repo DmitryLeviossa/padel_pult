@@ -30,13 +30,6 @@ RSpec.describe Tournaments::Matches::OlympicGenerator do
         expect(tournament.matches.bye.count).to eq(0)
       end
 
-      it "seeds higher-score pairs into earlier positions" do
-        high_score_pair = make_pair(score: 100)
-        described_class.new(tournament.reload).call
-        r1_matches = tournament.matches.bracket.where(round_number: 1).ordered
-        top_match = r1_matches.first
-        expect([ top_match.pair1_id, top_match.pair2_id ]).to include(high_score_pair.id)
-      end
     end
 
     context "with 6 pairs (padded to 8)" do

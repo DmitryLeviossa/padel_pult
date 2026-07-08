@@ -18,7 +18,7 @@ module Tournaments
       private
 
       def seed_and_create_groups
-        pairs = @tournament.eligible_pairs
+        pairs = @tournament.pairs.to_a
         groups = distribute_to_groups(pairs)
         groups.each_with_index { |group_pairs, i| generate_group_matches(group_pairs, i + 1) }
       end

@@ -101,7 +101,7 @@ RSpec.describe "Pairs", type: :request do
         expect(response).to redirect_to(tournament_path(registration_tournament))
       end
 
-      it "does not change player when tournament is not in registration" do
+      it "changes player when tournament is active" do
         active_tournament = create(:tournament, league: league, status: :active)
         active_pair = create(:pair, tournament: active_tournament, player1: league_user1, player2: league_user2)
 
@@ -109,8 +109,20 @@ RSpec.describe "Pairs", type: :request do
               params: { pair: { player1_id: league_user3.id } }
 
         active_pair.reload
-        expect(active_pair.player1).to eq(league_user1)
+        expect(active_pair.player1).to eq(league_user3)
         expect(response).to redirect_to(tournament_path(active_tournament))
+      end
+
+      it "does not change player when tournament is not in registration or active" do
+        draft_tournament = create(:tournament, league: league, status: :draft)
+        draft_pair = create(:pair, tournament: draft_tournament, player1: league_user1, player2: league_user2)
+
+        patch tournament_pair_path(draft_tournament, draft_pair),
+              params: { pair: { player1_id: league_user3.id } }
+
+        draft_pair.reload
+        expect(draft_pair.player1).to eq(league_user1)
+        expect(response).to redirect_to(tournament_path(draft_tournament))
       end
 
       it "does not change player to one already in another pair" do

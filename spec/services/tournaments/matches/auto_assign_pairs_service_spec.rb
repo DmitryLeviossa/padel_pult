@@ -35,7 +35,7 @@ RSpec.describe Tournaments::Matches::AutoAssignPairsService do
       described_class.new(tournament).call
       r1 = tournament.matches.bracket.where(round_number: 1).reload
       assigned = r1.flat_map { |m| [ m.pair1_id, m.pair2_id ] }.compact
-      expect(assigned).to match_array(tournament.eligible_pairs.map(&:id))
+      expect(assigned).to match_array(tournament.pairs.map(&:id))
     end
 
     it "places seeded pairs first" do
@@ -94,7 +94,7 @@ RSpec.describe Tournaments::Matches::AutoAssignPairsService do
 
     it "assigns each pair a different opponent per round" do
       described_class.new(tournament).call
-      pair_ids = tournament.eligible_pairs.map(&:id)
+      pair_ids = tournament.pairs.map(&:id)
       pair_ids.each do |pid|
         opponents = tournament.matches.where("pair1_id = ? OR pair2_id = ?", pid, pid)
                               .flat_map { |m| [ m.pair1_id, m.pair2_id ] }
@@ -159,7 +159,7 @@ RSpec.describe Tournaments::Matches::AutoAssignPairsService do
       described_class.new(tournament).call
       assigned_ids = tournament.matches.group_stage
                                .flat_map { |m| [ m.pair1_id, m.pair2_id ] }.compact.uniq
-      expect(assigned_ids).to match_array(tournament.eligible_pairs.map(&:id))
+      expect(assigned_ids).to match_array(tournament.pairs.map(&:id))
     end
 
     it "no group exceeds the pre-created slot count" do

@@ -6,7 +6,7 @@ module Tournaments
       end
 
       def call
-        pairs = @tournament.eligible_pairs
+        pairs = @tournament.pairs.to_a
         n = next_power_of_two(pairs.length)
         seeded_pairs = pairs.select(&:seeded)
         non_seeded_pairs = pairs.reject(&:seeded)

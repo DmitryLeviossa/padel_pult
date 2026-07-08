@@ -69,10 +69,6 @@ class Tournament < ApplicationRecord
     max_participants / 2
   end
 
-  def eligible_pairs
-    pairs.sort_by { |p| [ -p.score, p.created_at ] }.first(max_pairs)
-  end
-
   def points_for_place(position)
     Array(placement_points).each do |rule|
       from = rule["from"].to_i
