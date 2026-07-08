@@ -3,6 +3,7 @@ class Admin::LeaguesController < ApplicationController
 
   def index
     @leagues = League.includes(:owner).order(:name)
+    @users = User.order(created_at: :desc)
   end
 
   def update

@@ -33,3 +33,24 @@
                         style: "width: 80px; display: inline-block;",
                         data: { action: "change->admin-quota#save", "admin-quota-target": "input" }
                     span.ms-2.text-success.d-none data-admin-quota-target="saved" ✓
+
+  h2.mt-5.mb-3 Пользователи (#{@users.count})
+  .card
+    .card-body.p-0
+      .table-responsive
+        table.table.table-hover.align-middle.mb-0
+          thead
+            tr
+              th #
+              th Имя
+              th Email
+              th Пол
+              th Зарегистрирован
+          tbody
+            - @users.each do |user|
+              tr
+                td.text-muted= user.id
+                td= link_to user.full_name, user_path(user)
+                td= user.email
+                td= user.gender_male? ? "М" : "Ж"
+                td= l(user.created_at, format: :short)
