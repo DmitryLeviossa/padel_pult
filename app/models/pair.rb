@@ -36,9 +36,9 @@ class Pair < ApplicationRecord
 
   has_one_attached :photo
 
-  before_create :snapshot_player_scores
+  before_save :snapshot_player_scores, if: -> { new_record? || player_id_changing? }
   after_create :inherit_photo_from_league_history
-  after_update :inherit_photo_from_league_history, if: :player_ids_changed?
+  after_update :reset_photo_and_inherit, if: :player_ids_changed?
 
   validate :players_must_be_different
   validate :each_player_once_per_tournament
@@ -53,8 +53,17 @@ class Pair < ApplicationRecord
 
   private
 
+  def player_id_changing?
+    will_save_change_to_player1_id? || will_save_change_to_player2_id?
+  end
+
   def player_ids_changed?
     saved_change_to_player1_id? || saved_change_to_player2_id?
+  end
+
+  def reset_photo_and_inherit
+    photo.purge if photo.attached?
+    inherit_photo_from_league_history
   end
 
   def inherit_photo_from_league_history
@@ -76,8 +85,8 @@ class Pair < ApplicationRecord
   end
 
   def snapshot_player_scores
-    self.player1_score = player1.score
-    self.player2_score = player2.score
+    self.player1_score = player1.score if new_record? || will_save_change_to_player1_id?
+    self.player2_score = player2.score if new_record? || will_save_change_to_player2_id?
   end
 
   def players_must_be_different
