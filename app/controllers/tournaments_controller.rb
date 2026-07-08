@@ -526,27 +526,30 @@ class TournamentsController < ApplicationController
         end
       end
     elsif @tournament.round_robin?
-      wins_count   = Hash.new(0)
-      wins_score   = Hash.new(0)
-      losses_score = Hash.new(0)
+      wins_count  = Hash.new(0)
+      pts_for     = Hash.new(0)
+      pts_against = Hash.new(0)
       head_to_head = {}
 
       matches.where(status: :completed).each do |match|
-        next unless match.winner_id.present?
+        next unless match.winner_id.present? && match.pair1_id.present? && match.pair2_id.present?
         loser_id = match.pair1_id == match.winner_id ? match.pair2_id : match.pair1_id
 
-        winner_score = match.pair1_id == match.winner_id ? match.pair1_score.to_i : match.pair2_score.to_i
-        loser_score  = match.pair1_id == match.winner_id ? match.pair2_score.to_i : match.pair1_score.to_i
+        p1_pts = match.pair1_score.to_i
+        p2_pts = match.pair2_score.to_i
 
-        wins_count[match.winner_id]   += 1
-        wins_score[match.winner_id]   += winner_score
-        losses_score[loser_id]        += loser_score
+        pts_for[match.pair1_id]     += p1_pts
+        pts_against[match.pair1_id] += p2_pts
+        pts_for[match.pair2_id]     += p2_pts
+        pts_against[match.pair2_id] += p1_pts
+
+        wins_count[match.winner_id] += 1
         head_to_head[[ match.winner_id, loser_id ]] = match.winner_id
         head_to_head[[ loser_id, match.winner_id ]] = match.winner_id
       end
 
       pair_stats = @tournament.pairs.map do |pair|
-        net = wins_score[pair.id] - losses_score[pair.id]
+        net = pts_for[pair.id] - pts_against[pair.id]
         [ pair.id, wins_count[pair.id], net ]
       end
 
