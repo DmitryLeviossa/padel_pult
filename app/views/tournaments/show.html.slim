@@ -122,9 +122,13 @@
           th Фото
           th= sort_link(@tournament, "player1", "Игрок 1", @sort, @direction)
           th= sort_link(@tournament, "player1_score", "Очки", @sort, @direction)
+          - if @tournament.league.owner == current_user && !@tournament.completed?
+            th Рейтинг
           th Фото
           th= sort_link(@tournament, "player2", "Игрок 2", @sort, @direction)
           th= sort_link(@tournament, "player2_score", "Очки", @sort, @direction)
+          - if @tournament.league.owner == current_user && !@tournament.completed?
+            th Рейтинг
           th= sort_link(@tournament, "score", "Очки пары", @sort, @direction)
           th= sort_link(@tournament, "created_at", "Дата подачи заявки", @sort, @direction)
           th Фото пары
@@ -171,6 +175,12 @@
                 - if earned > 0
                   = " "
                   span.text-success= "+#{earned}"
+            - if @tournament.league.owner == current_user && !@tournament.completed?
+              td
+                = form_with url: tournament_pair_path(@tournament, pair), method: :patch, class: "d-inline" do |f|
+                  div.form-check.form-switch
+                    = hidden_field_tag "pair[player1_count_score]", "0"
+                    = check_box_tag "pair[player1_count_score]", "1", pair.player1_count_score, id: "p1_cs_#{pair.id}", class: "form-check-input", role: "switch", onchange: "this.form.requestSubmit()", style: "cursor: pointer;"
             td
               = render "shared/avatar", user: pair.player2.user
             td
@@ -187,6 +197,12 @@
                 - if earned > 0
                   = " "
                   span.text-success= "+#{earned}"
+            - if @tournament.league.owner == current_user && !@tournament.completed?
+              td
+                = form_with url: tournament_pair_path(@tournament, pair), method: :patch, class: "d-inline" do |f|
+                  div.form-check.form-switch
+                    = hidden_field_tag "pair[player2_count_score]", "0"
+                    = check_box_tag "pair[player2_count_score]", "1", pair.player2_count_score, id: "p2_cs_#{pair.id}", class: "form-check-input", role: "switch", onchange: "this.form.requestSubmit()", style: "cursor: pointer;"
             td= pair.score
             td= ru_datetime(pair.created_at)
             td

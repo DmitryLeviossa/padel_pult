@@ -42,8 +42,8 @@ module Tournaments
 
         pair.update!(placement: placement)
         points = @tournament.points_for_place(placement)
-        pair.player1.increment!(:score, points)
-        pair.player2.increment!(:score, points)
+        pair.player1.increment!(:score, points) if pair.player1_count_score
+        pair.player2.increment!(:score, points) if pair.player2_count_score
       end
     end
   end

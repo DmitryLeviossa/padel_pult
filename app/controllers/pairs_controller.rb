@@ -36,6 +36,10 @@ class PairsController < ApplicationController
       return redirect_to tournament_path(@tournament), alert: "Изменение игроков доступно только в период регистрации." unless @tournament.registration?
       @pair.player2 = @tournament.league.league_users.find(player2_id)
       return redirect_to tournament_path(@tournament), alert: @pair.errors.full_messages.to_sentence unless @pair.save
+    elsif params[:pair]&.key?("player1_count_score")
+      @pair.update!(player1_count_score: params.dig(:pair, :player1_count_score) == "1")
+    elsif params[:pair]&.key?("player2_count_score")
+      @pair.update!(player2_count_score: params.dig(:pair, :player2_count_score) == "1")
     else
       @pair.update!(seeded: params.dig(:pair, :seeded) == "1")
     end

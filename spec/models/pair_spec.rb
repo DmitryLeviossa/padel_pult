@@ -2,16 +2,18 @@
 #
 # Table name: pairs
 #
-#  id            :bigint           not null, primary key
-#  placement     :integer
-#  player1_score :integer          default(0), not null
-#  player2_score :integer          default(0), not null
-#  seeded        :boolean          default(FALSE), not null
-#  created_at    :datetime         not null
-#  updated_at    :datetime         not null
-#  player1_id    :bigint           not null
-#  player2_id    :bigint           not null
-#  tournament_id :bigint           not null
+#  id                  :bigint           not null, primary key
+#  placement           :integer
+#  player1_count_score :boolean          default(TRUE), not null
+#  player1_score       :integer          default(0), not null
+#  player2_count_score :boolean          default(TRUE), not null
+#  player2_score       :integer          default(0), not null
+#  seeded              :boolean          default(FALSE), not null
+#  created_at          :datetime         not null
+#  updated_at          :datetime         not null
+#  player1_id          :bigint           not null
+#  player2_id          :bigint           not null
+#  tournament_id       :bigint           not null
 #
 # Indexes
 #
