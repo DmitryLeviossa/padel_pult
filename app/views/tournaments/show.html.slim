@@ -17,6 +17,9 @@
       - if !@tournament.completed? && @tournament.league.owner == current_user
         = link_to fill_results_tournament_path(@tournament), class: "btn btn-primary btn-sm", title: "Заполнить результаты", data: { bs_toggle: "tooltip" } do
           i.bi.bi-clipboard-check
+      - if @tournament.completed? && @tournament.league.owner == current_user
+        = link_to edit_placements_tournament_path(@tournament), class: "btn btn-outline-primary btn-sm", title: "Редактировать места", data: { bs_toggle: "tooltip" } do
+          i.bi.bi-pencil-square
       - if @tournament.active? || @tournament.completed?
         = link_to online_tournament_path(@tournament), class: "btn btn-outline-info btn-sm", title: "Онлайн трансляция", target: "_blank", data: { bs_toggle: "tooltip" } do
           i.bi.bi-broadcast

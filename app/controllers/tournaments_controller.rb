@@ -1,8 +1,8 @@
 class TournamentsController < ApplicationController
   before_action :set_league, only: [ :new, :create ]
-  before_action :set_tournament, only: [ :show, :edit, :update, :destroy, :open_registration, :activate, :cancel, :fill_results, :complete, :online, :auto_assign_pairs, :seed_bracket, :copy ]
+  before_action :set_tournament, only: [ :show, :edit, :update, :destroy, :open_registration, :activate, :cancel, :fill_results, :complete, :edit_placements, :update_placements, :online, :auto_assign_pairs, :seed_bracket, :copy ]
   before_action :authorize_owner!, only: [ :new, :create ]
-  before_action :authorize_tournament_owner!, only: [ :edit, :update, :destroy, :open_registration, :activate, :cancel, :fill_results, :complete, :auto_assign_pairs, :seed_bracket, :copy ]
+  before_action :authorize_tournament_owner!, only: [ :edit, :update, :destroy, :open_registration, :activate, :cancel, :fill_results, :complete, :edit_placements, :update_placements, :auto_assign_pairs, :seed_bracket, :copy ]
   skip_before_action :authenticate_user!, only: [ :online ]
 
   def index
@@ -244,6 +244,36 @@ class TournamentsController < ApplicationController
       redirect_to tournament_path(@tournament), notice: "Турнир завершён, очки начислены."
     else
       redirect_to tournament_path(@tournament), alert: "Не удалось завершить турнир. Попробуйте ещё раз."
+    end
+  end
+
+  def edit_placements
+    unless @tournament.completed?
+      redirect_to tournament_path(@tournament), alert: "Редактировать места можно только у завершённого турнира."
+      return
+    end
+
+    if @tournament.americano?
+      @participants = @tournament.tournament_participants
+                                 .includes(league_user: :user)
+                                 .order(:placement)
+    else
+      @pairs = @tournament.pairs
+                          .includes({ player1: :user }, { player2: :user })
+                          .sort_by { |p| p.placement || Float::INFINITY }
+    end
+  end
+
+  def update_placements
+    unless @tournament.completed?
+      redirect_to tournament_path(@tournament), alert: "Обновить места можно только у завершённого турнира."
+      return
+    end
+
+    if Tournaments::UpdatePlacementsService.new(@tournament, params[:placements] || {}).call
+      redirect_to tournament_path(@tournament), notice: "Места обновлены, очки пересчитаны."
+    else
+      redirect_to tournament_path(@tournament), alert: "Не удалось обновить места. Попробуйте ещё раз."
     end
   end
 

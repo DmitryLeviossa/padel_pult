@@ -1,0 +1,42 @@
+.container.py-4
+  .d-flex.justify-content-between.align-items-center.mb-4
+    h1.mb-0= "Редактировать места: #{@tournament.name}"
+    = link_to "← #{@tournament.name}", tournament_path(@tournament), class: "btn btn-outline-secondary btn-sm"
+
+  - if @tournament.americano?
+    - if @participants&.any?
+      p.text-muted Измените места участников. Очки будут пересчитаны автоматически.
+      = form_with url: update_placements_tournament_path(@tournament), method: :patch do |f|
+        table.table.table-hover.mb-4
+          thead
+            tr
+              th Игрок
+              th.text-center Место
+          tbody
+            - @participants.each do |participant|
+              tr
+                td= participant.league_user.full_name
+                td.text-center
+                  = number_field_tag "placements[#{participant.id}]", participant.placement, min: 1, max: @tournament.tournament_participants.size, class: "form-control form-control-sm d-inline-block", style: "width: 80px"
+        .mt-3
+          = f.submit "Сохранить места", class: "btn btn-primary"
+    - else
+      p.text-muted Участников нет.
+  - elsif @pairs&.any?
+    p.text-muted Измените места пар. Очки будут пересчитаны автоматически.
+    = form_with url: update_placements_tournament_path(@tournament), method: :patch do |f|
+      table.table.table-hover
+        thead
+          tr
+            th Пара
+            th.text-center Место
+        tbody
+          - @pairs.each do |pair|
+            tr
+              td= "#{pair.player1.full_name} / #{pair.player2.full_name}"
+              td.text-center
+                = number_field_tag "placements[#{pair.id}]", pair.placement, min: 1, max: @tournament.pairs.size, class: "form-control form-control-sm d-inline-block", style: "width: 80px"
+      .mt-3
+        = f.submit "Сохранить места", class: "btn btn-primary"
+  - else
+    p.text-muted Пар пока нет.

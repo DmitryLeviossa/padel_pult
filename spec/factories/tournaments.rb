@@ -50,5 +50,9 @@ FactoryBot.define do
     trait :active do
       status { :active }
     end
+
+    trait :completed do
+      status { :completed }
+    end
   end
 end

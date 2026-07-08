@@ -67,6 +67,8 @@ Rails.application.routes.draw do
       post :cancel
       get :fill_results
       patch :complete
+      get :edit_placements
+      patch :update_placements
       get :online
       post :auto_assign_pairs
       post :seed_bracket
