@@ -274,7 +274,7 @@ t_mixed_loser_bracket = Tournament.create!(
   league:            league1,
   start_date:        Date.new(2026, 5, 17),
   end_date:          Date.new(2026, 5, 21),
-  max_participants:  16,
+  max_participants:  24,
   club:              club_arena,
   type:              "mixed",
   status:            "active",
