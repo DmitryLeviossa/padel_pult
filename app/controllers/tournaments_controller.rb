@@ -495,7 +495,7 @@ class TournamentsController < ApplicationController
   end
 
   def compute_suggested_placements
-    matches = @tournament.matches.ordered
+    matches = @tournament.matches.ordered.includes(:match_sets)
     return {} unless matches.any?
 
     placements = {}
@@ -535,8 +535,13 @@ class TournamentsController < ApplicationController
         next unless match.winner_id.present? && match.pair1_id.present? && match.pair2_id.present?
         loser_id = match.pair1_id == match.winner_id ? match.pair2_id : match.pair1_id
 
-        p1_pts = match.pair1_score.to_i
-        p2_pts = match.pair2_score.to_i
+        if match.match_sets.any?
+          p1_pts = match.match_sets.sum(&:pair1_score)
+          p2_pts = match.match_sets.sum(&:pair2_score)
+        else
+          p1_pts = match.pair1_score.to_i
+          p2_pts = match.pair2_score.to_i
+        end
 
         pts_for[match.pair1_id]     += p1_pts
         pts_against[match.pair1_id] += p2_pts
