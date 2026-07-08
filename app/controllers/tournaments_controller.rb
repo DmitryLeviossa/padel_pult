@@ -92,6 +92,10 @@ class TournamentsController < ApplicationController
         @all_league_users = @tournament.league.league_users.includes(:user).to_a
       end
     end
+
+    if @tournament.active? && @tournament.league.owner == current_user
+      @all_league_users = @tournament.league.league_users.includes(:user).to_a
+    end
   end
 
   def online

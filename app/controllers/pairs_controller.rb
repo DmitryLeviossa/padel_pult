@@ -29,11 +29,9 @@ class PairsController < ApplicationController
     if params.dig(:pair, :photo).present?
       @pair.photo.attach(params.dig(:pair, :photo))
     elsif (player1_id = params.dig(:pair, :player1_id)).present?
-      return redirect_to tournament_path(@tournament), alert: "Изменение игроков доступно только в период регистрации." unless @tournament.registration?
       @pair.player1 = @tournament.league.league_users.find(player1_id)
       return redirect_to tournament_path(@tournament), alert: @pair.errors.full_messages.to_sentence unless @pair.save
     elsif (player2_id = params.dig(:pair, :player2_id)).present?
-      return redirect_to tournament_path(@tournament), alert: "Изменение игроков доступно только в период регистрации." unless @tournament.registration?
       @pair.player2 = @tournament.league.league_users.find(player2_id)
       return redirect_to tournament_path(@tournament), alert: @pair.errors.full_messages.to_sentence unless @pair.save
     elsif params[:pair]&.key?("player1_count_score")
@@ -115,6 +113,10 @@ class PairsController < ApplicationController
   def authorize_owner_for_pair_add!
     unless @tournament.league.owner == current_user
       redirect_to tournament_path(@tournament), alert: "У вас нет прав для выполнения этого действия."
+      return
+    end
+    unless @tournament.registration?
+      redirect_to tournament_path(@tournament), alert: "Добавление пар доступно только в период регистрации."
     end
   end
 
