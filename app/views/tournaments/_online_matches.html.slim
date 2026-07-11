@@ -3,7 +3,8 @@
     div data-slide="" data-slide-title="Расписание"
       = render "matches/round_robin", matches: matches, tournament: tournament, is_owner: false
   - elsif tournament.olympic?
-    = render partial: "tournaments/tv_bracket_slide", locals: { bracket_rounds: bracket_rounds, third_place_match: third_place_match, slide_title: "Основной турнир" }
+    - if bracket_rounds.any?
+      = render partial: "tournaments/tv_bracket_slide", locals: { bracket_rounds: bracket_rounds, third_place_match: third_place_match, slide_title: "Основной турнир" }
     - if loser_bracket_rounds&.any?
       = render partial: "tournaments/tv_bracket_slide", locals: { bracket_rounds: loser_bracket_rounds, third_place_match: loser_third_place_match, slide_title: "Доп. турнир" }
   - elsif tournament.mixed?
