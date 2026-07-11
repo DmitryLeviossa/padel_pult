@@ -238,9 +238,9 @@
     - if @tournament.round_robin?
       = render "matches/round_robin", matches: @matches, tournament: @tournament, is_owner: is_owner, any_completed: any_completed
     - elsif @tournament.olympic?
-      = render "matches/olympic_bracket", bracket_rounds: @bracket_rounds, third_place_match: @third_place_match, loser_bracket_rounds: @loser_bracket_rounds, loser_third_place_match: @loser_third_place_match, tournament: @tournament, is_owner: is_owner, any_completed: any_completed
+      = render "matches/olympic_bracket", bracket_rounds: @bracket_rounds, third_place_match: @third_place_match, loser_bracket_rounds: @loser_bracket_rounds, loser_third_place_match: @loser_third_place_match, tournament: @tournament, is_owner: is_owner, any_completed: any_completed, main_bracket: @main_bracket, loser_bracket: @loser_bracket
     - elsif @tournament.mixed?
-      = render "matches/mixed", group_data: @group_data, bracket_rounds: @bracket_rounds, third_place_match: @third_place_match, loser_bracket_rounds: @loser_bracket_rounds, loser_third_place_match: @loser_third_place_match, tournament: @tournament, is_owner: is_owner, any_completed: any_completed, bracket_unseeded: @bracket_unseeded, bracket_slot_labels: @bracket_slot_labels
+      = render "matches/mixed", group_data: @group_data, bracket_rounds: @bracket_rounds, third_place_match: @third_place_match, loser_bracket_rounds: @loser_bracket_rounds, loser_third_place_match: @loser_third_place_match, tournament: @tournament, is_owner: is_owner, any_completed: any_completed, bracket_unseeded: @bracket_unseeded, bracket_slot_labels: @bracket_slot_labels, main_bracket: @main_bracket, loser_bracket: @loser_bracket
 
   - if @custom_bracket_data.any?
     - any_completed ||= false

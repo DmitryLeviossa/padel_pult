@@ -33,9 +33,11 @@ class TournamentsController < ApplicationController
       final_round = grouped.last || []
       @third_place_match = final_round.find { |m| m.position == 2 }
       @bracket_rounds = grouped[0..-2] + [ final_round.reject { |m| m.position == 2 } ]
+      @main_bracket = @tournament.brackets.find_by(bracket_type: :bracket, group_number: 0)
 
       if @tournament.loser_bracket?
         @loser_bracket_rounds, @loser_third_place_match = extract_bracket_rounds(@matches.select(&:loser_bracket?))
+        @loser_bracket = @tournament.brackets.find_by(bracket_type: :loser_bracket, group_number: 0)
       end
     elsif @tournament.mixed?
       prepare_mixed_data
@@ -429,9 +431,11 @@ class TournamentsController < ApplicationController
     end
 
     @bracket_rounds, @third_place_match = extract_bracket_rounds(@matches.select { |m| m.bracket? && m.group_number == 0 })
+    @main_bracket = @tournament.brackets.find_by(bracket_type: :bracket, group_number: 0)
 
     if @tournament.loser_bracket?
       @loser_bracket_rounds, @loser_third_place_match = extract_bracket_rounds(@matches.select(&:loser_bracket?))
+      @loser_bracket = @tournament.brackets.find_by(bracket_type: :loser_bracket, group_number: 0)
     end
 
     real_group_matches = @tournament.matches.group_stage.where.not(pair1_id: nil, pair2_id: nil)

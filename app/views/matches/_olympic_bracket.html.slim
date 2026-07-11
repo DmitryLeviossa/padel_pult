@@ -10,6 +10,9 @@
       - if tournament.active?
         - all_done = tournament.all_matches_completed?
         = link_to "Завершить турнир", fill_results_tournament_path(tournament), class: "btn btn-success btn-sm#{' disabled' unless all_done}", aria: { disabled: (true unless all_done) }, tabindex: (all_done ? nil : "-1")
+      - if main_bracket
+        = link_to tournament_bracket_path(tournament, main_bracket), data: { turbo_method: :delete, turbo_confirm: "Удалить основной турнир? Все матчи будут удалены." }, class: "btn btn-outline-danger btn-sm" do
+          i.bi.bi-trash
 
 css:
   .tournament-bracket {
@@ -207,7 +210,11 @@ css:
         = link_to "Удалить матч", tournament_match_path(tournament, third_place_match), data: { turbo_method: :delete, turbo_confirm: "Удалить матч за 3-е место?" }, class: "btn btn-outline-danger btn-sm bracket-enter-btn mt-1"
 
 - if loser_bracket_rounds&.any?
-  h4.mt-5.mb-3 Доп. турнир
+  .d-flex.justify-content-between.align-items-center.mt-5.mb-3
+    h4.mb-0 Доп. турнир
+    - if is_owner && !tournament.completed? && loser_bracket
+      = link_to tournament_bracket_path(tournament, loser_bracket), data: { turbo_method: :delete, turbo_confirm: "Удалить доп. турнир? Все матчи будут удалены." }, class: "btn btn-outline-danger btn-sm" do
+        i.bi.bi-trash
 
   - lb_total_rounds = loser_bracket_rounds.length
   .tournament-bracket
