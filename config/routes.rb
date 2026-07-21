@@ -71,6 +71,7 @@ Rails.application.routes.draw do
       patch :update_placements
       get :online
       post :auto_assign_pairs
+      patch :assign_group_pairs
       post :seed_bracket
       get :copy
     end

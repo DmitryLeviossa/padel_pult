@@ -1,8 +1,8 @@
 class TournamentsController < ApplicationController
   before_action :set_league, only: [ :new, :create ]
-  before_action :set_tournament, only: [ :show, :edit, :update, :destroy, :open_registration, :activate, :cancel, :fill_results, :complete, :edit_placements, :update_placements, :online, :auto_assign_pairs, :seed_bracket, :copy ]
+  before_action :set_tournament, only: [ :show, :edit, :update, :destroy, :open_registration, :activate, :cancel, :fill_results, :complete, :edit_placements, :update_placements, :online, :auto_assign_pairs, :assign_group_pairs, :seed_bracket, :copy ]
   before_action :authorize_owner!, only: [ :new, :create ]
-  before_action :authorize_tournament_owner!, only: [ :edit, :update, :destroy, :open_registration, :activate, :cancel, :fill_results, :complete, :edit_placements, :update_placements, :auto_assign_pairs, :seed_bracket, :copy ]
+  before_action :authorize_tournament_owner!, only: [ :edit, :update, :destroy, :open_registration, :activate, :cancel, :fill_results, :complete, :edit_placements, :update_placements, :auto_assign_pairs, :assign_group_pairs, :seed_bracket, :copy ]
   skip_before_action :authenticate_user!, only: [ :online ]
 
   def index
@@ -230,6 +230,15 @@ class TournamentsController < ApplicationController
       redirect_to tournament_path(@tournament), notice: "Пары автоматически расставлены."
     else
       redirect_to tournament_path(@tournament), alert: "Не удалось расставить пары. Возможно, некоторые матчи уже сыграны."
+    end
+  end
+
+  def assign_group_pairs
+    service = Tournaments::Matches::ManualAssignPairsService.new(@tournament, group_assignments_params)
+    if service.call
+      redirect_to tournament_path(@tournament), notice: "Пары в группах обновлены."
+    else
+      redirect_to tournament_path(@tournament), alert: service.errors.first || "Не удалось обновить пары."
     end
   end
 
@@ -582,6 +591,22 @@ class TournamentsController < ApplicationController
     end
 
     placements
+  end
+
+  # Incoming shape: { group_number => [pair_id, pair_id, ...] } (one entry per group slot,
+  # blank slots included). Inverted here into the { pair_id => group_number } shape the
+  # service expects.
+  def group_assignments_params
+    raw = params.dig(:tournament, :group_assignments)
+    return {} unless raw
+
+    raw = raw.to_unsafe_h if raw.is_a?(ActionController::Parameters)
+    raw.each_with_object({}) do |(group_number, pair_ids), assignments|
+      Array(pair_ids).each do |pair_id|
+        next if pair_id.blank?
+        assignments[pair_id] = group_number
+      end
+    end
   end
 
   def tournament_params

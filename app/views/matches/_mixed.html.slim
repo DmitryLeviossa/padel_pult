@@ -34,7 +34,42 @@ css:
   h4.mb-0 Групповой этап
   - if is_owner && !tournament.completed?
     - unless any_completed
-      = button_to "Переставить пары", auto_assign_pairs_tournament_path(tournament), method: :post, class: "btn btn-outline-secondary btn-sm"
+      .d-flex.gap-2
+        = button_to "Переставить пары", auto_assign_pairs_tournament_path(tournament), method: :post, class: "btn btn-outline-secondary btn-sm"
+        button.btn.btn-outline-secondary.btn-sm type="button" data-bs-toggle="modal" data-bs-target="#manual-group-pairs-modal"
+          | Задать пары вручную
+
+      - total_assigned = group_data.sum { |gd| gd[:pairs_ordered].length }
+      - if total_assigned == tournament.pairs.count
+        - manual_slot_counts = group_data.map { |gd| gd[:pairs_ordered].length }
+      - else
+        - base_size = tournament.pairs.count / tournament.groups_count
+        - remainder = tournament.pairs.count % tournament.groups_count
+        - manual_slot_counts = Array.new(tournament.groups_count) { |i| base_size + (i < remainder ? 1 : 0) }
+      #manual-group-pairs-modal.modal.fade tabindex="-1"
+        .modal-dialog.modal-xl
+          .modal-content
+            .modal-header
+              h5.modal-title Задать пары в группах вручную
+              button.btn-close type="button" data-bs-dismiss="modal"
+            = form_with url: assign_group_pairs_tournament_path(tournament), method: :patch, data: {turbo: false} do
+              .modal-body
+                p.text-muted.small Выберите пару для каждого места в группе. Количество мест в группе изменить нельзя.
+                .row
+                  - group_data.each do |gd|
+                    - slot_count = manual_slot_counts[gd[:group_number] - 1]
+                    .col-md-6.mb-3
+                      h6.mb-2= "Группа #{ru_letters[gd[:group_number] - 1] || gd[:group_number]}"
+                      - slot_count.times do |slot_idx|
+                        .mb-2
+                          - current_pair = gd[:pairs_ordered][slot_idx]
+                          select.form-select.form-select-sm name="tournament[group_assignments][#{gd[:group_number]}][]" required=true
+                            option value="" selected=(current_pair.nil?) — …
+                            - tournament.pairs.each do |pair|
+                              option value=pair.id selected=(current_pair&.id == pair.id) = pair.player1.short_name + " / " + pair.player2.short_name
+              .modal-footer
+                button.btn.btn-secondary type="button" data-bs-dismiss="modal" Отмена
+                button.btn.btn-primary type="submit" Сохранить
 
 .row
   - group_data.each do |gd|
