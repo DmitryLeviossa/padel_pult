@@ -25,9 +25,9 @@
         .col
           .card.card-hoverable.h-100
             - if league.logo.attached?
-              = image_tag league.logo, class: "card-img-top", style: "object-fit: contain; background-color: #111827;"
+              = image_tag league.logo, class: "card-img-top", style: "height: 220px; width: 100%; object-fit: contain; background-color: #111827;"
             - else
-              = image_tag "/default_league_logo.jpg", class: "card-img-top", style: "object-fit: contain; background-color: #111827;"
+              = image_tag "/default_league_logo.jpg", class: "card-img-top", style: "height: 220px; width: 100%; object-fit: contain; background-color: #111827;"
             .card-body
               .d-flex.align-items-start.gap-2.mb-1
                 h5.card-title.mb-0= link_to league.name, league_path(league), class: "text-decoration-none stretched-link"
