@@ -1,7 +1,7 @@
 - if (tournament.active? || tournament.completed?) && matches.any?
   - if tournament.round_robin?
-    div data-slide="" data-slide-title="Расписание"
-      = render "matches/round_robin", matches: matches, tournament: tournament, is_owner: false
+    = render partial: "tournaments/tv_round_robin_results_slide", locals: { matches: matches, tournament: tournament }
+    = render partial: "tournaments/tv_round_robin_rounds_slides", locals: { matches: matches, tournament: tournament }
   - elsif tournament.olympic?
     - if bracket_rounds.any?
       = render partial: "tournaments/tv_bracket_slide", locals: { bracket_rounds: bracket_rounds, third_place_match: third_place_match, slide_title: "Основной турнир" }

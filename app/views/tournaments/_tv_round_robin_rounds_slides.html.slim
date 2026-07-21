@@ -1,0 +1,33 @@
+- rounds = matches.group_by(&:round_number).sort_by { |round_number, _| round_number }
+- rounds.each_slice(3) do |round_group|
+  - first_round = round_group.first.first
+  - last_round = round_group.last.first
+  - group_title = first_round == last_round ? "Раунд #{first_round}" : "Раунды #{first_round}-#{last_round}"
+  div data-slide="" data-slide-title=group_title
+    .row
+      - round_group.each do |round_number, round_matches|
+        .col-md-4
+          h6.mt-3.mb-2= "Раунд #{round_number}"
+          table.table.table-hover.table-sm.mb-4
+            thead.table-light
+              tr
+                th Пара 1
+                th.text-center Счёт
+                th Пара 2
+            tbody
+              - round_matches.each do |match|
+                - next unless match.pair1.present? || match.pair2.present?
+                tr
+                  td= match.pair_display_name(match.pair1)
+                  td.text-center
+                    - if match.completed?
+                      - rr_sets = match.match_sets
+                      - if rr_sets.any?
+                        .d-flex.justify-content-center.gap-1.flex-wrap
+                          - rr_sets.each do |set|
+                            span.badge.bg-secondary= "#{set.pair1_score}:#{set.pair2_score}"
+                      - else
+                        strong= "#{match.pair1_score} : #{match.pair2_score}"
+                    - else
+                      span.text-muted —
+                  td= match.pair_display_name(match.pair2)
