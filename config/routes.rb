@@ -17,7 +17,13 @@ Rails.application.routes.draw do
 
   resources :leagues do
     resources :tournaments, only: [:new, :create]
-    resources :seasons, only: [:new, :create, :show, :edit, :update, :destroy]
+    resources :seasons, only: [:new, :create, :show, :edit, :update, :destroy] do
+      member do
+        get :results_pdf
+        get :download_pdf
+        post :send_pdf_to_telegram
+      end
+    end
     resources :league_users, only: [:new, :create, :edit, :update], module: :leagues
     resources :league_invitations, only: [:create], module: :leagues
     resource :league_telegram_setting, only: [:create, :update], module: :leagues do

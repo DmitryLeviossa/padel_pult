@@ -9,7 +9,11 @@
     .d-flex.align-items-center.gap-2
       - badge = { upcoming: ["info", "Предстоящий"], active: ["success", "Активный"], finished: ["secondary", "Завершён"] }[@season.status]
       span.badge.fs-6 class="bg-#{badge[0]}" = badge[1]
+      = link_to download_pdf_league_season_path(@league, @season), class: "btn btn-outline-secondary btn-sm", data: { tooltip: "Скачать PDF с результатами" } do
+        i.bi.bi-file-earmark-pdf
       - if @league.owner == current_user
+        = link_to send_pdf_to_telegram_league_season_path(@league, @season), class: "btn btn-outline-secondary btn-sm", data: { tooltip: "Отправить результаты в Telegram", turbo_method: :post, turbo_confirm: "Отправить PDF с результатами в Telegram лиги?" } do
+          i.bi.bi-telegram
         = link_to edit_league_season_path(@league, @season), class: "btn btn-outline-primary btn-sm", data: { tooltip: "Редактировать" } do
           i.bi.bi-pencil-square
       = link_to league_path(@league, anchor: "seasons"), class: "btn btn-outline-secondary btn-sm", data: { tooltip: "Все сезоны" } do

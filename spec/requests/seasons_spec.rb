@@ -22,6 +22,104 @@ RSpec.describe "Seasons", type: :request do
     end
   end
 
+  describe "GET /leagues/:league_id/seasons/:id/results_pdf" do
+    it "renders the print view without authentication" do
+      get results_pdf_league_season_path(league, season)
+      expect(response).to have_http_status(:ok)
+      expect(response.body).to include(season.name)
+      expect(response.body).to include("Турниры сезона")
+    end
+  end
+
+  describe "GET /leagues/:league_id/seasons/:id/download_pdf" do
+    before { sign_in owner }
+
+    it "streams the generated pdf as an attachment" do
+      allow_any_instance_of(SeasonResultsPdfService).to receive(:call) do
+        path = Rails.root.join("tmp", "test_season_results_#{season.id}.pdf").to_s
+        File.write(path, "fake-pdf-content")
+        path
+      end
+
+      get download_pdf_league_season_path(league, season)
+
+      expect(response).to have_http_status(:ok)
+      expect(response.content_type).to eq("application/pdf")
+      expect(response.body).to eq("fake-pdf-content")
+    end
+
+    context "when unauthenticated" do
+      before { sign_out owner }
+
+      it "redirects to sign in" do
+        get download_pdf_league_season_path(league, season)
+        expect(response).to redirect_to(new_user_session_path)
+      end
+    end
+  end
+
+  describe "POST /leagues/:league_id/seasons/:id/send_pdf_to_telegram" do
+    # The controller spawns Thread.new for the actual PDF generation/upload, which
+    # races against the test transaction rollback. Stub it out to keep tests stable.
+    before { allow_any_instance_of(SeasonsController).to receive(:deliver_pdf_to_telegram) }
+
+    context "as owner" do
+      before { sign_in owner }
+
+      it "redirects with an alert when telegram is not configured" do
+        post send_pdf_to_telegram_league_season_path(league, season)
+        expect(response).to redirect_to(league_season_path(league, season))
+        follow_redirect!
+        expect(response.body).to include("Telegram")
+      end
+
+      it "kicks off pdf delivery to telegram when configured" do
+        create(:league_telegram_setting, league: league, chat_id: "-100999", announces_thread_id: "5")
+
+        expect_any_instance_of(SeasonsController).to receive(:deliver_pdf_to_telegram).with(
+          season_id: season.id, season_name: season.name, chat_id: "-100999", thread_id: "5"
+        )
+
+        post send_pdf_to_telegram_league_season_path(league, season)
+        expect(response).to redirect_to(league_season_path(league, season))
+      end
+    end
+
+    context "as non-owner" do
+      before { sign_in other_user }
+
+      it "redirects with an alert" do
+        post send_pdf_to_telegram_league_season_path(league, season)
+        expect(response).to redirect_to(league_path(league))
+      end
+    end
+  end
+
+  describe "SeasonsController#deliver_pdf_to_telegram" do
+    before do
+      sign_in owner
+      create(:league_telegram_setting, league: league, chat_id: "-100999", announces_thread_id: "5")
+      # Run the background thread inline so the generation/send can be asserted synchronously.
+      allow(Thread).to receive(:new) { |&block| block.call }
+    end
+
+    it "generates the pdf and sends it to telegram, then cleans up the tmp file" do
+      pdf_path = Rails.root.join("tmp", "test_deliver_pdf_#{season.id}.pdf").to_s
+      File.write(pdf_path, "fake-pdf-content")
+
+      expect(SeasonResultsPdfService).to receive(:new).with(season).and_return(
+        instance_double(SeasonResultsPdfService, call: pdf_path)
+      )
+      expect(TelegramBotService).to receive(:send_document).with(
+        chat_id: "-100999", thread_id: "5", file_path: pdf_path, caption: "Результаты сезона «#{season.name}»"
+      )
+
+      post send_pdf_to_telegram_league_season_path(league, season)
+
+      expect(File.exist?(pdf_path)).to be false
+    end
+  end
+
   describe "GET /leagues/:league_id/seasons/new" do
     context "as owner" do
       before { sign_in owner }
