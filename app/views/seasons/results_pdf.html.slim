@@ -1,53 +1,56 @@
-.container.py-4
-  .d-flex.align-items-center.gap-3.mb-4
-    - if (logo = @season.effective_logo)
-      = image_tag logo, class: "rounded", style: "width: 64px; height: 64px; object-fit: cover;"
-    div
-      h1.mb-1= @season.name
-      p.mb-0.text-muted= "#{@league.name} · #{ru_date(@season.date_from)} — #{ru_date(@season.date_to)}"
+.doc-header
+  - if (logo = @season.effective_logo)
+    = image_tag logo, class: "doc-logo"
+  div
+    h1.doc-title= @season.name
+    p.doc-subtitle= "#{@league.name} · #{ru_date(@season.date_from)} — #{ru_date(@season.date_to)}"
 
-  - if @season.description.present?
-    p.text-muted= @season.description
+- if @season.description.present?
+  p.doc-description= @season.description
 
-  h5.mt-4.mb-3 Турниры сезона
+h2.section-title Турниры сезона
 
-  - if @tournaments.any?
-    table.table.table-bordered.table-sm
-      thead
+- if @tournaments.any?
+  table.report-table
+    thead
+      tr
+        th Название
+        th Даты
+        th Клуб
+        th Тип
+        th Статус
+        th.text-end Участники
+    tbody
+      - @tournaments.each do |tournament|
         tr
-          th Название
-          th Даты
-          th Клуб
-          th Тип
-          th Статус
-          th.text-end Участники
-      tbody
-        - @tournaments.each do |tournament|
-          tr
-            td= tournament.name
-            td= tournament_date_range(tournament)
-            td= tournament.club&.name || "—"
-            td= { "olympic" => "Олимпийский", "round_robin" => "Круговой", "mixed" => "Смешанный" }.fetch(tournament.type, tournament.type)
-            td= { "draft" => "Черновик", "registration" => "Регистрация", "active" => "Активный", "completed" => "Завершён", "cancelled" => "Отменён" }.fetch(tournament.status, tournament.status)
-            td.text-end= "#{tournament.pairs.count * 2} / #{tournament.max_participants}"
-  - else
-    p.text-muted В этом сезоне турниров не запланировано.
+          td= tournament.name
+          td= tournament_date_range(tournament)
+          td= tournament.club&.name || "—"
+          td= { "olympic" => "Олимпийский", "round_robin" => "Круговой", "mixed" => "Смешанный" }.fetch(tournament.type, tournament.type)
+          td
+            - pill_class = { "draft" => "pill-draft", "registration" => "pill-registration", "active" => "pill-active", "completed" => "pill-completed", "cancelled" => "pill-cancelled" }.fetch(tournament.status, "pill-draft")
+            span.pill class=pill_class
+              = { "draft" => "Черновик", "registration" => "Регистрация", "active" => "Активный", "completed" => "Завершён", "cancelled" => "Отменён" }.fetch(tournament.status, tournament.status)
+          td.text-end= "#{tournament.pairs.count * 2} / #{tournament.max_participants}"
+- else
+  p.empty-state В этом сезоне турниров не запланировано.
 
-  h5.mt-5.mb-3 Рейтинг участников
+h2.section-title Рейтинг участников
 
-  - if @rankings.any?
-    table.table.table-bordered.table-sm
-      thead
-        tr
-          th style="width: 3rem;" #
-          th Имя
-          th.text-end Очки
-      tbody
-        - @rankings.each_with_index do |entry, index|
-          tr
-            td= index + 1
-            td= entry[:league_user].full_name
-            td.text-end
-              strong= entry[:points]
-  - else
-    p.text-muted Ни один участник ещё не заработал очков в турнирах этого сезона.
+- if @rankings.any?
+  .leaderboard
+    - @rankings.each_with_index do |entry, index|
+      - lu = entry[:league_user]
+      .rank-row class="#{index < 3 ? "top-#{index + 1}" : ""}"
+        - medal = { 0 => "🥇", 1 => "🥈", 2 => "🥉" }[index]
+        - if medal
+          .rank-medal= medal
+        - else
+          .rank-num= index + 1
+        .rank-name= lu.full_name
+        .rank-points= entry[:points]
+- else
+  p.empty-state Ни один участник ещё не заработал очков в турнирах этого сезона.
+
+.doc-footer
+  = "ПАДЕЛ Пульт · Сформировано #{ru_date(Date.current)}"
