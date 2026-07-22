@@ -1,102 +1,13 @@
 doctype html
-html
+html data-bs-theme="dark"
   head
     meta charset="utf-8"
     title= "#{@season.name} — Результаты"
-    css:
-      :root { color-scheme: light; }
-      * { box-sizing: border-box; }
-      html, body { margin: 0; padding: 0; }
-      body {
-        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
-        color: #111827;
-        background: #ffffff;
-        font-size: 13px;
-        line-height: 1.5;
-        padding: 44px 52px;
-      }
-
-      .doc-header { display: flex; align-items: center; gap: 16px; }
-      .doc-logo { width: 56px; height: 56px; border-radius: 10px; object-fit: cover; flex-shrink: 0; }
-      .doc-title { font-size: 26px; font-weight: 700; color: #0f172a; margin: 0 0 4px; }
-      .doc-subtitle { font-size: 13px; color: #6b7280; margin: 0; }
-      .doc-description {
-        margin: 20px 0 0;
-        padding: 14px 16px;
-        background: #f8fafc;
-        border-left: 3px solid #2f81f7;
-        border-radius: 4px;
-        color: #334155;
-        font-size: 12.5px;
-      }
-
-      .section-title {
-        font-size: 12px;
-        font-weight: 700;
-        text-transform: uppercase;
-        letter-spacing: 0.08em;
-        color: #6b7280;
-        margin: 34px 0 12px;
-        padding-bottom: 8px;
-        border-bottom: 2px solid #111827;
-      }
-
-      table.report-table { width: 100%; border-collapse: collapse; }
-      table.report-table th {
-        text-align: left;
-        font-size: 10.5px;
-        text-transform: uppercase;
-        letter-spacing: 0.05em;
-        color: #6b7280;
-        font-weight: 600;
-        padding: 8px 10px;
-        background: #f9fafb;
-        border-bottom: 1px solid #e5e7eb;
-      }
-      table.report-table td {
-        padding: 9px 10px;
-        border-bottom: 1px solid #f1f5f9;
-        color: #1f2937;
-        vertical-align: middle;
-      }
-      table.report-table tr { break-inside: avoid; }
-      table.report-table tbody tr:nth-child(even) { background: #fafbfc; }
-      .text-end { text-align: right; }
-
-      .pill { display: inline-block; padding: 3px 10px; border-radius: 999px; font-size: 11px; font-weight: 600; white-space: nowrap; }
-      .pill-draft        { background: #e5e7eb; color: #374151; }
-      .pill-registration { background: #dbeafe; color: #1d4ed8; }
-      .pill-active       { background: #dcfce7; color: #15803d; }
-      .pill-completed    { background: #e0e7ff; color: #4338ca; }
-      .pill-cancelled    { background: #fee2e2; color: #b91c1c; }
-
-      .empty-state { color: #9ca3af; font-style: italic; padding: 4px 0 16px; }
-
-      .leaderboard { display: flex; flex-direction: column; gap: 6px; }
-      .rank-row {
-        display: flex;
-        align-items: center;
-        gap: 14px;
-        padding: 10px 14px;
-        border-radius: 8px;
-        border: 1px solid #f1f5f9;
-        break-inside: avoid;
-      }
-      .rank-row.top-1 { background: #fffbeb; border-color: #fde68a; }
-      .rank-row.top-2 { background: #f8fafc; border-color: #e2e8f0; }
-      .rank-row.top-3 { background: #fff7ed; border-color: #fed7aa; }
-      .rank-num   { width: 28px; font-size: 15px; font-weight: 700; color: #6b7280; text-align: center; flex-shrink: 0; }
-      .rank-medal { font-size: 20px; width: 28px; text-align: center; flex-shrink: 0; }
-      .rank-name  { flex: 1; font-size: 14px; font-weight: 500; color: #111827; }
-      .rank-points{ font-size: 15px; font-weight: 700; color: #2f81f7; }
-
-      .doc-footer {
-        margin-top: 40px;
-        padding-top: 14px;
-        border-top: 1px solid #e5e7eb;
-        color: #9ca3af;
-        font-size: 10.5px;
-        text-align: center;
-      }
+    meta name="viewport" content="width=device-width,initial-scale=1"
+    link rel="preconnect" href="https://fonts.googleapis.com"
+    link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="anonymous"
+    link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap"
+    = stylesheet_link_tag "application", "data-turbo-track": "reload"
   body
-    = yield
+    main.py-4
+      = yield
