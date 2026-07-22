@@ -2,7 +2,7 @@ class Admin::LeaguesController < ApplicationController
   before_action :require_admin!
 
   def index
-    @leagues = League.includes(:owner).order(:name)
+    @leagues = League.includes(:owner).left_joins(:tournaments).select("leagues.*, COUNT(tournaments.id) AS tournaments_count").group("leagues.id").order(:name)
     @users = User.where(invitation_token: nil).order(created_at: :desc)
   end
 

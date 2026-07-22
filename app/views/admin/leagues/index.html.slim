@@ -16,6 +16,7 @@
               th #
               th Название
               th Владелец
+              th.text-center Турниров
               th.text-center style="width: 160px;" Квота турниров
           tbody
             - @leagues.each do |league|
@@ -23,6 +24,7 @@
                 td.text-muted= league.id
                 td= link_to league.name, league_path(league)
                 td= league.owner.full_name
+                td.text-center= league.tournaments_count
                 td.text-center
                   = form_with url: admin_league_path(league), method: :patch, scope: :league,
                       data: { controller: "admin-quota", turbo: true } do |f|
