@@ -100,4 +100,56 @@ RSpec.describe Match, type: :model do
       expect(match.sets_score_summary).to eq("6:4, 6:3")
     end
   end
+
+  describe "round-robin schedule validations" do
+    let(:tournament) do
+      t = create(:tournament, type: :round_robin, max_participants: 12)
+      t.matches.destroy_all
+      t
+    end
+    let(:pair1) { create(:pair, tournament: tournament) }
+    let(:pair2) { create(:pair, tournament: tournament) }
+    let(:pair3) { create(:pair, tournament: tournament) }
+
+    it "rejects a pair playing itself" do
+      match = build(:match, tournament: tournament, pair1: pair1, pair2: pair1, round_number: 1, position: 1)
+
+      expect(match).not_to be_valid
+      expect(match.errors[:pair2_id]).to be_present
+    end
+
+    it "rejects a matchup that already exists elsewhere in the bracket" do
+      create(:match, tournament: tournament, pair1: pair1, pair2: pair2, round_number: 1, position: 1)
+      duplicate = build(:match, tournament: tournament, pair1: pair2, pair2: pair1, round_number: 2, position: 1)
+
+      expect(duplicate).not_to be_valid
+      expect(duplicate.errors[:base]).to be_present
+    end
+
+    it "rejects a pair scheduled twice in the same round" do
+      create(:match, tournament: tournament, pair1: pair1, pair2: pair2, round_number: 1, position: 1)
+      clash = build(:match, tournament: tournament, pair1: pair1, pair2: pair3, round_number: 1, position: 2)
+
+      expect(clash).not_to be_valid
+      expect(clash.errors[:base]).to be_present
+    end
+
+    it "allows the same pair to appear again in a later round against a different opponent" do
+      create(:match, tournament: tournament, pair1: pair1, pair2: pair2, round_number: 1, position: 1)
+      later = build(:match, tournament: tournament, pair1: pair1, pair2: pair3, round_number: 2, position: 1)
+
+      expect(later).to be_valid
+    end
+
+    it "does not apply round-robin invariants to olympic brackets" do
+      olympic = create(:tournament, type: :olympic)
+      olympic.matches.destroy_all
+      o_pair1 = create(:pair, tournament: olympic)
+      o_pair2 = create(:pair, tournament: olympic)
+      create(:match, tournament: olympic, pair1: o_pair1, pair2: o_pair2, round_number: 1, position: 1)
+      rematch = build(:match, tournament: olympic, pair1: o_pair1, pair2: o_pair2, round_number: 1, position: 2)
+
+      expect(rematch).to be_valid
+    end
+  end
 end

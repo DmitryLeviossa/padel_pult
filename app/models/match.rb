@@ -49,6 +49,10 @@ class Match < ApplicationRecord
   delegate :bracket_type, :group_stage?, :bracket?, :loser_bracket?, to: :bracket
   delegate :group_number, to: :bracket
 
+  validate :pair1_and_pair2_different
+  validate :no_duplicate_round_robin_matchup, if: :round_robin_schedule?
+  validate :pair_not_already_scheduled_in_round, if: :round_robin_schedule?
+
   def stage = bracket_type
 
   scope :ordered, -> {
@@ -114,5 +118,41 @@ class Match < ApplicationRecord
 
   def sets_score_summary
     match_sets.map { |s| "#{s.pair1_score}:#{s.pair2_score}" }.join(", ")
+  end
+
+  private
+
+  # Round-robin invariants (each pair meets every other pair exactly once,
+  # and never plays two matches in the same round) only hold for brackets
+  # that actually use a round-robin schedule: the main bracket of a
+  # round_robin tournament, or a mixed tournament's group stage.
+  def round_robin_schedule?
+    group_stage? || (bracket? && tournament.round_robin?)
+  end
+
+  def pair1_and_pair2_different
+    return unless pair1_id.present? && pair2_id.present?
+    errors.add(:pair2_id, "не может совпадать с первой парой") if pair1_id == pair2_id
+  end
+
+  def no_duplicate_round_robin_matchup
+    return unless pair1_id.present? && pair2_id.present?
+
+    duplicate = bracket.matches.where.not(id: id)
+                        .where(pair1_id: [ pair1_id, pair2_id ], pair2_id: [ pair1_id, pair2_id ])
+                        .exists?
+    errors.add(:base, "эти пары уже играют друг с другом в другом матче") if duplicate
+  end
+
+  def pair_not_already_scheduled_in_round
+    [ pair1_id, pair2_id ].compact.each do |pair_id|
+      clash = bracket.matches.where(round_number: round_number).where.not(id: id)
+                      .where("pair1_id = :pid OR pair2_id = :pid", pid: pair_id)
+                      .exists?
+      next unless clash
+
+      errors.add(:base, "эта пара уже играет другой матч в этом раунде")
+      break
+    end
   end
 end
