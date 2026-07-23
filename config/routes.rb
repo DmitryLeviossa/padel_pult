@@ -63,6 +63,7 @@ Rails.application.routes.draw do
     resources :matches, only: [ :update, :destroy ] do
       member do
         patch :assign_pairs
+        patch :clear_results
         get :result_card
         post :finish
       end

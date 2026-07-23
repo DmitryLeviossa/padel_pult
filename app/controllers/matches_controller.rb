@@ -96,7 +96,28 @@ class MatchesController < ApplicationController
     if @match.update(pair_assignment_params)
       redirect_to tournament_path(@match.tournament)
     else
-      redirect_to tournament_path(@match.tournament), alert: "Не удалось обновить пары."
+      redirect_to tournament_path(@match.tournament), alert: @match.errors.full_messages.to_sentence.presence || "Не удалось обновить пары."
+    end
+  end
+
+  def clear_results
+    unless @match.completed?
+      redirect_to tournament_path(@match.tournament), alert: "Этот матч ещё не завершён."
+      return
+    end
+
+    if @match.has_downstream_results?
+      redirect_to tournament_path(@match.tournament), alert: "Нельзя очистить результат: следующий матч уже завершён."
+      return
+    end
+
+    @match.match_sets.destroy_all
+    if @match.update(status: :pending, winner_id: nil, pair1_score: nil, pair2_score: nil)
+      recalculate_americano_scores if @match.tournament.americano?
+      broadcast_online_update
+      redirect_to tournament_path(@match.tournament), notice: "Результат очищен."
+    else
+      redirect_to tournament_path(@match.tournament), alert: "Не удалось очистить результат."
     end
   end
 

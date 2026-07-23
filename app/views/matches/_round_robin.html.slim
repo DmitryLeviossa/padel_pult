@@ -134,3 +134,6 @@
               - if match.completed? && match.pair1.present? && match.pair2.present?
                 = link_to result_card_tournament_match_path(tournament, match), target: "_blank", class: "btn btn-outline-secondary btn-sm" do
                   i.bi.bi-image
+              - if is_owner && match.completed?
+                = link_to clear_results_tournament_match_path(tournament, match), data: { turbo_method: :patch, turbo_confirm: "Очистить результат этого матча?" }, class: "btn btn-outline-danger btn-sm", title: "Очистить результат" do
+                  i.bi.bi-arrow-counterclockwise

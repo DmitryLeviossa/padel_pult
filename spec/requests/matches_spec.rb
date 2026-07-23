@@ -165,6 +165,49 @@ RSpec.describe "Matches", type: :request do
     end
   end
 
+  describe "PATCH /tournaments/:tournament_id/matches/:id/clear_results" do
+    let(:completed_match) do
+      tournament.matches.find_by!(round_number: 1, position: 1).tap do |m|
+        m.update_columns(pair1_id: pair1.id, pair2_id: pair2.id,
+                          status: "completed", winner_id: pair1.id,
+                          pair1_score: 1, pair2_score: 0)
+      end
+    end
+
+    context "as league owner" do
+      before { sign_in owner }
+
+      it "resets the match to pending and clears the score" do
+        create(:match_set, match: completed_match, pair1_score: 6, pair2_score: 3)
+
+        patch clear_results_tournament_match_path(tournament, completed_match)
+
+        expect(response).to redirect_to(tournament_path(tournament))
+        completed_match.reload
+        expect(completed_match.status).to eq("pending")
+        expect(completed_match.winner_id).to be_nil
+        expect(completed_match.pair1_score).to be_nil
+        expect(completed_match.pair2_score).to be_nil
+        expect(completed_match.match_sets).to be_empty
+      end
+
+      it "does nothing for a match that isn't completed" do
+        patch clear_results_tournament_match_path(tournament, match)
+        expect(response).to redirect_to(tournament_path(tournament))
+        expect(match.reload.status).to eq("pending")
+      end
+    end
+
+    context "as non-owner" do
+      before { sign_in other_user }
+
+      it "does not clear the result" do
+        patch clear_results_tournament_match_path(tournament, completed_match)
+        expect(completed_match.reload.status).to eq("completed")
+      end
+    end
+  end
+
   describe "PATCH /tournaments/:tournament_id/matches/:id/assign_pairs" do
     before { sign_in owner }
 
