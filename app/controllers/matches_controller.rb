@@ -1,8 +1,19 @@
 class MatchesController < ApplicationController
-  before_action :set_match
+  before_action :set_match, except: :create
+  before_action :set_tournament, only: :create
   before_action :authorize_tournament_owner!, except: :result_card
   before_action :ensure_tournament_not_completed!, except: :result_card
   skip_before_action :authenticate_user!, only: :result_card
+
+  def create
+    service = Tournaments::Matches::AddMatchService.new(@tournament, params[:round_number])
+    if service.call
+      broadcast_online_update_for(@tournament)
+      redirect_to tournament_path(@tournament), notice: "Матч добавлен."
+    else
+      redirect_to tournament_path(@tournament), alert: service.errors.to_sentence.presence || "Не удалось добавить матч."
+    end
+  end
 
   def update
     if @match.has_downstream_results?
@@ -75,21 +86,18 @@ class MatchesController < ApplicationController
   end
 
   def destroy
-    unless @match.third_place?
-      redirect_to tournament_path(@match.tournament), alert: "Можно удалить только матч за 3-е место."
+    tournament = @match.tournament
+    removable = @match.third_place? || tournament.round_robin?
+
+    unless removable
+      redirect_to tournament_path(tournament), alert: "Этот матч нельзя удалить."
       return
     end
 
-    tournament = @match.tournament
+    notice = @match.third_place? ? "Матч за 3-е место удалён." : "Матч удалён."
     @match.destroy
-    data = Tournaments::MatchData.new(tournament)
-    Turbo::StreamsChannel.broadcast_update_to(
-      "tournament_#{tournament.id}_online",
-      target: "tournament_matches",
-      partial: "tournaments/online_matches",
-      locals: data.to_locals
-    )
-    redirect_to tournament_path(tournament), notice: "Матч за 3-е место удалён."
+    broadcast_online_update_for(tournament)
+    redirect_to tournament_path(tournament), notice: notice
   end
 
   def assign_pairs
@@ -97,27 +105,6 @@ class MatchesController < ApplicationController
       redirect_to tournament_path(@match.tournament)
     else
       redirect_to tournament_path(@match.tournament), alert: @match.errors.full_messages.to_sentence.presence || "Не удалось обновить пары."
-    end
-  end
-
-  def clear_results
-    unless @match.completed?
-      redirect_to tournament_path(@match.tournament), alert: "Этот матч ещё не завершён."
-      return
-    end
-
-    if @match.has_downstream_results?
-      redirect_to tournament_path(@match.tournament), alert: "Нельзя очистить результат: следующий матч уже завершён."
-      return
-    end
-
-    @match.match_sets.destroy_all
-    if @match.update(status: :pending, winner_id: nil, pair1_score: nil, pair2_score: nil)
-      recalculate_americano_scores if @match.tournament.americano?
-      broadcast_online_update
-      redirect_to tournament_path(@match.tournament), notice: "Результат очищен."
-    else
-      redirect_to tournament_path(@match.tournament), alert: "Не удалось очистить результат."
     end
   end
 
@@ -139,7 +126,10 @@ class MatchesController < ApplicationController
   end
 
   def broadcast_online_update
-    tournament = @match.tournament
+    broadcast_online_update_for(@match.tournament)
+  end
+
+  def broadcast_online_update_for(tournament)
     data = Tournaments::MatchData.new(tournament)
     Turbo::StreamsChannel.broadcast_update_to(
       "tournament_#{tournament.id}_online",
@@ -170,15 +160,23 @@ class MatchesController < ApplicationController
     @match = Match.includes(:tournament).find(params[:id])
   end
 
+  def set_tournament
+    @tournament = Tournament.find(params[:tournament_id])
+  end
+
+  def tournament
+    @match&.tournament || @tournament
+  end
+
   def ensure_tournament_not_completed!
-    if @match.tournament.completed?
-      redirect_to tournament_path(@match.tournament), alert: "Нельзя изменить результат: турнир завершён."
+    if tournament.completed?
+      redirect_to tournament_path(tournament), alert: "Нельзя изменить результат: турнир завершён."
     end
   end
 
   def authorize_tournament_owner!
-    unless @match.tournament.league.owner == current_user
-      redirect_to tournament_path(@match.tournament), alert: "Нет доступа."
+    unless tournament.league.owner == current_user
+      redirect_to tournament_path(tournament), alert: "Нет доступа."
     end
   end
 

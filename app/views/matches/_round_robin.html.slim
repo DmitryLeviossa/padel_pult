@@ -80,7 +80,12 @@
 
 - rounds = matches.group_by(&:round_number).sort_by { |r, _| r }
 - rounds.each do |round_number, round_matches|
-  h6.mt-3.mb-2= "Раунд #{round_number}"
+  .d-flex.justify-content-between.align-items-center.mt-3.mb-2
+    h6.mb-0= "Раунд #{round_number}"
+    - if is_owner && !tournament.completed?
+      = button_to tournament_matches_path(tournament, round_number: round_number), method: :post, class: "btn btn-outline-secondary btn-sm py-0" do
+        i.bi.bi-plus-lg
+        '  Матч
   table.table.table-hover.table-sm.mb-4
     thead.table-light
       tr
@@ -122,18 +127,23 @@
               = match.pair_display_name(match.pair2)
           td.text-center
             - if match.completed?
-              span.badge.bg-success Завершён
+              i.bi.bi-check-circle-fill.text-success title="Завершён"
             - else
-              span.badge.bg-secondary Не сыгран
+              i.bi.bi-x-circle.text-muted title="Не сыгран"
           td
             .d-flex.align-items-center.gap-1
               - if is_owner && !match.bye? && match.pair1.present? && match.pair2.present?
-                - btn_label = match.completed? ? "Изменить" : "Ввести результат"
-                button.btn.btn-outline-primary.btn-sm data-bs-toggle="modal" data-bs-target="#match-modal-#{match.id}"
-                  = btn_label
+                - btn_title = match.completed? ? "Изменить результат" : "Ввести результат"
+                button.btn.btn-outline-primary.btn-sm data-bs-toggle="modal" data-bs-target="#match-modal-#{match.id}" title=btn_title
+                  i.bi.bi-pencil-square
               - if match.completed? && match.pair1.present? && match.pair2.present?
                 = link_to result_card_tournament_match_path(tournament, match), target: "_blank", class: "btn btn-outline-secondary btn-sm" do
                   i.bi.bi-image
-              - if is_owner && match.completed?
-                = link_to clear_results_tournament_match_path(tournament, match), data: { turbo_method: :patch, turbo_confirm: "Очистить результат этого матча?" }, class: "btn btn-outline-danger btn-sm", title: "Очистить результат" do
-                  i.bi.bi-arrow-counterclockwise
+              - if is_owner
+                - delete_confirm = match.completed? ? "Удалить этот матч вместе с результатом?" : "Удалить этот матч?"
+                = link_to tournament_match_path(tournament, match), data: { turbo_method: :delete, turbo_confirm: delete_confirm }, class: "btn btn-outline-danger btn-sm", title: "Удалить матч" do
+                  i.bi.bi-trash
+
+- if is_owner && !tournament.completed?
+  - next_round = (rounds.map(&:first).max || 0) + 1
+  = button_to "+ Раунд #{next_round}", tournament_matches_path(tournament, round_number: next_round), method: :post, class: "btn btn-outline-secondary btn-sm mb-4"

@@ -60,10 +60,9 @@ Rails.application.routes.draw do
     resources :brackets, only: [ :new, :create, :destroy ]
     resources :pairs, only: [ :create, :destroy, :update ]
     resources :tournament_participants, only: [ :create, :destroy ]
-    resources :matches, only: [ :update, :destroy ] do
+    resources :matches, only: [ :create, :update, :destroy ] do
       member do
         patch :assign_pairs
-        patch :clear_results
         get :result_card
         post :finish
       end

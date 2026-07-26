@@ -165,45 +165,102 @@ RSpec.describe "Matches", type: :request do
     end
   end
 
-  describe "PATCH /tournaments/:tournament_id/matches/:id/clear_results" do
-    let(:completed_match) do
-      tournament.matches.find_by!(round_number: 1, position: 1).tap do |m|
-        m.update_columns(pair1_id: pair1.id, pair2_id: pair2.id,
-                          status: "completed", winner_id: pair1.id,
-                          pair1_score: 1, pair2_score: 0)
-      end
-    end
+  describe "POST /tournaments/:tournament_id/matches" do
+    let(:rr_tournament) { create(:tournament, :active, type: :round_robin, league: league, max_participants: 4) }
 
     context "as league owner" do
       before { sign_in owner }
 
-      it "resets the match to pending and clears the score" do
-        create(:match_set, match: completed_match, pair1_score: 6, pair2_score: 3)
-
-        patch clear_results_tournament_match_path(tournament, completed_match)
-
-        expect(response).to redirect_to(tournament_path(tournament))
-        completed_match.reload
-        expect(completed_match.status).to eq("pending")
-        expect(completed_match.winner_id).to be_nil
-        expect(completed_match.pair1_score).to be_nil
-        expect(completed_match.pair2_score).to be_nil
-        expect(completed_match.match_sets).to be_empty
+      it "adds a match to an existing round" do
+        expect {
+          post tournament_matches_path(rr_tournament), params: { round_number: 1 }
+        }.to change { rr_tournament.matches.where(round_number: 1).count }.by(1)
+        expect(response).to redirect_to(tournament_path(rr_tournament))
       end
 
-      it "does nothing for a match that isn't completed" do
-        patch clear_results_tournament_match_path(tournament, match)
+      it "assigns the next available position within the round" do
+        post tournament_matches_path(rr_tournament), params: { round_number: 1 }
+        new_match = rr_tournament.matches.where(round_number: 1).order(:position).last
+        expect(new_match.position).to eq(2)
+      end
+
+      it "creates a new round when given a round number beyond the current schedule" do
+        expect {
+          post tournament_matches_path(rr_tournament), params: { round_number: 2 }
+        }.to change { rr_tournament.matches.where(round_number: 2).count }.by(1)
+      end
+
+      it "does not add a match to a non-round-robin tournament" do
+        tournament # force creation before counting
+        expect {
+          post tournament_matches_path(tournament), params: { round_number: 1 }
+        }.not_to change(Match, :count)
         expect(response).to redirect_to(tournament_path(tournament))
-        expect(match.reload.status).to eq("pending")
       end
     end
 
     context "as non-owner" do
       before { sign_in other_user }
 
-      it "does not clear the result" do
-        patch clear_results_tournament_match_path(tournament, completed_match)
-        expect(completed_match.reload.status).to eq("completed")
+      it "does not add a match" do
+        rr_tournament # force creation before counting
+        expect {
+          post tournament_matches_path(rr_tournament), params: { round_number: 1 }
+        }.not_to change(Match, :count)
+      end
+    end
+
+    context "when tournament is completed" do
+      before do
+        sign_in owner
+        rr_tournament.update_columns(status: "completed")
+      end
+
+      it "does not add a match" do
+        expect {
+          post tournament_matches_path(rr_tournament), params: { round_number: 1 }
+        }.not_to change(Match, :count)
+      end
+    end
+  end
+
+  describe "DELETE /tournaments/:tournament_id/matches/:id for round-robin matches" do
+    let(:rr_tournament) { create(:tournament, :active, type: :round_robin, league: league, max_participants: 4) }
+    let(:rr_pair1) { create(:pair, tournament: rr_tournament, player1: lu1, player2: lu2) }
+    let(:rr_pair2) { create(:pair, tournament: rr_tournament, player1: lu3, player2: lu4) }
+    let(:pending_match) { rr_tournament.matches.find_by!(round_number: 1, position: 1) }
+
+    context "as league owner" do
+      before { sign_in owner }
+
+      it "deletes a pending round-robin match" do
+        pending_match
+        expect {
+          delete tournament_match_path(rr_tournament, pending_match)
+        }.to change(Match, :count).by(-1)
+        expect(response).to redirect_to(tournament_path(rr_tournament))
+      end
+
+      it "deletes a completed round-robin match along with its results" do
+        pending_match.update_columns(pair1_id: rr_pair1.id, pair2_id: rr_pair2.id,
+                                      status: "completed", winner_id: rr_pair1.id)
+        create(:match_set, match: pending_match, pair1_score: 6, pair2_score: 3)
+
+        expect {
+          delete tournament_match_path(rr_tournament, pending_match)
+        }.to change(Match, :count).by(-1).and change(MatchSet, :count).by(-1)
+        expect(response).to redirect_to(tournament_path(rr_tournament))
+      end
+    end
+
+    context "as non-owner" do
+      before { sign_in other_user }
+
+      it "does not delete the match" do
+        pending_match
+        expect {
+          delete tournament_match_path(rr_tournament, pending_match)
+        }.not_to change(Match, :count)
       end
     end
   end
